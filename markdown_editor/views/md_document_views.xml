@@ -8,61 +8,113 @@
             <form string="Markdown‑Dokument">
                 <sheet>
                     <header>
-                        <field name="state" widget="statusbar"/>
+                        <button name="action_publish" string="Veröffentlichen" type="object" class="oe_highlight" states="draft"/>
+                        <button name="action_archive" string="Archivieren" type="object" states="published"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,published,archived"/>
                     </header>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Dokumenttitel"/></h1>
+                    </div>
                     <group>
-                        <field name="name"/>
-                        <field name="owner_id" readonly="1"/>
-                        <field name="current_version" readonly="1"/>
+                        <group>
+                            <field name="owner_id" readonly="1"/>
+                            <field name="current_version" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="create_date" readonly="1"/>
+                            <field name="write_date" readonly="1"/>
+                        </group>
                     </group>
                     <notebook>
-                        <page string="Editor">
+                        <page string="Editor" name="editor">
                             <field name="content_md" widget="markdown_editor" nolabel="1" class="o_full_width"/>
                         </page>
-                        <page string="Versionen">
-                            <field name="version_ids" mode="tree,form" context="{'form_view_ref':'view_md_document_version_form'}">
-                                <tree string="Versionen" editable="false">
-                                    <field name="version"/>
-                                    <field name="changed_by"/>
-                                    <field name="changed_at"/>
-                                    <field name="checksum"/>
-                                    <field name="md_attachment_id"/>
-                                    <field name="pdf_attachment_id"/>
-                                </tree>
-                                <form string="Version" create="false" edit="false" id="view_md_document_version_form">
-                                    <sheet>
-                                        <group>
-                                            <field name="version"/>
-                                            <field name="changed_by" readonly="1"/>
-                                            <field name="changed_at" readonly="1"/>
-                                            <field name="checksum" readonly="1"/>
-                                            <field name="md_attachment_id" readonly="1"/>
-                                            <field name="pdf_attachment_id" readonly="1"/>
-                                        </group>
-                                        <group>
-                                            <field name="content_md" widget="markdown_editor" nolabel="1" readonly="1" class="o_full_width"/>
-                                        </group>
-                                    </sheet>
-                                </form>
+                        <page string="Versionen" name="versions">
+                            <field name="version_ids" readonly="1">
+                                <list string="Versionen" decoration-muted="state == 'archived'">
+                                    <field name="version" string="Version"/>
+                                    <field name="changed_by" string="Geändert von"/>
+                                    <field name="changed_at" string="Geändert am" widget="date"/>
+                                    <field name="checksum" string="Checksumme"/>
+                                    <field name="md_attachment_id" string="Markdown"/>
+                                    <field name="pdf_attachment_id" string="PDF"/>
+                                </list>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                </div>
             </form>
         </field>
     </record>
 
-    <!-- Tree view for Markdown Document -->
-    <record id="view_md_document_tree" model="ir.ui.view">
-        <field name="name">x.md.document.tree</field>
+    <!-- List view for Markdown Document -->
+    <record id="view_md_document_list" model="ir.ui.view">
+        <field name="name">x.md.document.list</field>
         <field name="model">x.md.document</field>
         <field name="arch" type="xml">
-            <tree string="Markdown‑Dokumente">
+            <list string="Markdown‑Dokumente" decoration-muted="state == 'archived'" decoration-info="state == 'draft'">
                 <field name="name"/>
-                <field name="owner_id"/>
-                <field name="state"/>
+                <field name="owner_id" widget="many2one_avatar_user"/>
+                <field name="state" widget="badge" decoration-success="state == 'published'" decoration-warning="state == 'draft'" decoration-secondary="state == 'archived'"/>
                 <field name="current_version"/>
-            </tree>
+                <field name="write_date" widget="date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search view for filters -->
+    <record id="view_md_document_search" model="ir.ui.view">
+        <field name="name">x.md.document.search</field>
+        <field name="model">x.md.document</field>
+        <field name="arch" type="xml">
+            <search string="Markdown‑Dokumente">
+                <field name="name" string="Titel"/>
+                <field name="owner_id" string="Eigentümer"/>
+                <filter string="Entwürfe" name="draft_filter" domain="[('state', '=', 'draft')]"/>
+                <filter string="Veröffentlicht" name="published_filter" domain="[('state', '=', 'published')]"/>
+                <filter string="Archiviert" name="archived_filter" domain="[('state', '=', 'archived')]"/>
+                <separator/>
+                <filter string="Meine Dokumente" name="my_docs" domain="[('owner_id', '=', uid)]"/>
+                <group string="Gruppieren nach">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Eigentümer" name="group_owner" context="{'group_by': 'owner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Version Form View (read-only) -->
+    <record id="view_md_document_version_form" model="ir.ui.view">
+        <field name="name">x.md.document.version.form</field>
+        <field name="model">x.md.document.version</field>
+        <field name="arch" type="xml">
+            <form string="Version" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h2><field name="version" string="Version" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="version" readonly="1"/>
+                            <field name="changed_by" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="changed_at" readonly="1" widget="date"/>
+                            <field name="checksum" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Anhänge">
+                        <field name="md_attachment_id" readonly="1"/>
+                        <field name="pdf_attachment_id" readonly="1"/>
+                    </group>
+                    <separator string="Markdown‑Inhalt"/>
+                    <field name="content_md" widget="markdown_editor" nolabel="1" readonly="1" class="o_full_width"/>
+                </sheet>
+            </form>
         </field>
     </record>
 
@@ -70,15 +122,23 @@
     <record id="action_md_document" model="ir.actions.act_window">
         <field name="name">Markdown‑Dokumente</field>
         <field name="res_model">x.md.document</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_md_document_search"/>
         <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Erstelle dein erstes Markdown‑Dokument!
+            </p>
             <p>
-                Mit dieser App können Sie Markdown‑Dokumente erstellen, live
-                bearbeiten und Versionen verwalten.
+                Mit dieser App kannst du Markdown‑Dokumente erstellen, live bearbeiten
+                und Versionen verwalten. Jede Änderung wird automatisch versioniert
+                und mit einem Audittrail versehen.
             </p>
         </field>
     </record>
 
-    <menuitem id="menu_md_document_root" name="Markdown" sequence="20"/>
+    <!-- Root Menu -->
+    <menuitem id="menu_md_document_root" name="Markdown" sequence="20" web_icon="markdown_editor,static/description/icon.png"/>
+
+    <!-- Documents Menu -->
     <menuitem id="menu_md_document" name="Dokumente" parent="menu_md_document_root" action="action_md_document" sequence="10"/>
 </odoo>
