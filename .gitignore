@@ -1,0 +1,92 @@
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+.directory
+
+# Odoo specific
+*.log
+session.pickle
+.odoorc
+odoo-bin.pid
+odoo.egg-info/
+
+# Node modules (falls frontend assets)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+*~
+
+# Icons/Logos (nur source, nicht final)
+Icons/
+*.psd
+*.ai
+*.sketch
+
+# Notizen (für Entwicklung)
+notiz.md
+notes/
+TODO.txt
+NOTES.md
+
+# Misc
+.cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.tox/
