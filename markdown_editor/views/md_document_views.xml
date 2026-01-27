@@ -29,7 +29,7 @@
                         </page>
                         <page string="Versionen" name="versions">
                             <field name="version_ids" readonly="1">
-                                <list string="Versionen" decoration-muted="state == 'archived'">
+                                <list string="Versionen">
                                     <field name="version" string="Version"/>
                                     <field name="changed_by" string="Geändert von"/>
                                     <field name="changed_at" string="Geändert am" widget="date"/>
