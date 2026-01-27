@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Form view for Markdown Document -->
+    <record id="view_md_document_form" model="ir.ui.view">
+        <field name="name">x.md.document.form</field>
+        <field name="model">x.md.document</field>
+        <field name="arch" type="xml">
+            <form string="Markdown‑Dokument">
+                <sheet>
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <group>
+                        <field name="name"/>
+                        <field name="owner_id" readonly="1"/>
+                        <field name="current_version" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Editor">
+                            <field name="content_md" widget="markdown_editor" nolabel="1" class="o_full_width"/>
+                        </page>
+                        <page string="Versionen">
+                            <field name="version_ids" mode="tree,form" context="{'form_view_ref':'view_md_document_version_form'}">
+                                <tree string="Versionen" editable="false">
+                                    <field name="version"/>
+                                    <field name="changed_by"/>
+                                    <field name="changed_at"/>
+                                    <field name="checksum"/>
+                                    <field name="md_attachment_id"/>
+                                    <field name="pdf_attachment_id"/>
+                                </tree>
+                                <form string="Version" create="false" edit="false" id="view_md_document_version_form">
+                                    <sheet>
+                                        <group>
+                                            <field name="version"/>
+                                            <field name="changed_by" readonly="1"/>
+                                            <field name="changed_at" readonly="1"/>
+                                            <field name="checksum" readonly="1"/>
+                                            <field name="md_attachment_id" readonly="1"/>
+                                            <field name="pdf_attachment_id" readonly="1"/>
+                                        </group>
+                                        <group>
+                                            <field name="content_md" widget="markdown_editor" nolabel="1" readonly="1" class="o_full_width"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view for Markdown Document -->
+    <record id="view_md_document_tree" model="ir.ui.view">
+        <field name="name">x.md.document.tree</field>
+        <field name="model">x.md.document</field>
+        <field name="arch" type="xml">
+            <tree string="Markdown‑Dokumente">
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="state"/>
+                <field name="current_version"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action and Menu -->
+    <record id="action_md_document" model="ir.actions.act_window">
+        <field name="name">Markdown‑Dokumente</field>
+        <field name="res_model">x.md.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>
+                Mit dieser App können Sie Markdown‑Dokumente erstellen, live
+                bearbeiten und Versionen verwalten.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_md_document_root" name="Markdown" sequence="20"/>
+    <menuitem id="menu_md_document" name="Dokumente" parent="menu_md_document_root" action="action_md_document" sequence="10"/>
+</odoo>

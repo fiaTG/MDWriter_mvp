@@ -1,0 +1,28 @@
+// Styling für den Markdown Editor
+
+.o_markdown_editor {
+    display: flex;
+    flex-direction: row;
+    min-height: 400px;
+    border: 1px solid var(--border-color);
+}
+
+.o_markdown_editor textarea.o_input {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    resize: none;
+    outline: none;
+    background: var(--o-input-bg);
+    color: var(--o-input-color);
+}
+
+.o_markdown_preview {
+    flex: 1;
+    padding: 0.75rem;
+    border-left: 1px solid var(--border-color);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    background: var(--o-background-color);
+    color: var(--o-text-color);
+}

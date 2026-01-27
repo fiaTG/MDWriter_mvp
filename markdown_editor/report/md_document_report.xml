@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- QWeb template for Markdown Document PDF -->
+    <template id="report_md_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <t t-foreach="docs" t-as="doc">
+                    <h1>
+                        <t t-esc="doc.name"/>
+                    </h1>
+                    <!-- Einfacher Markdown Preview: Markdown wird nicht geparst,
+                         sondern im PDF als Preformatted Text dargestellt. Eine
+                         echte Markdown‑zu‑HTML Konvertierung sollte mittels
+                         zusätzlicher Python‑Bibliothek erfolgen. -->
+                    <pre>
+                        <t t-esc="doc.content_md"/>
+                    </pre>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Report action definition -->
+    <report
+        id="md_document_pdf"
+        model="x.md.document"
+        string="Markdown Dokument"
+        report_type="qweb-pdf"
+        name="markdown_editor.report_md_document"
+        file="markdown_editor.report_md_document"
+    />
+</odoo>

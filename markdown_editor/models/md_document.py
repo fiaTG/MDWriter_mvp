@@ -1,0 +1,161 @@
+import base64
+import hashlib
+import logging
+from datetime import datetime
+
+from odoo import api, fields, models, _
+
+_logger = logging.getLogger(__name__)
+
+
+class XMdDocument(models.Model):
+    """
+    Hauptmodell für Markdown‑Dokumente.
+
+    Dieses Modell speichert den aktuellen Markdown‑Inhalt und verwaltet
+    Versionen sowie zugehörige Attachments. Jede Änderung am
+    Inhalt führt zu einer neuen Version in ``x.md.document.version``.
+    """
+
+    _name = "x.md.document"
+    _description = "Markdown Document"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+
+    name = fields.Char(string="Titel", required=True, tracking=True)
+    content_md = fields.Text(string="Markdown‑Inhalt", tracking=True)
+    state = fields.Selection([
+        ("draft", "Entwurf"),
+        ("published", "Veröffentlicht"),
+        ("archived", "Archiviert"),
+    ], default="draft", tracking=True)
+    owner_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Eigentümer",
+        default=lambda self: self.env.user,
+        tracking=True,
+    )
+    version_ids = fields.One2many(
+        comodel_name="x.md.document.version",
+        inverse_name="document_id",
+        string="Versionen",
+    )
+    current_version = fields.Integer(
+        string="Aktuelle Version",
+        compute="_compute_current_version",
+        store=True,
+        tracking=True,
+    )
+
+    @api.depends("version_ids.version")
+    def _compute_current_version(self):
+        for doc in self:
+            if doc.version_ids:
+                doc.current_version = max(doc.version_ids.mapped("version"))
+            else:
+                doc.current_version = 0
+
+    def _create_version(self):
+        """
+        Erzeugt eine neue Version des Dokuments. Diese Methode wird
+        automatisch beim Erstellen und Aktualisieren eines Dokumentes
+        aufgerufen. Sie speichert den Markdown‑Inhalt als Attachment
+        und erzeugt optional einen PDF‑Attachment über einen QWeb‑Report.
+        """
+        Attachment = self.env["ir.attachment"]
+        Version = self.env["x.md.document.version"]
+
+        for record in self:
+            # Bestimme die nächste Versionsnummer
+            next_version = record.current_version + 1
+            md_content = record.content_md or ""
+            checksum = hashlib.md5(md_content.encode("utf-8")).hexdigest()
+
+            # Markdown als Attachment speichern
+            md_name = f"{record.name}_v{next_version}.md"
+            md_attachment = Attachment.create({
+                "name": md_name,
+                "datas": base64.b64encode(md_content.encode("utf-8")),
+                "mimetype": "text/markdown",
+                "res_model": record._name,
+                "res_id": record.id,
+            })
+
+            # Versuche, einen PDF‑Report zu rendern. Falls dies fehlschlägt,
+            # wird das PDF‑Attachment leer bleiben. Die tatsächliche
+            # PDF‑Konvertierung erfolgt mittels eines QWeb‑Reports.
+            pdf_attachment = False
+            try:
+                report_action = self.env.ref("markdown_editor.md_document_pdf", raise_if_not_found=False)
+                if report_action:
+                    pdf_bytes, _content_type = report_action._render_qweb_pdf(record.ids)
+                    pdf_name = f"{record.name}_v{next_version}.pdf"
+                    pdf_attachment = Attachment.create({
+                        "name": pdf_name,
+                        "datas": base64.b64encode(pdf_bytes),
+                        "mimetype": "application/pdf",
+                        "res_model": record._name,
+                        "res_id": record.id,
+                    })
+            except Exception as e:
+                _logger.warning("PDF render failed: %s", e)
+
+            # Neue Version anlegen
+            Version.create({
+                "document_id": record.id,
+                "version": next_version,
+                "content_md": md_content,
+                "checksum": checksum,
+                "changed_by": self.env.user.id,
+                "changed_at": fields.Datetime.now(),
+                "md_attachment_id": md_attachment.id,
+                "pdf_attachment_id": pdf_attachment.id if pdf_attachment else False,
+            })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._create_version()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Bei jeder Änderung des Markdown‑Inhalts eine neue Version erzeugen
+        if "content_md" in vals:
+            self._create_version()
+        return res
+
+
+class XMdDocumentVersion(models.Model):
+    """
+    Versionierungsmodell für Markdown‑Dokumente.
+    Jede Änderung an ``x.md.document`` erzeugt einen neuen Datensatz
+    in diesem Modell. Versionen sind append‑only und enthalten
+    Referenzen auf die gespeicherten Attachments.
+    """
+
+    _name = "x.md.document.version"
+    _description = "Markdown Document Version"
+    _order = "version desc"
+
+    document_id = fields.Many2one(
+        comodel_name="x.md.document",
+        string="Dokument",
+        required=True,
+        ondelete="cascade",
+    )
+    version = fields.Integer(string="Version", required=True)
+    content_md = fields.Text(string="Markdown‑Inhalt")
+    checksum = fields.Char(string="Checksumme", size=32)
+    changed_by = fields.Many2one(
+        comodel_name="res.users",
+        string="Geändert von",
+    )
+    changed_at = fields.Datetime(string="Geändert am")
+    md_attachment_id = fields.Many2one(
+        comodel_name="ir.attachment",
+        string="Markdown‑Anhang",
+    )
+    pdf_attachment_id = fields.Many2one(
+        comodel_name="ir.attachment",
+        string="PDF‑Anhang",
+    )
