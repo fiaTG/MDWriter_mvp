@@ -534,12 +534,21 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 
 | Version | Datum | Änderung | Autor |
 |---------|-------|---------|-------|
+| 1.0.6 | 27.01.2026 | .gitignore hinzugefügt für Python, IDEs, OS und Odoo-spezifische Dateien | Timo |
 | 1.0.5 | 27.01.2026 | List View Fix: Ungültige Decoration-Attribute entfernt | Timo |
 | 1.0.4 | 27.01.2026 | Form View Fix: Undefined Action Buttons entfernt, nur State-Selection | Timo |
 | 1.0.3 | 27.01.2026 | Icon/Logo Integration: MDWriterLogo in Manifest und Views hinzugefügt | Timo |
 | 1.0.2 | 27.01.2026 | Manifest-Fixes: Version zu 19.0.1.0.0, Python Boolean-Fehler behoben | Timo |
 | 1.0.1 | 27.01.2026 | Odoo 19 View Migration: `<tree>` → `<list>`, Search View & Decorations hinzugefügt | Timo |
 | 1.0.0 | 27.01.2026 | Initial Release | Timo |
+
+**Detailierte Änderungen in 1.0.6:**
+- `.gitignore`: Python Cache (`__pycache__`, `*.pyc`) ignoriert
+- `.gitignore`: IDE Dateien (`.vscode`, `.idea`, `*.swp`) ignoriert
+- `.gitignore`: OS Dateien (`.DS_Store`, `Thumbs.db`) ignoriert
+- `.gitignore`: Odoo-spezifisch (`.log`, `session.pickle`, `.odoorc`) ignoriert
+- `.gitignore`: Temporäre Dateien (`*.tmp`, `*.bak`, `notiz.md`) ignoriert
+- Struktur: Entwicklungs-Notizen werden nicht mehr committed
 
 **Detailierte Änderungen in 1.0.5:**
 - List View: Ungültige Decoration-Attribute (`decoration-secondary`, `decoration-success`, `decoration-warning`, `decoration-muted`) entfernt

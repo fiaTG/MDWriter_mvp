@@ -70,17 +70,17 @@
         <field name="model">x.md.document</field>
         <field name="arch" type="xml">
             <search string="Markdown‑Dokumente">
-                <field name="name" string="Titel"/>
-                <field name="owner_id" string="Eigentümer"/>
+                <field name="name"/>
+                <field name="owner_id"/>
+                <separator/>
                 <filter string="Entwürfe" name="draft_filter" domain="[('state', '=', 'draft')]"/>
                 <filter string="Veröffentlicht" name="published_filter" domain="[('state', '=', 'published')]"/>
                 <filter string="Archiviert" name="archived_filter" domain="[('state', '=', 'archived')]"/>
                 <separator/>
                 <filter string="Meine Dokumente" name="my_docs" domain="[('owner_id', '=', uid)]"/>
-                <group string="Gruppieren nach">
-                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
-                    <filter string="Eigentümer" name="group_owner" context="{'group_by': 'owner_id'}"/>
-                </group>
+                <separator/>
+                <filter string="Nach Status" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Nach Eigentümer" name="group_owner" context="{'group_by': 'owner_id'}"/>
             </search>
         </field>
     </record>
