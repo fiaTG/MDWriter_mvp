@@ -25,7 +25,12 @@ class MarkdownField extends Component {
 }
 
 MarkdownField.template = "markdown_editor.MarkdownField";
-MarkdownField.props = ["record", "name"];
+MarkdownField.props = {
+    record: Object,
+    name: String,
+    readonly: { type: Boolean, optional: true },
+    id: { type: [String, Number], optional: true },
+};
 MarkdownField.displayName = "Markdown Editor";
 
 // Widget im Field Registry registrieren
