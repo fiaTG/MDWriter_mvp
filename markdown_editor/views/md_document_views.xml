@@ -32,7 +32,7 @@
                                 <list string="Versionen">
                                     <field name="version" string="Version"/>
                                     <field name="changed_by" string="Geändert von"/>
-                                    <field name="changed_at" string="Geändert am" widget="date"/>
+                                    <field name="changed_at" string="Geändert am"/>
                                     <field name="checksum" string="Checksumme"/>
                                     <field name="md_attachment_id" string="Markdown"/>
                                     <field name="pdf_attachment_id" string="PDF"/>
@@ -59,7 +59,7 @@
                 <field name="owner_id" widget="many2one_avatar_user"/>
                 <field name="state" widget="badge"/>
                 <field name="current_version"/>
-                <field name="write_date" widget="date"/>
+                <field name="write_date"/>
             </list>
         </field>
     </record>
@@ -101,7 +101,7 @@
                             <field name="changed_by" readonly="1"/>
                         </group>
                         <group>
-                            <field name="changed_at" readonly="1" widget="date"/>
+                            <field name="changed_at" readonly="1"/>
                             <field name="checksum" readonly="1"/>
                         </group>
                     </group>
