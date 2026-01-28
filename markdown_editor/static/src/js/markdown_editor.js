@@ -11,6 +11,13 @@ class MarkdownField extends Component {
         this.state = useState({
             value: this.props.record.data[this.props.name] || "",
         });
+
+        // Debug-Output für Entwicklung
+        console.log("MarkdownField mounted", {
+            name: this.props.name,
+            value: this.state.value,
+            readonly: this.props.readonly
+        });
     }
 
     /**

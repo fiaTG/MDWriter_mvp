@@ -3,26 +3,48 @@
 .o_markdown_editor {
     display: flex;
     flex-direction: row;
+    min-height: 600px;
     height: 600px;
+    width: 100%;
     border: 1px solid var(--border-color);
+    box-sizing: border-box;
 }
 
 .o_markdown_editor textarea.o_input {
     flex: 1;
+    min-width: 0; // Flex-Bug-Fix
     padding: 0.75rem;
     border: none;
     resize: none;
     outline: none;
     background: var(--o-input-bg);
     color: var(--o-input-color);
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .o_markdown_preview {
     flex: 1;
+    min-width: 0; // Flex-Bug-Fix
     padding: 0.75rem;
     border-left: 1px solid var(--border-color);
     overflow-y: auto;
     white-space: pre-wrap;
     background: var(--o-background-color);
     color: var(--o-text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+// Stelle sicher, dass das Field-Widget Container die volle Breite haben
+.o_field_widget.o_field_markdown_editor {
+    width: 100%;
+    display: block;
+}
+
+// Fix für Odoo Form View Layout
+.o_form_sheet .o_field_markdown_editor {
+    margin-bottom: 16px;
 }

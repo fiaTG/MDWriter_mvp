@@ -534,6 +534,7 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 
 | Version | Datum | Änderung | Autor |
 |---------|-------|---------|-------|
+| 1.0.7 | 27.01.2026 | **MEILENSTEIN 1:** Icon auf 2048x2048px hochskaliert, Modul erfolgreich deploybar | Timo |
 | 1.0.6 | 27.01.2026 | .gitignore hinzugefügt für Python, IDEs, OS und Odoo-spezifische Dateien | Timo |
 | 1.0.5 | 27.01.2026 | List View Fix: Ungültige Decoration-Attribute entfernt | Timo |
 | 1.0.4 | 27.01.2026 | Form View Fix: Undefined Action Buttons entfernt, nur State-Selection | Timo |
@@ -541,6 +542,15 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 | 1.0.2 | 27.01.2026 | Manifest-Fixes: Version zu 19.0.1.0.0, Python Boolean-Fehler behoben | Timo |
 | 1.0.1 | 27.01.2026 | Odoo 19 View Migration: `<tree>` → `<list>`, Search View & Decorations hinzugefügt | Timo |
 | 1.0.0 | 27.01.2026 | Initial Release | Timo |
+
+**Detailierte Änderungen in 1.0.7 (MEILENSTEIN 1):**
+- Icon: Von 1024x1024px auf 2048x2048px hochskaliert
+- Icon: Höhere Qualität und besseres Rendering in Odoo
+- Status: Modul erfolgreich installierbar auf Odoo 19
+- Funktionalität: Markdown Editor, Live Preview, Versionierung aktiv
+- Views: Form, List, Search Views validiert und funktionsfähig
+- Security: ACL und Record Rules vorhanden
+- Deployment: Auf Odoo.sh (fiatg-mdwriter-main) erfolgreich getestet
 
 **Detailierte Änderungen in 1.0.6:**
 - `.gitignore`: Python Cache (`__pycache__`, `*.pyc`) ignoriert

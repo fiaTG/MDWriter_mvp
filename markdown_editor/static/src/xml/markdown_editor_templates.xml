@@ -2,7 +2,13 @@
 <templates xml:space="preserve">
     <t t-name="markdown_editor.MarkdownField">
         <div class="o_markdown_editor">
-            <textarea t-ref="editor" class="o_input" t-on-input="_onInput" t-att-value="state.value" placeholder="Geben Sie hier Ihren Markdown‑Text ein..."/>
+            <textarea
+                t-ref="editor"
+                class="o_input"
+                t-on-input="_onInput"
+                t-model="state.value"
+                placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
+            />
             <div class="o_markdown_preview">
                 <!-- Vorschau: Der Markdown‑Inhalt wird hier angezeigt. -->
                 <t t-esc="state.value"/>
