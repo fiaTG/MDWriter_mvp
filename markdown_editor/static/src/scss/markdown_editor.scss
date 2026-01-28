@@ -51,6 +51,26 @@
     margin-bottom: 16px;
 }
 
+// KRITISCHER FIX: Verhindere overflow-Probleme im Form View
+.o_form_view:has(.o_markdown_editor) {
+    overflow: visible !important;
+}
+
+.o_form_view .o_form_sheet:has(.o_markdown_editor) {
+    overflow: visible !important;
+}
+
+// Alternative: Setze min-height für den Form Sheet Container
+.o_form_sheet:has(.o_markdown_editor) {
+    min-height: 800px !important;
+}
+
+// Stelle sicher, dass der Content-Container genug Höhe hat
+.o_content:has(.o_markdown_editor) {
+    min-height: 100vh !important;
+    overflow-y: auto !important;
+}
+
 // WICHTIG: Fix für Notebook/Tab Layout
 .o_notebook .tab-pane {
     .o_field_markdown_editor,
@@ -78,5 +98,33 @@
 
     .o_field_markdown_editor {
         margin: 0 !important;
+    }
+}
+
+// Genereller Fix für alle Form Views mit Markdown Editor
+// Setze overflow auf dem gesamten Form View zurück
+.o_form_view.o_xxl_form_view {
+    .o_form_sheet_bg {
+        overflow: visible !important;
+
+        .o_form_sheet {
+            overflow: visible !important;
+        }
+    }
+}
+
+// Backup: Genereller Override für alle Form Views (wenn :has nicht funktioniert)
+body:has(.o_markdown_editor) {
+    .o_form_view {
+        overflow: visible !important;
+
+        .o_form_sheet_bg {
+            overflow: visible !important;
+        }
+
+        .o_form_sheet {
+            overflow: visible !important;
+            min-height: 800px !important;
+        }
     }
 }

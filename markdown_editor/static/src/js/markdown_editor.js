@@ -18,6 +18,28 @@ class MarkdownField extends Component {
             value: this.state.value,
             readonly: this.props.readonly
         });
+
+        // KRITISCHER FIX: Entferne overflow-Constraints vom Form View
+        // Dies verhindert, dass der Editor außerhalb des sichtbaren Bereichs ist
+        setTimeout(() => {
+            const formView = document.querySelector('.o_form_view');
+            const formSheet = document.querySelector('.o_form_sheet');
+            const formSheetBg = document.querySelector('.o_form_sheet_bg');
+
+            if (formView) {
+                formView.style.overflow = 'visible';
+                console.log('Fixed form view overflow');
+            }
+            if (formSheet) {
+                formSheet.style.overflow = 'visible';
+                formSheet.style.minHeight = '800px';
+                console.log('Fixed form sheet overflow');
+            }
+            if (formSheetBg) {
+                formSheetBg.style.overflow = 'visible';
+                console.log('Fixed form sheet bg overflow');
+            }
+        }, 100);
     }
 
     /**
