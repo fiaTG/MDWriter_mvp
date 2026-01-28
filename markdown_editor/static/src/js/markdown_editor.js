@@ -40,6 +40,14 @@ MarkdownField.props = {
 };
 MarkdownField.displayName = "Markdown Editor";
 
+// Füge eine CSS-Klasse hinzu, damit das Widget die volle Breite bekommt
+MarkdownField.extractProps = ({ attrs }) => {
+    return {
+        readonly: attrs.readonly,
+        id: attrs.id,
+    };
+};
+
 // Widget im Field Registry registrieren
 registry.category("fields").add("markdown_editor", {
     component: MarkdownField,

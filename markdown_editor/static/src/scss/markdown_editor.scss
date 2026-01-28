@@ -1,13 +1,15 @@
 // Styling für den Markdown Editor
 
 .o_markdown_editor {
-    display: flex;
-    flex-direction: row;
-    min-height: 600px;
-    height: 600px;
-    width: 100%;
+    display: flex !important;
+    flex-direction: row !important;
+    min-height: 600px !important;
+    height: 600px !important;
+    width: 100% !important;
+    max-width: 100% !important;
     border: 1px solid var(--border-color);
-    box-sizing: border-box;
+    box-sizing: border-box !important;
+    flex: 1 1 auto !important;
 }
 
 .o_markdown_editor textarea.o_input {
