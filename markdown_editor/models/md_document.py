@@ -21,7 +21,7 @@ class XMdDocument(models.Model):
     _description = "Markdown Document"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(string="Titel", required=True, tracking=True)
+    name = fields.Char(string="Titel", required=True)
     content_md = fields.Text(string="Markdown‑Inhalt", tracking=True)
     state = fields.Selection([
         ("draft", "Entwurf"),
