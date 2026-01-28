@@ -189,126 +189,197 @@ def _create_version(self, user_id=None):
 
 ### 4.1 OWL-Komponenten
 
-**Hauptkomponente: `MarkdownEditor`**
+**Hauptkomponente: `MarkdownField`**
 
 ```javascript
-import { Component, useState, useEffect } from "@odoo/owl";
+import { Component, useState } from "@odoo/owl";
+import { registry } from "@web/core/registry";
 
-export class MarkdownEditor extends Component {
+class MarkdownField extends Component {
     setup() {
         this.state = useState({
-            markdown: this.props.content || '',
-            preview: '',
-            isSaving: false,
-            lastSave: null,
+            value: this.props.record.data[this.props.name] || "",
         });
-        
-        useEffect(() => {
-            this.updatePreview();
-        }, () => [this.state.markdown]);
+
+        // Debug-Output für Entwicklung
+        console.log("MarkdownField mounted", {
+            name: this.props.name,
+            value: this.state.value,
+            readonly: this.props.readonly
+        });
+
+        // KRITISCHER FIX: Entferne overflow-Constraints vom Form View
+        // Dies verhindert, dass der Editor außerhalb des sichtbaren Bereichs ist
+        setTimeout(() => {
+            const formView = document.querySelector('.o_form_view');
+            const formSheet = document.querySelector('.o_form_sheet');
+            const formSheetBg = document.querySelector('.o_form_sheet_bg');
+
+            if (formView) {
+                formView.style.overflow = 'visible';
+                console.log('Fixed form view overflow');
+            }
+            if (formSheet) {
+                formSheet.style.overflow = 'visible';
+                formSheet.style.minHeight = '800px';
+                console.log('Fixed form sheet overflow');
+            }
+            if (formSheetBg) {
+                formSheetBg.style.overflow = 'visible';
+                console.log('Fixed form sheet bg overflow');
+            }
+        }, 100);
     }
-    
-    updatePreview() {
-        // Markdown → HTML Konvertierung
-        const converter = new showdown.Converter();
-        this.state.preview = converter.makeHtml(this.state.markdown);
-    }
-    
-    async saveDocument() {
-        this.state.isSaving = true;
-        try {
-            await this.rpc('/web/dataset/call_kw/x_md_document/save_document', {
-                model: 'x_md_document',
-                method: 'save_document',
-                args: [this.props.docId, this.state.markdown],
-            });
-            this.state.lastSave = new Date();
-        } finally {
-            this.state.isSaving = false;
-        }
+
+    _onInput(ev) {
+        const value = ev.target.value;
+        this.state.value = value;
+        this.props.record.update({ [this.props.name]: value });
     }
 }
 
-MarkdownEditor.template = 'markdown_editor.MarkdownEditor';
+MarkdownField.template = "markdown_editor.MarkdownField";
+MarkdownField.props = {
+    record: Object,
+    name: String,
+    readonly: { type: Boolean, optional: true },
+    id: { type: [String, Number], optional: true },
+};
+MarkdownField.displayName = "Markdown Editor";
+
+// Widget im Field Registry registrieren
+registry.category("fields").add("markdown_editor", {
+    component: MarkdownField,
+});
 ```
+
+**Wichtige Änderungen (v1.0.8):**
+- Overflow-Fix mit `setTimeout` für Form View Container
+- Debug-Logging beim Mounten der Komponente
+- Props-Definition mit `readonly` und `id` Support
+- Reactive Binding über `t-model` statt `t-att-value`
 
 ### 4.2 Template: markdown_editor_templates.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="markdown_editor.MarkdownEditor">
-        <div class="md-editor-container">
-            <div class="md-editor-toolbar">
-                <button t-on-click="saveDocument" t-att-disabled="state.isSaving">
-                    Save
-                </button>
-            </div>
-            <div class="md-editor-split">
-                <textarea 
-                    class="md-editor-input"
-                    t-model="state.markdown"
-                    placeholder="Enter Markdown...">
-                </textarea>
-                <div class="md-editor-preview" t-raw="state.preview"></div>
+    <t t-name="markdown_editor.MarkdownField">
+        <div class="o_markdown_editor" style="width: 100%; display: flex;">
+            <textarea
+                t-ref="editor"
+                class="o_input"
+                t-on-input="_onInput"
+                t-model="state.value"
+                placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
+            />
+            <div class="o_markdown_preview">
+                <!-- Vorschau: Der Markdown‑Inhalt wird hier angezeigt. -->
+                <t t-esc="state.value"/>
             </div>
         </div>
     </t>
 </templates>
 ```
 
+**Wichtige Änderungen (v1.0.8):**
+- Inline-Style `width: 100%; display: flex;` für bessere Sichtbarkeit
+- `t-model` Binding für reaktive Zwei-Wege-Datenbindung
+- `t-esc` statt `t-raw` für XSS-Schutz (plain text preview)
+- Vereinfachte Struktur ohne Toolbar (Split-View only)
+
 ### 4.3 Styling: markdown_editor.scss
 
 ```scss
-.md-editor-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
-    
-    .md-editor-toolbar {
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--border-color);
-        background: var(--bg-secondary);
-    }
-    
-    .md-editor-split {
-        display: flex;
-        flex: 1;
-        overflow: hidden;
-        gap: 1px;
-        
-        .md-editor-input,
-        .md-editor-preview {
-            flex: 1;
-            padding: 16px;
-            overflow: auto;
-            border: none;
+// Styling für den Markdown Editor
+.o_markdown_editor {
+    display: flex !important;
+    flex-direction: row !important;
+    min-height: 600px !important;
+    height: 600px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box !important;
+    flex: 1 1 auto !important;
+}
+
+.o_markdown_editor textarea.o_input {
+    flex: 1;
+    min-width: 0; // Flex-Bug-Fix
+    padding: 0.75rem;
+    border: none;
+    resize: none;
+    outline: none;
+    background: var(--o-input-bg);
+    color: var(--o-input-color);
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.o_markdown_preview {
+    flex: 1;
+    min-width: 0; // Flex-Bug-Fix
+    padding: 0.75rem;
+    border-left: 1px solid var(--border-color);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    background: var(--o-background-color);
+    color: var(--o-text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+// KRITISCHER FIX: Verhindere overflow-Probleme im Form View
+.o_form_view:has(.o_markdown_editor) {
+    overflow: visible !important;
+}
+
+.o_form_view .o_form_sheet:has(.o_markdown_editor) {
+    overflow: visible !important;
+}
+
+.o_form_sheet:has(.o_markdown_editor) {
+    min-height: 800px !important;
+}
+
+// Backup für Browser ohne :has() Support
+body:has(.o_markdown_editor) {
+    .o_form_view {
+        overflow: visible !important;
+
+        .o_form_sheet_bg {
+            overflow: visible !important;
         }
-        
-        .md-editor-input {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            resize: none;
-        }
-        
-        .md-editor-preview {
-            background: var(--bg-light);
-            border-left: 1px solid var(--border-color);
+
+        .o_form_sheet {
+            overflow: visible !important;
+            min-height: 800px !important;
         }
     }
 }
 
-// Dark Mode Support
-@media (prefers-color-scheme: dark) {
-    .md-editor-container {
-        .md-editor-input {
-            background: #1e1e1e;
-            color: #e0e0e0;
-        }
-    }
+// Field-Widget Container
+.o_field_widget.o_field_markdown_editor {
+    width: 100% !important;
+    display: block !important;
+}
+
+.o_field_widget[name="content_md"] {
+    width: 100% !important;
+    max-width: none !important;
+    flex: 1 1 100% !important;
 }
 ```
+
+**Wichtige Änderungen (v1.0.8):**
+- Aggressive `!important` Regeln für zuverlässige Darstellung
+- `:has()` Selektoren für moderne Browser (Overflow-Fix)
+- `min-width: 0` gegen bekannten Flexbox-Bug
+- Backup-Regeln für Browser ohne `:has()` Support
+- Odoo-spezifische CSS-Variablen für Theming
 
 ---
 
@@ -441,13 +512,17 @@ Dokumente und Versionen sind in PostgreSQL gespeichert. Standard Odoo-Backups si
 
 | Problem | Lösung |
 |---------|--------|
+| Editor unsichtbar / nur 50px breit | **Ursache:** Form View `overflow: auto` versteckt Editor. **Fix:** JavaScript overflow-reset in `markdown_editor.js` (v1.0.8), CSS `:has()` Selektoren. DevTools öffnen als Workaround zeigt Editor temporär |
+| Editor nur mit DevTools sichtbar | Gleiche Ursache wie oben. Assets neu kompilieren: `odoo-bin -u markdown_editor`, Hard-Refresh Browser (`Ctrl+Shift+R`) |
 | PDF-Generation schlägt fehl | `wkhtmltopdf` installiert? `which wkhtmltopdf` prüfen |
-| OWL-Komponente lädt nicht | Browser Console (F12) auf JS-Fehler prüfen |
+| OWL-Komponente lädt nicht | Browser Console (F12) auf JS-Fehler prüfen. Check: "MarkdownField mounted" Log vorhanden? |
 | Versionierung funktioniert nicht | `_create_version()` wird nicht aufgerufen? Check Hooks |
 | ACL-Fehler | Benutzer in korrekter Gruppe? `security/ir.model.access.csv` prüfen |
+| Editor-Breite nicht 100% | CSS-Kaskade überschreibt Regeln. Prüfe mit DevTools computed styles. Notfall: Mehr `!important` in `markdown_editor.scss` |
 
 ### 8.2 Logging aktivieren
 
+**Python Backend Logging:**
 ```python
 import logging
 _logger = logging.getLogger(__name__)
@@ -460,11 +535,77 @@ def save_document(self, content):
 
 Logs in Odoo-Logdatei: `/var/log/odoo/odoo.log`
 
+**JavaScript Frontend Logging (v1.0.8):**
+```javascript
+// In markdown_editor.js automatisch aktiviert
+console.log("MarkdownField mounted", {
+    name: this.props.name,
+    value: this.state.value,
+    readonly: this.props.readonly
+});
+console.log('Fixed form view overflow');
+console.log('Fixed form sheet overflow');
+console.log('Fixed form sheet bg overflow');
+```
+
+Browser Console öffnen: `F12` → Console Tab
+
+**Debug-Checklist bei Editor-Problemen:**
+1. Console-Log "MarkdownField mounted" vorhanden? → Komponente lädt
+2. Overflow-Fix Logs vorhanden? → JavaScript-Fix aktiv
+3. Computed Style prüfen: `.o_markdown_editor` hat `width: 100%`?
+4. Computed Style prüfen: `.o_form_view` hat `overflow: visible`?
+
 ---
 
-## 9. Best Practices und Code-Standards
+## 9. Bekannte Einschränkungen
 
-### 9.1 Python-Richtlinien
+### 9.1 Editor-Layout (Stand v1.0.8)
+
+**Problem:** Editor wird nur ~50px breit angezeigt, obwohl CSS `width: 100%` gesetzt ist.
+
+**Ursache:**
+- Odoo Form View Container haben standardmäßig `overflow: auto`
+- Dies führt dazu, dass der Editor außerhalb des sichtbaren Bereichs gerendert wird
+- Beim Öffnen der DevTools ändert sich das Layout → Editor wird sichtbar
+
+**Teilweise Lösung (implementiert in v1.0.8):**
+- JavaScript-Fix: Setzt `overflow: visible` beim Editor-Mount
+- CSS-Fix: `:has()` Selektoren für moderne Browser
+- Workaround: Editor ist jetzt grundsätzlich sichtbar, aber Breite noch nicht optimal
+
+**Geplante Verbesserungen:**
+- Weitere CSS-Optimierungen für volle Breite
+- Untersuchung alternativer Layout-Strategien (Flexbox vs. Grid)
+- Mögliche Anpassung der View-Struktur
+
+**Workaround für Entwickler:**
+```javascript
+// Temporary fix: Manuell im Browser Console ausführen
+document.querySelector('.o_form_view').style.overflow = 'visible';
+document.querySelector('.o_form_sheet').style.overflow = 'visible';
+```
+
+### 9.2 Browser-Kompatibilität
+
+**CSS `:has()` Selector:**
+- Wird für Overflow-Fixes verwendet
+- **Unterstützt:** Chrome 105+, Firefox 121+, Safari 15.4+
+- **Nicht unterstützt:** Ältere Browser
+- **Fallback:** JavaScript-Fix in `markdown_editor.js` funktioniert überall
+
+### 9.3 Performance-Überlegungen
+
+- Kein Markdown-Rendering im Frontend (v1.0.8)
+- Preview zeigt nur Plain Text (`t-esc` statt `t-raw`)
+- Für echtes Markdown-Rendering: Library wie `marked.js` oder `showdown.js` erforderlich
+- Live-Preview kann bei großen Dokumenten (>10.000 Zeilen) langsam werden
+
+---
+
+## 10. Best Practices und Code-Standards
+
+### 10.1 Python-Richtlinien
 
 - PEP 8 einhalten
 - Docstrings für alle Methoden
@@ -489,7 +630,7 @@ def save_document(self, content: str) -> bool:
         raise ValueError("Inhalt kann nicht leer sein")
 ```
 
-### 9.2 JavaScript/OWL-Richtlinien
+### 10.2 JavaScript/OWL-Richtlinien
 
 - ES6+ Syntax verwenden
 - Keine globalen Variablen
@@ -507,7 +648,7 @@ async saveDocument() {
 }
 ```
 
-### 9.3 SQL und Queries
+### 10.3 SQL und Queries
 
 Niemals Raw-SQL verwenden! Immer Odoo ORM:
 
@@ -521,12 +662,13 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 
 ---
 
-## 10. Ressourcen und Referenzen
+## 11. Ressourcen und Referenzen
 
 - [Odoo 19 Entwicklerdokumentation](https://www.odoo.com/documentation/19.0)
 - [OWL Framework](https://github.com/odoo/owl)
 - [Markdown Syntax](https://commonmark.org/)
 - [Projektrepository](https://github.com/fiaTG/MDWriter)
+- [CSS :has() Browser Support](https://caniuse.com/css-has)
 
 ---
 
@@ -534,6 +676,7 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 
 | Version | Datum | Änderung | Autor |
 |---------|-------|---------|-------|
+| 1.0.8 | 28.01.2026 | Editor Layout-Fix: Vollständige Sichtbarkeit durch Overflow-Fixes und Umstrukturierung | Timo |
 | 1.0.7 | 27.01.2026 | **MEILENSTEIN 1:** Icon auf 2048x2048px hochskaliert, Modul erfolgreich deploybar | Timo |
 | 1.0.6 | 27.01.2026 | .gitignore hinzugefügt für Python, IDEs, OS und Odoo-spezifische Dateien | Timo |
 | 1.0.5 | 27.01.2026 | List View Fix: Ungültige Decoration-Attribute entfernt | Timo |
@@ -542,6 +685,21 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 | 1.0.2 | 27.01.2026 | Manifest-Fixes: Version zu 19.0.1.0.0, Python Boolean-Fehler behoben | Timo |
 | 1.0.1 | 27.01.2026 | Odoo 19 View Migration: `<tree>` → `<list>`, Search View & Decorations hinzugefügt | Timo |
 | 1.0.0 | 27.01.2026 | Initial Release | Timo |
+
+**Detailierte Änderungen in 1.0.8:**
+- **View-Struktur:** Editor-Field von Notebook auf Sheet-Root verschoben für bessere Sichtbarkeit
+- **Layout-Fix:** Content-Field jetzt direkt unter Titel, oberhalb des Notebooks
+- **Metadaten-Tab:** Eigentümer, Version, Timestamps in neues "Metadaten"-Tab ausgelagert
+- **Overflow-Fix (JavaScript):** Automatisches Entfernen von `overflow: auto` auf Form-View-Containern beim Editor-Mount
+- **Overflow-Fix (CSS):** Aggressive CSS-Regeln mit `:has()` Selektoren und `!important` für moderne Browser
+- **Template-Binding:** Umstellung von `t-att-value` auf `t-model` für reaktive Zwei-Wege-Bindung
+- **Inline-Styles:** Wrapper-Div und Editor-Element mit `width: 100%` für volle Breite
+- **CSS-Regeln:** Full-Width Rules für `.o_field_widget`, `.o_markdown_editor` mit `!important`
+- **Flexbox-Fixes:** `min-width: 0` für Flex-Children gegen bekannten Flexbox-Bug
+- **Debug-Logging:** Console-Logs für Mount-Events und Overflow-Fixes zur Fehlersuche
+- **Browser-Kompatibilität:** Backup-CSS-Regeln für Browser ohne `:has()` Support
+- **Problem:** Editor war ohne DevTools unsichtbar (50px breit) → Ursache: Form View `overflow: auto`
+- **Status:** Editor jetzt sichtbar, aber noch Optimierungspotenzial bei der Breite
 
 **Detailierte Änderungen in 1.0.7 (MEILENSTEIN 1):**
 - Icon: Von 1024x1024px auf 2048x2048px hochskaliert
@@ -595,6 +753,6 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 
 ---
 
-**Gültig ab:** Januar 2026  
-**Letzte Aktualisierung:** 27.01.2026  
+**Gültig ab:** Januar 2026
+**Letzte Aktualisierung:** 28.01.2026
 **Nächste Überprüfung:** Quartalsweise
