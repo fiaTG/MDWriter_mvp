@@ -40,11 +40,41 @@
 
 // Stelle sicher, dass das Field-Widget Container die volle Breite haben
 .o_field_widget.o_field_markdown_editor {
-    width: 100%;
-    display: block;
+    width: 100% !important;
+    display: block !important;
 }
 
 // Fix für Odoo Form View Layout
 .o_form_sheet .o_field_markdown_editor {
     margin-bottom: 16px;
+}
+
+// WICHTIG: Fix für Notebook/Tab Layout
+.o_notebook .tab-pane {
+    .o_field_markdown_editor,
+    .o_field_widget[name="content_md"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+
+        .o_markdown_editor {
+            width: 100% !important;
+        }
+    }
+}
+
+// Alternative: Direkter Fix für das spezifische Field
+.o_field_widget[name="content_md"] {
+    width: 100% !important;
+    max-width: none !important;
+    flex: 1 1 100% !important;
+}
+
+// Entferne Padding vom Notebook für volle Breite
+.o_notebook .tab-pane.active {
+    padding: 0 !important;
+
+    .o_field_markdown_editor {
+        margin: 0 !important;
+    }
 }
