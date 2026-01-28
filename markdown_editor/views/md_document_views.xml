@@ -13,9 +13,10 @@
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Dokumenttitel"/></h1>
                     </div>
-                    <div style="width: 100%; display: block; margin-bottom: 20px;">
-                        <field name="content_md" widget="markdown_editor" nolabel="1" style="width: 100%;"/>
+                    <div class="o_markdown_editor_wrapper" style="width: 100%; display: block; margin-bottom: 20px; clear: both;">
+                        <field name="content_md" widget="markdown_editor" nolabel="1"/>
                     </div>
+                    <div style="clear: both;"></div>
                     <notebook>
                         <page string="Metadaten" name="metadata">
                             <group>
