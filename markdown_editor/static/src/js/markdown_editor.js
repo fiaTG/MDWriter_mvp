@@ -1,21 +1,16 @@
-/** @odoo-module **/
-import { Component, useState, useRef } from "@odoo/owl";
-import { fieldRegistry } from "@web/views/fields/field_registry";
+/** @odoo-module alias=markdown_editor.MarkdownField **/
+import { Component, useState } from "@odoo/owl";
+import { registry } from "@web/core/registry";
 
 /**
  * MarkdownField ist ein einfacher OWL‑basierter Form‑Widget, der
- * einen Split‑View Editor mit Live‑Vorschau darstellt. Die
- * eigentliche Markdown‑Konvertierung wird hier nicht durchgeführt,
- * stattdessen wird der Inhalt 1:1 in der Vorschau angezeigt.
- * Eine Erweiterung um eine echte Markdown‑Parser‑Bibliothek ist
- * möglich, indem beispielsweise marked.js eingebunden wird.
+ * einen Split‑View Editor mit Live‑Vorschau darstellt.
  */
 class MarkdownField extends Component {
     setup() {
         this.state = useState({
             value: this.props.record.data[this.props.name] || "",
         });
-        this.editorRef = useRef("editor");
     }
 
     /**
@@ -30,8 +25,12 @@ class MarkdownField extends Component {
 }
 
 MarkdownField.template = "markdown_editor.MarkdownField";
+MarkdownField.props = ["record", "name"];
+MarkdownField.displayName = "Markdown Editor";
 
-// Widget im Registry registrieren
-fieldRegistry.add("markdown_editor", MarkdownField);
+// Widget im Field Registry registrieren
+registry.category("fields").add("markdown_editor", {
+    component: MarkdownField,
+});
 
 export default MarkdownField;
