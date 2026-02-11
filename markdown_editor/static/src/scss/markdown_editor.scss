@@ -46,15 +46,41 @@
     line-height: 1.5;
 }
 
-// Overflow-Fix: Odoo Form View clippt den Editor mit overflow:auto
+// ============================================================
+// Odoo Form View Layout-Fix
+// ============================================================
+// Odoo Enterprise legt Sheet + Chatter nebeneinander (flex-row).
+// Der Editor braucht volle Breite -> alles vertikal stapeln.
+
 .o_form_view:has(.o_markdown_editor) {
     overflow: visible !important;
 
+    // Alle direkten Flex-Container im Form View: vertikal stapeln
+    > * {
+        flex-wrap: wrap !important;
+    }
+
     .o_form_sheet_bg {
         overflow: visible !important;
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
     }
 
     .o_form_sheet {
         overflow: visible !important;
+        max-width: 100% !important;
+    }
+}
+
+// Chatter: volle Breite erzwingen (geht dann automatisch darunter)
+.o_form_view:has(.o_markdown_editor) {
+    // Alle gaengigen Chatter-Container-Klassen in Odoo 17/18/19
+    .o-mail-Form-chatter,
+    .o_FormRenderer_chatterContainer,
+    .o-mail-ChatterContainer,
+    .oe_chatter {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
 }
