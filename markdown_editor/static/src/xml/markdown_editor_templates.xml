@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
+    <!--
+        QWeb‑Vorlage fuer den Markdown‑Editor mit Split‑View.
+        Links befindet sich das Eingabefeld fuer Markdown; rechts wird
+        die gerenderte HTML‑Vorschau angezeigt. Statt des rohen
+        Markdown‑Texts (t‑esc) wird hier t‑raw verwendet, um das von
+        markdown‑it erzeugte HTML anzuzeigen.
+    -->
     <t t-name="markdown_editor.MarkdownField">
         <div class="o_markdown_editor">
+            <!-- Eingabefeld fuer Markdown -->
             <textarea
                 t-ref="editor"
                 class="o_input"
@@ -9,9 +17,9 @@
                 t-model="state.value"
                 placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
             />
+            <!-- Vorschau-Bereich fuer gerendertes HTML -->
             <div class="o_markdown_preview">
-                <!-- Vorschau: Der Markdown‑Inhalt wird hier angezeigt. -->
-                <t t-esc="state.value"/>
+                <t t-raw="state.html"/>
             </div>
         </div>
     </t>
