@@ -18,9 +18,10 @@
                 placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
             />
             <!-- Vorschau-Bereich fuer gerendertes HTML -->
-            <div class="o_markdown_preview">
+            <div class="o_markdown_preview" t-ref="preview">
                 <t t-raw="state.html"/>
             </div>
+
         </div>
     </t>
 </templates>

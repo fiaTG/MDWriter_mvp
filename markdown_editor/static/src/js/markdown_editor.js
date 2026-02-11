@@ -9,7 +9,7 @@
  * Bereich nicht mehr den rohen Markdown‑Text enthält.
  */
 
-import { Component, useState } from "@odoo/owl";
+import { Component, useState, useRef, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
@@ -38,11 +38,15 @@ class MarkdownField extends Component {
         // Vorschau zeigt den rohen Markdown‑Text.
         this.md = window.markdownit ? window.markdownit() : null;
         // State mit Text und gerendertem HTML initialisieren.
-        this.state = useState({
-            value: initial,
-            html: this.md ? this.md.render(initial) : initial,
-        });
-    }
+              this.state = useState({ value: initial, html: this.md ? this.md.render(initial) : initial });
+                this.previewRef = useRef("preview");
+                onMounted(() => {
+                    if (this.previewRef.el) {
+                        this.previewRef.el.innerHTML = this.state.html || "";
+                    }
+                });
+            }
+    
 
     /**
      * Handler fuer Eingaben im Textfeld.
@@ -58,6 +62,9 @@ class MarkdownField extends Component {
         this.state.value = value;
         // HTML‑Vorschau aktualisieren
         this.state.html = this.md ? this.md.render(value) : value;
+            if (this.previewRef.el) {
+                this.previewRef.el.innerHTML = this.state.html;
+            }
         // Wert im Record speichern
         this.props.record.update({ [this.props.name]: value });
     }
