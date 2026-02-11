@@ -68,7 +68,8 @@
 
     .o_form_sheet {
         overflow: visible !important;
-        max-width: 100% !important;
+        max-width: none !important;
+        width: 100% !important;
     }
 }
 
