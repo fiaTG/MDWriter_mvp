@@ -45,3 +45,16 @@
     font-size: 14px;
     line-height: 1.5;
 }
+
+// Overflow-Fix: Odoo Form View clippt den Editor mit overflow:auto
+.o_form_view:has(.o_markdown_editor) {
+    overflow: visible !important;
+
+    .o_form_sheet_bg {
+        overflow: visible !important;
+    }
+
+    .o_form_sheet {
+        overflow: visible !important;
+    }
+}
