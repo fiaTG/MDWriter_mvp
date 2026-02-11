@@ -15,7 +15,11 @@ import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
 // Importieren Sie die Markdown‑Bibliothek. Beachten Sie, dass
 // "markdown-it" als Abhängigkeit in die Assets aufgenommen werden muss.
-import MarkdownIt from "markdown-it";
+// Wir verwenden hier keine ES‑Modul‑Importe, weil das ausgelieferte
+// UMD‑Bundle von "markdown-it" keinen AMD/ESM‑Namen definiert. Stattdessen
+// greift Odoo auf eine globale Variable namens `markdownit` zu, die beim
+// Laden von markdown‑it.min.js gesetzt wird. Daher laden wir das Skript
+// einfach als Asset und greifen dann auf `window.markdownit` zu.
 
 class MarkdownField extends Component {
     /**
@@ -28,12 +32,15 @@ class MarkdownField extends Component {
     setup() {
         // Initialwert aus dem Datensatz lesen
         const initial = this.props.record.data[this.props.name] || "";
-        // Instanz des Markdown‑Parsers erzeugen
-        this.md = new MarkdownIt();
-        // State mit Text und gerendertem HTML initialisieren
+        // Instanz des Markdown‑Parsers erzeugen. Wenn die Bibliothek
+        // korrekt geladen wurde, steht `window.markdownit` zur
+        // Verfügung. Andernfalls bleibt der Parser null, und die
+        // Vorschau zeigt den rohen Markdown‑Text.
+        this.md = window.markdownit ? window.markdownit() : null;
+        // State mit Text und gerendertem HTML initialisieren.
         this.state = useState({
             value: initial,
-            html: this.md.render(initial),
+            html: this.md ? this.md.render(initial) : initial,
         });
     }
 
@@ -50,7 +57,7 @@ class MarkdownField extends Component {
         // Markdown‑Text aktualisieren
         this.state.value = value;
         // HTML‑Vorschau aktualisieren
-        this.state.html = this.md.render(value);
+        this.state.html = this.md ? this.md.render(value) : value;
         // Wert im Record speichern
         this.props.record.update({ [this.props.name]: value });
     }
