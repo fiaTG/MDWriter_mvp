@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="markdown_editor.MarkdownField">
-        <div class="o_markdown_editor" style="width: 100%; display: flex;">
+        <div class="o_markdown_editor">
             <textarea
                 t-ref="editor"
                 class="o_input"

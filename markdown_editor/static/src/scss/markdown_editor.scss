@@ -1,20 +1,25 @@
-// Styling für den Markdown Editor
+// Markdown Editor – Styling
 
-.o_markdown_editor {
-    display: flex !important;
-    flex-direction: row !important;
-    min-height: 600px !important;
-    height: 600px !important;
+// Field widget container: volle Breite im Form Sheet
+.o_field_widget[name="content_md"] {
     width: 100% !important;
     max-width: 100% !important;
-    border: 1px solid var(--border-color);
-    box-sizing: border-box !important;
-    flex: 1 1 auto !important;
 }
 
+// Split-View Container (Textarea + Preview nebeneinander)
+.o_markdown_editor {
+    display: flex;
+    flex-direction: row;
+    height: 600px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+// Editor Textarea (linke Haelfte)
 .o_markdown_editor textarea.o_input {
-    flex: 1;
-    min-width: 0; // Flex-Bug-Fix
+    flex: 1 1 50%;
+    min-width: 0;
     padding: 0.75rem;
     border: none;
     resize: none;
@@ -26,9 +31,10 @@
     line-height: 1.5;
 }
 
+// Preview (rechte Haelfte)
 .o_markdown_preview {
-    flex: 1;
-    min-width: 0; // Flex-Bug-Fix
+    flex: 1 1 50%;
+    min-width: 0;
     padding: 0.75rem;
     border-left: 1px solid var(--border-color);
     overflow-y: auto;
@@ -38,107 +44,4 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 14px;
     line-height: 1.5;
-}
-
-// KRITISCHER FIX: Verhindere Flex-Layout auf Sheet
-.o_form_sheet {
-    display: block !important;
-    flex-direction: column !important;
-}
-
-// Wrapper für Editor - verhindert Side-by-Side mit Notebook
-.o_markdown_editor_wrapper {
-    width: 100% !important;
-    display: block !important;
-    clear: both !important;
-    margin-bottom: 20px !important;
-}
-
-// Stelle sicher, dass das Field-Widget Container die volle Breite haben
-.o_field_widget.o_field_markdown_editor {
-    width: 100% !important;
-    display: block !important;
-}
-
-// Fix für Odoo Form View Layout
-.o_form_sheet .o_field_markdown_editor {
-    margin-bottom: 16px;
-}
-
-// KRITISCHER FIX: Verhindere overflow-Probleme im Form View
-.o_form_view:has(.o_markdown_editor) {
-    overflow: visible !important;
-}
-
-.o_form_view .o_form_sheet:has(.o_markdown_editor) {
-    overflow: visible !important;
-}
-
-// Alternative: Setze min-height für den Form Sheet Container
-.o_form_sheet:has(.o_markdown_editor) {
-    min-height: 800px !important;
-}
-
-// Stelle sicher, dass der Content-Container genug Höhe hat
-.o_content:has(.o_markdown_editor) {
-    min-height: 100vh !important;
-    overflow-y: auto !important;
-}
-
-// WICHTIG: Fix für Notebook/Tab Layout
-.o_notebook .tab-pane {
-    .o_field_markdown_editor,
-    .o_field_widget[name="content_md"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        display: block !important;
-
-        .o_markdown_editor {
-            width: 100% !important;
-        }
-    }
-}
-
-// Alternative: Direkter Fix für das spezifische Field
-.o_field_widget[name="content_md"] {
-    width: 100% !important;
-    max-width: none !important;
-    flex: 1 1 100% !important;
-}
-
-// Entferne Padding vom Notebook für volle Breite
-.o_notebook .tab-pane.active {
-    padding: 0 !important;
-
-    .o_field_markdown_editor {
-        margin: 0 !important;
-    }
-}
-
-// Genereller Fix für alle Form Views mit Markdown Editor
-// Setze overflow auf dem gesamten Form View zurück
-.o_form_view.o_xxl_form_view {
-    .o_form_sheet_bg {
-        overflow: visible !important;
-
-        .o_form_sheet {
-            overflow: visible !important;
-        }
-    }
-}
-
-// Backup: Genereller Override für alle Form Views (wenn :has nicht funktioniert)
-body:has(.o_markdown_editor) {
-    .o_form_view {
-        overflow: visible !important;
-
-        .o_form_sheet_bg {
-            overflow: visible !important;
-        }
-
-        .o_form_sheet {
-            overflow: visible !important;
-            min-height: 800px !important;
-        }
-    }
 }
