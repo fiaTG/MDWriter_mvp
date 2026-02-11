@@ -1,9 +1,9 @@
 # Entwicklerdokumentation: MDWriter Odoo 19 Modul
 
 **Projekt:** MDWriter - Markdown Editor für Odoo 19  
-**Version:** 1.0.0  
-**Autor:** Timo  
-**Datum:** Januar 2026  
+**Version:** 1.0.9
+**Autor:** Timo
+**Datum:** Februar 2026
 **Status:** In Entwicklung
 
 ---
@@ -282,8 +282,10 @@ registry.category("fields").add("markdown_editor", {
 </templates>
 ```
 
-**Wichtige Änderungen (v1.0.8):**
-- Inline-Style `width: 100%; display: flex;` für bessere Sichtbarkeit
+**Wichtige Änderungen (v1.0.9):**
+- Editor-Wrapper nutzt dedizierte CSS-Klasse `o_markdown_editor_wrapper` statt nur Inline-Styles
+- `clear: both` Div nach Editor-Wrapper für saubere Layout-Trennung zum Notebook
+- Inline-Style auf Field entfernt (Styling über CSS-Klasse)
 - `t-model` Binding für reaktive Zwei-Wege-Datenbindung
 - `t-esc` statt `t-raw` für XSS-Schutz (plain text preview)
 - Vereinfachte Struktur ohne Toolbar (Split-View only)
@@ -332,6 +334,31 @@ registry.category("fields").add("markdown_editor", {
     line-height: 1.5;
 }
 
+// KRITISCHER FIX: Verhindere Flex-Layout auf Sheet
+.o_form_sheet {
+    display: block !important;
+    flex-direction: column !important;
+}
+
+// Wrapper für Editor - verhindert Side-by-Side mit Notebook
+.o_markdown_editor_wrapper {
+    width: 100% !important;
+    display: block !important;
+    clear: both !important;
+    margin-bottom: 20px !important;
+}
+
+// Field-Widget Container
+.o_field_widget.o_field_markdown_editor {
+    width: 100% !important;
+    display: block !important;
+}
+
+// Fix für Odoo Form View Layout
+.o_form_sheet .o_field_markdown_editor {
+    margin-bottom: 16px;
+}
+
 // KRITISCHER FIX: Verhindere overflow-Probleme im Form View
 .o_form_view:has(.o_markdown_editor) {
     overflow: visible !important;
@@ -361,12 +388,6 @@ body:has(.o_markdown_editor) {
     }
 }
 
-// Field-Widget Container
-.o_field_widget.o_field_markdown_editor {
-    width: 100% !important;
-    display: block !important;
-}
-
 .o_field_widget[name="content_md"] {
     width: 100% !important;
     max-width: none !important;
@@ -374,7 +395,9 @@ body:has(.o_markdown_editor) {
 }
 ```
 
-**Wichtige Änderungen (v1.0.8):**
+**Wichtige Änderungen (v1.0.9):**
+- **Flex-System-Fix:** `.o_form_sheet` auf `display: block` gesetzt, um Flex-Layout des Sheets zu deaktivieren
+- **Wrapper-Klasse:** Neue `.o_markdown_editor_wrapper` CSS-Klasse mit `clear: both` verhindert Side-by-Side-Rendering mit Notebook
 - Aggressive `!important` Regeln für zuverlässige Darstellung
 - `:has()` Selektoren für moderne Browser (Overflow-Fix)
 - `min-width: 0` gegen bekannten Flexbox-Bug
@@ -512,8 +535,9 @@ Dokumente und Versionen sind in PostgreSQL gespeichert. Standard Odoo-Backups si
 
 | Problem | Lösung |
 |---------|--------|
-| Editor unsichtbar / nur 50px breit | **Ursache:** Form View `overflow: auto` versteckt Editor. **Fix:** JavaScript overflow-reset in `markdown_editor.js` (v1.0.8), CSS `:has()` Selektoren. DevTools öffnen als Workaround zeigt Editor temporär |
+| Editor unsichtbar / nur 50px breit | **Ursache:** Form View `overflow: auto` versteckt Editor. **Fix:** JavaScript overflow-reset in `markdown_editor.js`, CSS `:has()` Selektoren + `.o_form_sheet { display: block }` (v1.0.9). DevTools öffnen als Workaround zeigt Editor temporär |
 | Editor nur mit DevTools sichtbar | Gleiche Ursache wie oben. Assets neu kompilieren: `odoo-bin -u markdown_editor`, Hard-Refresh Browser (`Ctrl+Shift+R`) |
+| Editor neben Notebook (Side-by-Side) | **Ursache:** Odoo Form Sheet nutzt Flexbox. **Fix (v1.0.9):** `.o_form_sheet { display: block }` und `.o_markdown_editor_wrapper` mit `clear: both` |
 | PDF-Generation schlägt fehl | `wkhtmltopdf` installiert? `which wkhtmltopdf` prüfen |
 | OWL-Komponente lädt nicht | Browser Console (F12) auf JS-Fehler prüfen. Check: "MarkdownField mounted" Log vorhanden? |
 | Versionierung funktioniert nicht | `_create_version()` wird nicht aufgerufen? Check Hooks |
@@ -560,31 +584,21 @@ Browser Console öffnen: `F12` → Console Tab
 
 ## 9. Bekannte Einschränkungen
 
-### 9.1 Editor-Layout (Stand v1.0.8)
+### 9.1 Editor-Layout (Stand v1.0.9)
 
-**Problem:** Editor wird nur ~50px breit angezeigt, obwohl CSS `width: 100%` gesetzt ist.
+**Problem (behoben):** Editor wurde nur ~50px breit angezeigt oder neben dem Notebook (Side-by-Side) gerendert.
 
 **Ursache:**
 - Odoo Form View Container haben standardmäßig `overflow: auto`
-- Dies führt dazu, dass der Editor außerhalb des sichtbaren Bereichs gerendert wird
-- Beim Öffnen der DevTools ändert sich das Layout → Editor wird sichtbar
+- Odoo Form Sheet nutzt Flexbox (`display: flex`), wodurch Editor und Notebook nebeneinander dargestellt wurden
+- Beim Öffnen der DevTools änderte sich das Layout → Editor wurde sichtbar
 
-**Teilweise Lösung (implementiert in v1.0.8):**
-- JavaScript-Fix: Setzt `overflow: visible` beim Editor-Mount
-- CSS-Fix: `:has()` Selektoren für moderne Browser
-- Workaround: Editor ist jetzt grundsätzlich sichtbar, aber Breite noch nicht optimal
-
-**Geplante Verbesserungen:**
-- Weitere CSS-Optimierungen für volle Breite
-- Untersuchung alternativer Layout-Strategien (Flexbox vs. Grid)
-- Mögliche Anpassung der View-Struktur
-
-**Workaround für Entwickler:**
-```javascript
-// Temporary fix: Manuell im Browser Console ausführen
-document.querySelector('.o_form_view').style.overflow = 'visible';
-document.querySelector('.o_form_sheet').style.overflow = 'visible';
-```
+**Lösung (implementiert in v1.0.9):**
+- **Flex-System-Fix:** `.o_form_sheet { display: block !important }` deaktiviert das Flex-Layout des Sheets
+- **Wrapper-Klasse:** `.o_markdown_editor_wrapper` mit `clear: both` und `display: block` verhindert Side-by-Side-Rendering
+- **Clear-Div:** Zusätzliches `<div style="clear: both;">` nach dem Editor-Wrapper für saubere Trennung
+- **Overflow-Fix:** JavaScript + CSS `:has()` Selektoren setzen `overflow: visible`
+- **Status:** Editor wird jetzt korrekt in voller Breite über dem Notebook angezeigt
 
 ### 9.2 Browser-Kompatibilität
 
@@ -676,6 +690,7 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 
 | Version | Datum | Änderung | Autor |
 |---------|-------|---------|-------|
+| 1.0.9 | 11.02.2026 | Flex-System-Fix: Form Sheet auf Block-Layout umgestellt, Editor-Wrapper-Klasse eingeführt | Timo |
 | 1.0.8 | 28.01.2026 | Editor Layout-Fix: Vollständige Sichtbarkeit durch Overflow-Fixes und Umstrukturierung | Timo |
 | 1.0.7 | 27.01.2026 | **MEILENSTEIN 1:** Icon auf 2048x2048px hochskaliert, Modul erfolgreich deploybar | Timo |
 | 1.0.6 | 27.01.2026 | .gitignore hinzugefügt für Python, IDEs, OS und Odoo-spezifische Dateien | Timo |
@@ -685,6 +700,16 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 | 1.0.2 | 27.01.2026 | Manifest-Fixes: Version zu 19.0.1.0.0, Python Boolean-Fehler behoben | Timo |
 | 1.0.1 | 27.01.2026 | Odoo 19 View Migration: `<tree>` → `<list>`, Search View & Decorations hinzugefügt | Timo |
 | 1.0.0 | 27.01.2026 | Initial Release | Timo |
+
+**Detailierte Änderungen in 1.0.9:**
+- **Flex-System-Fix (SCSS):** `.o_form_sheet` auf `display: block !important` gesetzt, um Odoo's Flex-Layout zu deaktivieren
+- **Wrapper-Klasse (SCSS):** Neue `.o_markdown_editor_wrapper` Klasse mit `width: 100%`, `display: block`, `clear: both`, `margin-bottom: 20px`
+- **View-Struktur (XML):** Editor-Wrapper-Div nutzt jetzt CSS-Klasse `o_markdown_editor_wrapper` statt nur Inline-Styles
+- **Clear-Fix (XML):** Zusätzliches `<div style="clear: both;">` nach Editor-Wrapper für saubere Layout-Trennung zum Notebook
+- **Inline-Style entfernt:** `style="width: 100%"` vom `<field>` Element entfernt, Styling über CSS-Klasse
+- **Problem behoben:** Editor wurde neben dem Notebook (Side-by-Side) gerendert statt darüber
+- **Ursache:** Odoo Form Sheet nutzte `display: flex`, was den Editor als Flex-Child neben dem Notebook positionierte
+- **Status:** Editor wird jetzt korrekt in voller Breite über dem Notebook angezeigt
 
 **Detailierte Änderungen in 1.0.8:**
 - **View-Struktur:** Editor-Field von Notebook auf Sheet-Root verschoben für bessere Sichtbarkeit
@@ -754,5 +779,5 @@ self.env.cr.execute("SELECT * FROM x_md_document WHERE owner_id = %s", (user.id,
 ---
 
 **Gültig ab:** Januar 2026
-**Letzte Aktualisierung:** 28.01.2026
+**Letzte Aktualisierung:** 11.02.2026
 **Nächste Überprüfung:** Quartalsweise
