@@ -154,19 +154,11 @@
 //         .o_markdown_editor
 //     .oe_chatter
 //
-// Fix: .o_form_renderer auf flex-column erzwingen
-
-.o_form_renderer:has(.o_markdown_editor) {
-    flex-direction: column !important;
-}
+// Fix: o_form_sheet volle Breite erzwingen (kein mail.thread → kein Chatter-Panel)
 
 .o_form_view:has(.o_markdown_editor) {
-    overflow: visible !important;
-
     .o_form_sheet_bg {
-        overflow: visible !important;
-        padding: 0 !important;
-        width: 100% !important;
+        flex: 1 1 auto !important;
     }
 
     .o_form_sheet {
