@@ -83,8 +83,11 @@ class XMdDocument(models.Model):
         aufgerufen. Sie speichert den Markdown‑Inhalt als Attachment
         und erzeugt optional einen PDF‑Attachment über einen QWeb‑Report.
         """
-        Attachment = self.env["ir.attachment"]
-        Version = self.env["x.md.document.version"]
+        # sudo(): Versionierung ist ein System-Mechanismus.
+        # Normale User haben kein perm_create auf x.md.document.version,
+        # aber das System muss bei jedem Speichern eine Version anlegen.
+        Attachment = self.env["ir.attachment"].sudo()
+        Version = self.env["x.md.document.version"].sudo()
 
         for record in self:
             # Bestimme die nächste Versionsnummer

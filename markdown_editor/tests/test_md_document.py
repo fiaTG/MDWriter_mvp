@@ -97,11 +97,11 @@ class TestMdDocumentACL(TransactionCase):
         self.assertEqual(doc.name, "Dokument von A")
 
     def test_other_user_cannot_read_document(self):
-        """Anderer User kann fremdes Dokument nicht lesen (Record Rule)."""
-        with self.assertRaises(AccessError):
-            self.env["x.md.document"].with_user(self.user_b).browse(
-                self.doc_a.id
-            ).name  # Zugriff erzwingen
+        """Record Rule: fremdes Dokument erscheint in Suche von User B nicht."""
+        result = self.env["x.md.document"].with_user(self.user_b).search(
+            [("id", "=", self.doc_a.id)]
+        )
+        self.assertFalse(result, "User B darf das Dokument von User A nicht sehen")
 
     def test_version_is_readonly_for_user(self):
         """Normale User können keine Versions-Records direkt anlegen."""
