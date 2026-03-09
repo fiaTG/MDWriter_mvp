@@ -82,7 +82,7 @@ Dateiname: [models/md_document.py](../markdown_editor/models/md_document.py)
 | `version_ids` | One2many → x.md.document.version | Alle Versionen |
 | `current_version` | Integer | Computed: höchste Versionsnummer |
 
-Erbt: `mail.thread`, `mail.activity.mixin` (Chatter + Aktivitäten)
+Kein `mail.thread`-Inherit — das Modul nutzt bewusst kein Odoo-Chatter-System. Änderungsverfolgung erfolgt ausschließlich über das eigene Versionierungssystem (`x.md.document.version`).
 
 ### 3.2 x.md.document.version (Versionsmodell)
 
@@ -123,16 +123,18 @@ def write(self, vals):
 Das computed field `content_html` wandelt Markdown serverseitig in HTML um:
 
 ```python
+from markupsafe import Markup
+
 @api.depends("content_md")
 def _compute_content_html(self):
     for doc in self:
         if _mistune_available:
-            doc.content_html = mistune.html(doc.content_md)
+            doc.content_html = Markup(mistune.html(doc.content_md))
         else:
-            doc.content_html = "<pre>%s</pre>" % (doc.content_md or "")
+            doc.content_html = Markup("<pre>%s</pre>") % (doc.content_md or "")
 ```
 
-`sanitize=True` auf dem Html-Field aktiviert Odoos eingebaute HTML-Sanitization vor der Speicherung.
+`Markup()` aus `markupsafe` kennzeichnet den HTML-String als sicher, damit `t-out` im QWeb-Template ihn unescaped rendert. `sanitize=True` auf dem Html-Field aktiviert zusätzlich Odoos eingebaute HTML-Sanitization.
 
 ---
 
@@ -226,13 +228,26 @@ Fallback: `monospace` (Editor), System-Fonts (Preview).
 
 Weitere Fonts im Repo (Fira Code, Space Grotesk) sind verfügbar aber nicht aktiv eingebunden.
 
-**Odoo Enterprise Layout-Fix:**
+**Odoo Layout-Fixes:**
 ```scss
-.o_form_renderer:has(.o_markdown_editor) {
-    flex-direction: column !important;
+.o_form_view:has(.o_markdown_editor) {
+    .o_form_sheet_bg {
+        flex: 1 1 auto !important;      /* füllt den Renderer vollständig */
+        max-width: 100% !important;     /* überschreibt Odoос max-width: 1400px */
+    }
+    .o_form_sheet {
+        overflow: visible !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 24px !important;
+    }
 }
 ```
-Ursache: Odoo Enterprise überschreibt `flex-direction` auf `row`, was den Editor neben den Chatter rendert. Der Fix ist mit `:has()` gezielt auf Views mit dem Editor begrenzt.
+
+Ursachen:
+- Odoo setzt auf `.o_form_sheet_bg` ein `max-width: 1400px`, das auf breiten Bildschirmen Leerraum rechts erzeugt.
+- Da das Modul kein `mail.thread` verwendet, ist kein `flex-direction: column` Override nötig. Der Renderer läuft im natürlichen Row-Layout, `o_form_sheet_bg` füllt automatisch die volle Breite.
 
 ### 4.4 Markdown-Library
 
@@ -266,7 +281,7 @@ Versionen sind für normale User read-only – Append-only-Charakter ist damit a
 
 - **Frontend:** `markdown-it({ html: false })` – HTML in Markdown wird escaped
 - **Backend:** `content_html` field mit `sanitize=True` – Odoo sanitized HTML vor Speicherung
-- **PDF-Template:** `t-raw` auf `doc.content_html` – Inhalt ist bereits sanitized
+- **PDF-Template:** `t-out` auf `doc.content_html` – `Markup()` im Python-Code signalisiert dass der Inhalt sicher ist; `t-raw` ist in Odoo 19 deprecated
 
 ---
 
@@ -289,7 +304,7 @@ Versionen sind für normale User read-only – Append-only-Charakter ist damit a
             <t t-call="web.external_layout">  <!-- Odoo-Header/Footer -->
                 <div class="page">
                     <h1><t t-esc="doc.name"/></h1>
-                    <div t-raw="doc.content_html"/>
+                    <div t-out="doc.content_html"/>  <!-- t-raw ist in Odoo 19 deprecated -->
                 </div>
             </t>
         </t>
@@ -319,8 +334,8 @@ Fallback: Falls `mistune` nicht verfügbar, zeigt PDF den rohen Markdown-Text al
 - Notebook mit zwei Tabs:
   - **Metadaten:** owner_id, current_version, create_date, write_date
   - **Versionen:** Liste aller Versionen (read-only) mit Version, User, Datum, Checksum, Attachments; Klick auf eine Version öffnet die Detail-Form mit "Wiederherstellen"-Button
-- Chatter (mail_thread + mail_activity)
 - State-Statusbar: draft → published → archived
+- Kein Chatter (mail.thread bewusst nicht verwendet)
 
 ### 7.2 List View
 
@@ -385,6 +400,9 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.10 | 09.03.2026 | Layout-Fix: o_form_sheet_bg max-width:1400px überschreiben, flex-direction:column Override entfernt |
+| 1.1.9 | 09.03.2026 | mail.thread + mail.activity.mixin entfernt (Chatter-Panel-Injection verhindert, Layout bereinigt) |
+| 1.1.8 | 09.03.2026 | Odoo-19-Fixes: groups_id in Tests entfernt, _render_qweb_pdf API korrigiert, t-raw→t-out+Markup(), icon.png hinzugefügt |
 | 1.1.7 | 09.03.2026 | Automatisierte Tests: TransactionCase für Versionierung, ACL, Restore, Diff (tests/test_md_document.py) |
 | 1.1.6 | 09.03.2026 | Diff-View Fix: unified_diff statt HtmlDiff, Button in Versionen-Tab, Dialog 900px, farbige Zeilen |
 | 1.1.5 | 09.03.2026 | Diff-View: Wizard x.md.document.diff.wizard, difflib.unified_diff, Button in Versionen-Tab |
@@ -406,4 +424,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 09.03.2026 (v1.1.6)
+**Letzte Aktualisierung:** 09.03.2026 (v1.1.10)
