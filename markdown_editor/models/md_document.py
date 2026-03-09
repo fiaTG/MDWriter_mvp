@@ -26,20 +26,18 @@ class XMdDocument(models.Model):
 
     _name = "x.md.document"
     _description = "Markdown Document"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
 
     name = fields.Char(string="Titel", required=True)
-    content_md = fields.Text(string="Markdown‑Inhalt", tracking=True)
+    content_md = fields.Text(string="Markdown‑Inhalt")
     state = fields.Selection([
         ("draft", "Entwurf"),
         ("published", "Veröffentlicht"),
         ("archived", "Archiviert"),
-    ], default="draft", tracking=True)
+    ], default="draft")
     owner_id = fields.Many2one(
         comodel_name="res.users",
         string="Eigentümer",
         default=lambda self: self.env.user,
-        tracking=True,
     )
     version_ids = fields.One2many(
         comodel_name="x.md.document.version",
@@ -50,7 +48,6 @@ class XMdDocument(models.Model):
         string="Aktuelle Version",
         compute="_compute_current_version",
         store=True,
-        tracking=True,
     )
     content_html = fields.Html(
         string="HTML-Vorschau",

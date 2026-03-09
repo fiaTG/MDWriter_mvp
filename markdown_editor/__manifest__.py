@@ -11,7 +11,6 @@
     "depends": [
         "base",
         "web",
-        "mail",
     ],
     "data": [
         "security/ir.model.access.csv",
