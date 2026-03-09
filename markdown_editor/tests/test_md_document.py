@@ -78,12 +78,10 @@ class TestMdDocumentACL(TransactionCase):
         self.user_a = self.env["res.users"].create({
             "name": "User A",
             "login": "user_a_test@example.com",
-            "groups_id": [(4, self.env.ref("base.group_user").id)],
         })
         self.user_b = self.env["res.users"].create({
             "name": "User B",
             "login": "user_b_test@example.com",
-            "groups_id": [(4, self.env.ref("base.group_user").id)],
         })
         # Dokument als User A anlegen
         self.doc_a = self.env["x.md.document"].with_user(self.user_a).create({

@@ -112,7 +112,7 @@ class XMdDocument(models.Model):
             try:
                 report_action = self.env.ref("markdown_editor.md_document_pdf", raise_if_not_found=False)
                 if report_action:
-                    pdf_bytes, _content_type = report_action._render_qweb_pdf(record.ids)
+                    pdf_bytes, _content_type = report_action._render_qweb_pdf([record.id])
                     pdf_name = f"{record.name}_v{next_version}.pdf"
                     pdf_attachment = Attachment.create({
                         "name": pdf_name,
