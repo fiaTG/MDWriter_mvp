@@ -91,6 +91,9 @@
         <field name="model">x.md.document.version</field>
         <field name="arch" type="xml">
             <form string="Version" create="false" edit="false" delete="false">
+                <header>
+                    <button name="action_restore" type="object" string="Wiederherstellen" class="btn-primary" confirm="Möchtest du das Dokument auf diese Version zurücksetzen? Eine neue Version wird automatisch angelegt."/>
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <h2><field name="version" string="Version" readonly="1"/></h2>

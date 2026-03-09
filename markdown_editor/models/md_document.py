@@ -181,3 +181,18 @@ class XMdDocumentVersion(models.Model):
         comodel_name="ir.attachment",
         string="PDF‑Anhang",
     )
+
+    def action_restore(self):
+        """
+        Stellt den Markdown‑Inhalt dieser Version im übergeordneten Dokument
+        wieder her. Löst dabei automatisch eine neue Version aus (via write).
+        """
+        self.ensure_one()
+        self.document_id.write({"content_md": self.content_md})
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "x.md.document",
+            "res_id": self.document_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
