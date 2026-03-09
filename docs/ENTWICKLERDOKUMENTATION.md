@@ -373,9 +373,9 @@ pip install mistune
 
 | Thema | Status | Beschreibung |
 |---|---|---|
-| Diff-View | ❌ Offen | Vergleich zwischen zwei Versionen im Frontend |
+| Diff-View | ✅ Implementiert | Wizard: zwei Versionen auswählen, difflib.HtmlDiff-Ausgabe |
 | Restore-Funktion | ✅ Implementiert | Ältere Version wiederherstellen via Button in der Versions-Form |
-| Syntax-Highlighting | ❌ Offen | Highlighting im Textarea (würde CodeMirror o.ä. erfordern) |
+| Syntax-Highlighting | ✅ Implementiert | CodeMirror 5 (Markdown-Modus), lokal eingebunden |
 | Automatisierte Tests | ❌ Offen | ACL-, Versionierungs- und UI-Tests |
 | Performance | ⚠️ Beobachten | Bei sehr großen Dokumenten (>10.000 Zeilen) kann Live-Preview verlangsamen |
 
@@ -385,6 +385,8 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.5 | 09.03.2026 | Diff-View: Wizard x.md.document.diff.wizard, difflib.HtmlDiff, Button in Dokument-Form |
+| 1.1.4 | 09.03.2026 | Syntax-Highlighting: CodeMirror 5 (Markdown-Modus) lokal eingebunden, OWL onMounted/onWillUnmount Integration |
 | 1.1.3 | 09.03.2026 | Restore-Funktion: action_restore() in XMdDocumentVersion, "Wiederherstellen"-Button in Versions-Form-View |
 | 1.1.2 | 09.03.2026 | t-raw → t-out + markup() Migration; Fonts JetBrains Mono + Inter eingebunden (Variable Fonts, lokal) |
 | 1.1.1 | 09.03.2026 | Font-Integration vorbereitet (SCSS @font-face), Textarea: JetBrains Mono, Preview: Inter |

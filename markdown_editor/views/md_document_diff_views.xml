@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Wizard Form View: Versionsdiff -->
+    <record id="view_md_document_diff_wizard_form" model="ir.ui.view">
+        <field name="name">x.md.document.diff.wizard.form</field>
+        <field name="model">x.md.document.diff.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Versionen vergleichen">
+                <group>
+                    <group>
+                        <field name="document_id" readonly="1"/>
+                        <field name="version_from_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="version_to_id" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <separator string="Diff"/>
+                <field name="diff_html" widget="html" nolabel="1" readonly="1"/>
+                <footer>
+                    <button string="Schließen" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

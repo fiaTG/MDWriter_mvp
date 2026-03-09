@@ -3,3 +3,4 @@ access_md_document_user,x_md_document_user,model_x_md_document,base.group_user,1
 access_md_document_admin,x_md_document_admin,model_x_md_document,base.group_system,1,1,1,1
 access_md_document_version_user,x_md_document_version_user,model_x_md_document_version,base.group_user,1,0,0,0
 access_md_document_version_admin,x_md_document_version_admin,model_x_md_document_version,base.group_system,1,1,1,1
+access_md_document_diff_wizard_user,x_md_document_diff_wizard_user,model_x_md_document_diff_wizard,base.group_user,1,1,1,1

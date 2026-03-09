@@ -133,6 +133,17 @@ class XMdDocument(models.Model):
                 "pdf_attachment_id": pdf_attachment.id if pdf_attachment else False,
             })
 
+    def action_open_diff(self):
+        """Öffnet den Versionsdiff-Wizard für dieses Dokument."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "x.md.document.diff.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_document_id": self.id},
+        }
+
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
