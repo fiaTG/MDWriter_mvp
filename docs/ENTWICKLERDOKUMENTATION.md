@@ -147,16 +147,23 @@ Die Komponente wird als Odoo Field Widget registriert und über `widget="markdow
 **Initialisierung:**
 
 ```javascript
+import { Component, useState, markup } from "@odoo/owl";
+
 this.md = window.markdownit
     ? window.markdownit({ html: false, xhtmlOut: false, breaks: true, linkify: true })
     : null;
+this.state = useState({
+    value: initial,
+    html: this.md ? markup(this.md.render(initial)) : markup(initial)
+});
 ```
 
 - `html: false` – eingebettetes HTML in Markdown wird escaped (XSS-Schutz)
 - `breaks: true` – einzelne Zeilenumbrüche erzeugen `<br>`
 - `linkify: true` – URLs werden automatisch verlinkt
+- `markup()` aus `@odoo/owl` markiert den String als sicheres HTML für `t-out`
 
-**XSS-Schutz:** Die Preview-Inhalte werden durch `markdown-it` mit `html: false` gerendert. Eingebettete `<script>`-Tags oder HTML-Attribute werden als Text ausgegeben, nicht ausgeführt. `innerHTML` wird nur mit diesem gefilterten Output befüllt.
+**XSS-Schutz:** `markdown-it({ html: false })` escaped eingebettetes HTML. `markup()` signalisiert OWL, dass der Inhalt sicher gerendert werden darf — ohne `markup()` würde `t-out` den Inhalt escapen.
 
 **Input-Handler:**
 
@@ -164,13 +171,12 @@ this.md = window.markdownit
 _onInput(ev) {
     const value = ev.target.value;
     this.state.value = value;
-    this.state.html = this.md ? this.md.render(value) : value;
-    if (this.previewRef.el) {
-        this.previewRef.el.innerHTML = this.state.html;
-    }
+    this.state.html = this.md ? markup(this.md.render(value)) : markup(value);
     this.props.record.update({ [this.props.name]: value });
 }
 ```
+
+Kein direktes `innerHTML` mehr — das Rendering läuft rein reaktiv über OWL State + `t-out`.
 
 ### 4.2 OWL-Template
 
@@ -186,14 +192,14 @@ Dateiname: [static/src/xml/markdown_editor_templates.xml](../markdown_editor/sta
             t-model="state.value"
             placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
         />
-        <div class="o_markdown_preview" t-ref="preview">
-            <t t-raw="state.html"/>
+        <div class="o_markdown_preview">
+            <t t-out="state.html"/>
         </div>
     </div>
 </t>
 ```
 
-`t-raw` ist bewusst eingesetzt – der Inhalt ist durch `markdown-it({ html: false })` bereits gefiltert.
+`t-out` mit `markup()`-gewraptem State ist der korrekte Weg in Odoo 19 — `t-raw` ist deprecated. Ohne `markup()` würde `t-out` den HTML-String escapen statt rendern.
 
 ### 4.3 Styling (SCSS)
 
@@ -205,6 +211,20 @@ Dateiname: [static/src/scss/markdown_editor.scss](../markdown_editor/static/src/
 - `white-space` ist bewusst **nicht** gesetzt – HTML-Rendering der Preview funktioniert korrekt
 
 **Dark-Mode:** Alle Farbwerte nutzen Odoo CSS-Variablen (`var(--o-input-bg)`, `var(--o-background-color)`, `var(--o-text-color)`, `var(--border-color)`). Dark-Mode-Kompatibilität ist dadurch automatisch gegeben – Odoos eigener Theme-Switcher wird vollständig respektiert.
+
+**Fonts:**
+
+Alle Fonts liegen lokal unter `static/src/fonts/` — kein CDN.
+
+| Font | Verwendung | Datei |
+|---|---|---|
+| JetBrains Mono | Editor-Textarea | `JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf` |
+| Inter | Preview-Bereich | `Inter/Inter-VariableFont_opsz,wght.ttf` |
+
+Variable Fonts decken alle Gewichte (100–800 / 100–900) in einer Datei ab.
+Fallback: `monospace` (Editor), System-Fonts (Preview).
+
+Weitere Fonts im Repo (Fira Code, Space Grotesk) sind verfügbar aber nicht aktiv eingebunden.
 
 **Odoo Enterprise Layout-Fix:**
 ```scss
@@ -365,6 +385,8 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.2 | 09.03.2026 | t-raw → t-out + markup() Migration; Fonts JetBrains Mono + Inter eingebunden (Variable Fonts, lokal) |
+| 1.1.1 | 09.03.2026 | Font-Integration vorbereitet (SCSS @font-face), Textarea: JetBrains Mono, Preview: Inter |
 | 1.1.0 | 09.03.2026 | markdown-it integriert (Live-HTML-Preview), XSS-Fix (html:false), PDF-Export funktionsfähig (mistune + web.html_container + binding_model_id), white-space:pre-wrap entfernt |
 | 1.0.9 | 11.02.2026 | Flex-System-Fix: Form Sheet auf Block-Layout, Editor-Wrapper-Klasse |
 | 1.0.8 | 28.01.2026 | Layout-Fix: Overflow-Fixes, Strukturänderung Form View |
