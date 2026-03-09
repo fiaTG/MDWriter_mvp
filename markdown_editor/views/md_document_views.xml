@@ -141,7 +141,7 @@
     </record>
 
     <!-- Root Menu -->
-    <menuitem id="menu_md_document_root" name="Markdown" sequence="20" web_icon="markdown_editor,static/description/icon.png"/>
+    <menuitem id="menu_md_document_root" name="Markdown" sequence="20" web_icon="markdown_editor,static/description/icon.svg"/>
 
     <!-- Documents Menu -->
     <menuitem id="menu_md_document" name="Dokumente" parent="menu_md_document_root" action="action_md_document" sequence="10"/>

@@ -373,7 +373,7 @@ pip install mistune
 
 | Thema | Status | Beschreibung |
 |---|---|---|
-| Diff-View | ✅ Implementiert | Wizard: zwei Versionen auswählen, difflib.HtmlDiff-Ausgabe |
+| Diff-View | ✅ Implementiert | Wizard: zwei Versionen auswählen, unified diff (farbig, eine Spalte) |
 | Restore-Funktion | ✅ Implementiert | Ältere Version wiederherstellen via Button in der Versions-Form |
 | Syntax-Highlighting | ✅ Implementiert | CodeMirror 5 (Markdown-Modus), lokal eingebunden |
 | Automatisierte Tests | ❌ Offen | ACL-, Versionierungs- und UI-Tests |
@@ -385,7 +385,8 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
-| 1.1.5 | 09.03.2026 | Diff-View: Wizard x.md.document.diff.wizard, difflib.HtmlDiff, Button in Dokument-Form |
+| 1.1.6 | 09.03.2026 | Diff-View Fix: unified_diff statt HtmlDiff, Button in Versionen-Tab, Dialog 900px, farbige Zeilen |
+| 1.1.5 | 09.03.2026 | Diff-View: Wizard x.md.document.diff.wizard, difflib.unified_diff, Button in Versionen-Tab |
 | 1.1.4 | 09.03.2026 | Syntax-Highlighting: CodeMirror 5 (Markdown-Modus) lokal eingebunden, OWL onMounted/onWillUnmount Integration |
 | 1.1.3 | 09.03.2026 | Restore-Funktion: action_restore() in XMdDocumentVersion, "Wiederherstellen"-Button in Versions-Form-View |
 | 1.1.2 | 09.03.2026 | t-raw → t-out + markup() Migration; Fonts JetBrains Mono + Inter eingebunden (Variable Fonts, lokal) |
@@ -404,4 +405,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 09.03.2026 (v1.1.3)
+**Letzte Aktualisierung:** 09.03.2026 (v1.1.6)
