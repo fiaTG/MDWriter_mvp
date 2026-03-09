@@ -27,9 +27,6 @@
             "markdown_editor/static/src/scss/markdown_editor.scss",
         ],
     },
-    "external_dependencies": {
-        "python": ["mistune"],
-    },
     "installable": True,
     "application": True,
     "auto_install": False,
