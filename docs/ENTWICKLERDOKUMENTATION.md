@@ -376,7 +376,7 @@ pip install mistune
 | Diff-View | ✅ Implementiert | Wizard: zwei Versionen auswählen, unified diff (farbig, eine Spalte) |
 | Restore-Funktion | ✅ Implementiert | Ältere Version wiederherstellen via Button in der Versions-Form |
 | Syntax-Highlighting | ✅ Implementiert | CodeMirror 5 (Markdown-Modus), lokal eingebunden |
-| Automatisierte Tests | ❌ Offen | ACL-, Versionierungs- und UI-Tests |
+| Automatisierte Tests | ✅ Implementiert | TransactionCase-Tests: Versionierung, ACL, Restore, Diff |
 | Performance | ⚠️ Beobachten | Bei sehr großen Dokumenten (>10.000 Zeilen) kann Live-Preview verlangsamen |
 
 ---
@@ -385,6 +385,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.7 | 09.03.2026 | Automatisierte Tests: TransactionCase für Versionierung, ACL, Restore, Diff (tests/test_md_document.py) |
 | 1.1.6 | 09.03.2026 | Diff-View Fix: unified_diff statt HtmlDiff, Button in Versionen-Tab, Dialog 900px, farbige Zeilen |
 | 1.1.5 | 09.03.2026 | Diff-View: Wizard x.md.document.diff.wizard, difflib.unified_diff, Button in Versionen-Tab |
 | 1.1.4 | 09.03.2026 | Syntax-Highlighting: CodeMirror 5 (Markdown-Modus) lokal eingebunden, OWL onMounted/onWillUnmount Integration |
