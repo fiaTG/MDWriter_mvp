@@ -14,9 +14,6 @@
                         <h1><field name="name" placeholder="Dokumenttitel"/></h1>
                     </div>
                     <field name="content_md" widget="markdown_editor" nolabel="1"/>
-                    <div class="o_row">
-                        <button name="action_open_diff" type="object" string="Versionen vergleichen" class="btn btn-secondary btn-sm"/>
-                    </div>
                     <notebook>
                         <page string="Metadaten" name="metadata">
                             <group>
@@ -31,6 +28,9 @@
                             </group>
                         </page>
                         <page string="Versionen" name="versions">
+                            <div class="mb-2">
+                                <button name="action_open_diff" type="object" string="Versionen vergleichen" class="btn btn-secondary btn-sm"/>
+                            </div>
                             <field name="version_ids" readonly="1">
                                 <list string="Versionen">
                                     <field name="version" string="Version"/>

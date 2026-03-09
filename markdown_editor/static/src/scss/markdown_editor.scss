@@ -114,6 +114,37 @@
 }
 
 // ============================================================
+// Diff-Wizard
+// ============================================================
+
+// Dialog breiter machen (Odoo 19 nutzt CSS-Custom-Property)
+.o_dialog:has(.o_md_diff) {
+    --dialog-max-width: 900px;
+}
+
+// Unified-Diff Block
+.o_md_diff {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--o-input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    white-space: pre;
+
+    span { display: block; }
+
+    .o_md_diff_add    { background: #1a4a1a; color: #6ecc6e; }
+    .o_md_diff_del    { background: #4a1a1a; color: #cc6e6e; }
+    .o_md_diff_hunk   { color: #6eb5cc; font-weight: bold; }
+    .o_md_diff_header { color: var(--o-text-color); opacity: 0.6; }
+}
+
+// ============================================================
 // Odoo Enterprise Layout-Fix
 // ============================================================
 // Struktur (aus DevTools):
