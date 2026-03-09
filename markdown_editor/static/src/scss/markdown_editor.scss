@@ -1,5 +1,37 @@
 // Markdown Editor – Styling
 
+// ============================================================
+// Fonts
+// ============================================================
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/markdown_editor/static/src/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/markdown_editor/static/src/fonts/JetBrains_Mono/JetBrainsMono-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/markdown_editor/static/src/fonts/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/markdown_editor/static/src/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+}
+
 // Field widget container: volle Breite im Form Sheet
 .o_field_widget[name="content_md"] {
     width: 100% !important;
@@ -26,9 +58,9 @@
     outline: none;
     background: var(--o-input-bg);
     color: var(--o-input-color);
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 // Preview (rechte Haelfte)
@@ -40,9 +72,9 @@
     overflow-y: auto;
     background: var(--o-background-color);
     color: var(--o-text-color);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
 }
 
 // ============================================================
