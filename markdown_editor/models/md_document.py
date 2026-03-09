@@ -110,9 +110,13 @@ class XMdDocument(models.Model):
             # PDF‑Konvertierung erfolgt mittels eines QWeb‑Reports.
             pdf_attachment = False
             try:
-                report_action = self.env.ref("markdown_editor.md_document_pdf", raise_if_not_found=False)
-                if report_action:
-                    pdf_bytes, _content_type = report_action._render_qweb_pdf([record.id])
+                # Odoo 19: _render_qweb_pdf(report_ref, res_ids) statt report._render_qweb_pdf(ids)
+                Report = self.env["ir.actions.report"]
+                report_exists = self.env.ref("markdown_editor.md_document_pdf", raise_if_not_found=False)
+                if report_exists:
+                    pdf_bytes, _content_type = Report._render_qweb_pdf(
+                        "markdown_editor.md_document_pdf", res_ids=[record.id]
+                    )
                     pdf_name = f"{record.name}_v{next_version}.pdf"
                     pdf_attachment = Attachment.create({
                         "name": pdf_name,
