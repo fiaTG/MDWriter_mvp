@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: target o_form_renderer for flex-direction column\n\nFrom DevTools inspection: the actual flex container placing sheet_bg\nand oe_chatter side-by-side is .o_form_renderer. Odoo Enterprise\noverrides its flex-column to flex-row on wide screens. Now we force\nflex-direction:column on .o_form_renderer when editor is present.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git push:*)"
-    ]
-  }
-}
