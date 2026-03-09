@@ -2,26 +2,22 @@
 <templates xml:space="preserve">
     <!--
         QWeb‑Vorlage fuer den Markdown‑Editor mit Split‑View.
-        Links befindet sich das Eingabefeld fuer Markdown; rechts wird
-        die gerenderte HTML‑Vorschau angezeigt. Statt des rohen
-        Markdown‑Texts (t‑esc) wird hier t‑raw verwendet, um das von
-        markdown‑it erzeugte HTML anzuzeigen.
+        Links: Textarea, auf der CodeMirror 5 (Markdown‑Modus) mountet.
+        Rechts: Live‑HTML‑Vorschau via markdown‑it + t‑out.
     -->
     <t t-name="markdown_editor.MarkdownField">
         <div class="o_markdown_editor">
-            <!-- Eingabefeld fuer Markdown -->
+            <!-- Eingabefeld: CodeMirror mountet fromTextArea auf dieses Element -->
             <textarea
                 t-ref="editor"
                 class="o_input"
                 t-on-input="_onInput"
-                t-model="state.value"
                 placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
             />
             <!-- Vorschau-Bereich fuer gerendertes HTML -->
             <div class="o_markdown_preview">
                 <t t-out="state.html"/>
             </div>
-
         </div>
     </t>
 </templates>

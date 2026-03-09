@@ -48,7 +48,7 @@
     box-sizing: border-box;
 }
 
-// Editor Textarea (linke Haelfte)
+// Editor Textarea (linke Haelfte) – versteckt, sobald CodeMirror mountet
 .o_markdown_editor textarea.o_input {
     flex: 1 1 50%;
     min-width: 0;
@@ -61,6 +61,42 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
     line-height: 1.6;
+}
+
+// ============================================================
+// CodeMirror Integration (linke Haelfte)
+// ============================================================
+
+// CodeMirror-Wrapper übernimmt den Platz der Textarea
+.o_markdown_editor .CodeMirror {
+    flex: 1 1 50%;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    background: var(--o-input-bg);
+    color: var(--o-input-color);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.o_markdown_editor .CodeMirror-scroll {
+    height: 100%;
+}
+
+// Cursor-Farbe in Odoo-Context
+.o_markdown_editor .CodeMirror-cursor {
+    border-left-color: var(--o-input-color);
+}
+
+// Selektions-Hintergrund
+.o_markdown_editor .CodeMirror-selected {
+    background: rgba(var(--o-brand-primary-rgb, 113, 75, 103), 0.2) !important;
+}
+
+// Trennlinie zwischen Editor und Preview
+.o_markdown_editor .CodeMirror + .o_markdown_preview {
+    border-left: 1px solid var(--border-color);
 }
 
 // Preview (rechte Haelfte)

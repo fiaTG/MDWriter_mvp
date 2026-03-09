@@ -21,7 +21,10 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "markdown_editor/static/lib/markdown-it.min.js",  # (oder marked.min.js)
+            "markdown_editor/static/lib/markdown-it.min.js",
+            "markdown_editor/static/lib/codemirror/codemirror.min.js",
+            "markdown_editor/static/lib/codemirror/markdown.min.js",
+            "markdown_editor/static/lib/codemirror/codemirror.min.css",
             "markdown_editor/static/src/js/markdown_editor.js",
             "markdown_editor/static/src/xml/markdown_editor_templates.xml",
             "markdown_editor/static/src/scss/markdown_editor.scss",

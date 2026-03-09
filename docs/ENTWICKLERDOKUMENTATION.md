@@ -318,7 +318,7 @@ Fallback: Falls `mistune` nicht verfügbar, zeigt PDF den rohen Markdown-Text al
 - `content_md` mit `widget="markdown_editor"` (Split-View)
 - Notebook mit zwei Tabs:
   - **Metadaten:** owner_id, current_version, create_date, write_date
-  - **Versionen:** Liste aller Versionen (read-only) mit Version, User, Datum, Checksum, Attachments
+  - **Versionen:** Liste aller Versionen (read-only) mit Version, User, Datum, Checksum, Attachments; Klick auf eine Version öffnet die Detail-Form mit "Wiederherstellen"-Button
 - Chatter (mail_thread + mail_activity)
 - State-Statusbar: draft → published → archived
 
@@ -374,7 +374,7 @@ pip install mistune
 | Thema | Status | Beschreibung |
 |---|---|---|
 | Diff-View | ❌ Offen | Vergleich zwischen zwei Versionen im Frontend |
-| Restore-Funktion | ❌ Offen | Ältere Version wiederherstellen |
+| Restore-Funktion | ✅ Implementiert | Ältere Version wiederherstellen via Button in der Versions-Form |
 | Syntax-Highlighting | ❌ Offen | Highlighting im Textarea (würde CodeMirror o.ä. erfordern) |
 | Automatisierte Tests | ❌ Offen | ACL-, Versionierungs- und UI-Tests |
 | Performance | ⚠️ Beobachten | Bei sehr großen Dokumenten (>10.000 Zeilen) kann Live-Preview verlangsamen |
@@ -385,6 +385,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.3 | 09.03.2026 | Restore-Funktion: action_restore() in XMdDocumentVersion, "Wiederherstellen"-Button in Versions-Form-View |
 | 1.1.2 | 09.03.2026 | t-raw → t-out + markup() Migration; Fonts JetBrains Mono + Inter eingebunden (Variable Fonts, lokal) |
 | 1.1.1 | 09.03.2026 | Font-Integration vorbereitet (SCSS @font-face), Textarea: JetBrains Mono, Preview: Inter |
 | 1.1.0 | 09.03.2026 | markdown-it integriert (Live-HTML-Preview), XSS-Fix (html:false), PDF-Export funktionsfähig (mistune + web.html_container + binding_model_id), white-space:pre-wrap entfernt |
@@ -401,4 +402,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 09.03.2026
+**Letzte Aktualisierung:** 09.03.2026 (v1.1.3)
