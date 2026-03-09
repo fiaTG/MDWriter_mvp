@@ -7,7 +7,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h1><t t-esc="doc.name"/></h1>
-                        <div t-raw="doc.content_html"/>
+                        <div t-out="doc.content_html"/>
                     </div>
                 </t>
             </t>

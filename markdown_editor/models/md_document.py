@@ -9,6 +9,7 @@ try:
 except ImportError:
     _mistune_available = False
 
+from markupsafe import Markup
 from odoo import api, fields, models, _
 
 _logger = logging.getLogger(__name__)
@@ -71,10 +72,10 @@ class XMdDocument(models.Model):
             if not doc.content_md:
                 doc.content_html = ""
             elif _mistune_available:
-                doc.content_html = mistune.html(doc.content_md)
+                doc.content_html = Markup(mistune.html(doc.content_md))
             else:
                 _logger.warning("mistune nicht installiert — PDF zeigt rohen Markdown-Text")
-                doc.content_html = "<pre>%s</pre>" % (doc.content_md or "")
+                doc.content_html = Markup("<pre>%s</pre>") % (doc.content_md or "")
 
     def _create_version(self):
         """
