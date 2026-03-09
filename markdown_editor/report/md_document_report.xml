@@ -8,13 +8,7 @@
                     <h1>
                         <t t-esc="doc.name"/>
                     </h1>
-                    <!-- Einfacher Markdown Preview: Markdown wird nicht geparst,
-                         sondern im PDF als Preformatted Text dargestellt. Eine
-                         echte Markdown‑zu‑HTML Konvertierung sollte mittels
-                         zusätzlicher Python‑Bibliothek erfolgen. -->
-                    <pre>
-                        <t t-esc="doc.content_md"/>
-                    </pre>
+                    <div t-raw="doc.content_html"/>
                 </t>
             </div>
         </t>

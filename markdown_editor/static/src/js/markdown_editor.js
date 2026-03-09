@@ -36,7 +36,7 @@ class MarkdownField extends Component {
         // korrekt geladen wurde, steht `window.markdownit` zur
         // Verfügung. Andernfalls bleibt der Parser null, und die
         // Vorschau zeigt den rohen Markdown‑Text.
-        this.md = window.markdownit ? window.markdownit() : null;
+        this.md = window.markdownit ? window.markdownit({ html: false, xhtmlOut: false, breaks: true, linkify: true }) : null;
         // State mit Text und gerendertem HTML initialisieren.
               this.state = useState({ value: initial, html: this.md ? this.md.render(initial) : initial });
                 this.previewRef = useRef("preview");

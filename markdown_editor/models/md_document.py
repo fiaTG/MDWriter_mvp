@@ -3,6 +3,12 @@ import hashlib
 import logging
 from datetime import datetime
 
+try:
+    import mistune
+    _mistune_available = True
+except ImportError:
+    _mistune_available = False
+
 from odoo import api, fields, models, _
 
 _logger = logging.getLogger(__name__)
@@ -45,6 +51,11 @@ class XMdDocument(models.Model):
         store=True,
         tracking=True,
     )
+    content_html = fields.Html(
+        string="HTML-Vorschau",
+        compute="_compute_content_html",
+        sanitize=True,
+    )
 
     @api.depends("version_ids.version")
     def _compute_current_version(self):
@@ -53,6 +64,17 @@ class XMdDocument(models.Model):
                 doc.current_version = max(doc.version_ids.mapped("version"))
             else:
                 doc.current_version = 0
+
+    @api.depends("content_md")
+    def _compute_content_html(self):
+        for doc in self:
+            if not doc.content_md:
+                doc.content_html = ""
+            elif _mistune_available:
+                doc.content_html = mistune.html(doc.content_md)
+            else:
+                _logger.warning("mistune nicht installiert — PDF zeigt rohen Markdown-Text")
+                doc.content_html = "<pre>%s</pre>" % (doc.content_md or "")
 
     def _create_version(self):
         """
