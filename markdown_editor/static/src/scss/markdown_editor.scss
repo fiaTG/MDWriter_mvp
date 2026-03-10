@@ -358,25 +358,27 @@
 
 // Badge-Farben via decoration-success/secondary/muted (Bootstrap-Override)
 .o_list_view {
-    // published → Trendtec-Grün
+    // published → Trendtec-Grün (decoration-success)
+    .o_field_badge .badge.text-bg-success,
     .o_field_badge .badge.bg-success {
         background-color: var(--tt-primary) !important;
         color: #1a1a1a !important;
         font-weight: 600;
     }
 
-    // draft → gedämpft
-    .o_field_badge .badge.bg-secondary {
+    // archived → gedämpft (decoration-warning)
+    .o_field_badge .badge.text-bg-warning,
+    .o_field_badge .badge.bg-warning {
         background-color: #5a6370 !important;
-        color: #fff !important;
+        color: #e0e0e0 !important;
         font-weight: 500;
     }
 
-    // archived → dunkel
-    .o_field_badge .badge.text-bg-secondary,
-    .o_field_badge .badge.bg-muted {
-        background-color: #3a3f46 !important;
-        color: #aaa !important;
+    // draft → blau (default badge, kein decoration)
+    .o_field_badge .badge.text-bg-primary,
+    .o_field_badge .badge.bg-primary {
+        background-color: #3d8bcd !important;
+        color: #fff !important;
         font-weight: 500;
     }
 
