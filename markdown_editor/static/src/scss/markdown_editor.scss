@@ -74,7 +74,6 @@
 // Split-View Container (Textarea + Preview nebeneinander)
 .o_markdown_editor {
     display: flex;
-    flex-direction: row;
     height: 600px;
     width: 100%;
     border: 1.5px solid var(--tt-primary);
@@ -83,38 +82,36 @@
     overflow: hidden;
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.12),
-        0 0 0 3px rgba(151, 210, 29, 0.15);
-}
-
-// Editor Textarea (linke Hälfte) – versteckt, sobald CodeMirror mountet
-.o_markdown_editor textarea.o_input {
-    flex: 1 1 50%;
-    min-width: 0;
-    padding: 1rem;
-    border: none;
-    resize: none;
-    outline: none;
-    background: var(--o-input-bg);
-    color: var(--o-input-color);
-    font-family: var(--tt-font-code);
-    font-size: 14px;
-    line-height: 1.6;
+        0 0 0 3px var(--tt-primary-dim);
 }
 
 // ============================================================
-// CodeMirror Integration (linke Hälfte)
+// Editor (linke Hälfte) — Textarea + CodeMirror teilen gemeinsame Styles
 // ============================================================
 
+// Gemeinsame Styles: Textarea (Fallback) und CodeMirror
+.o_markdown_editor textarea.o_input,
 .o_markdown_editor .CodeMirror {
     flex: 1 1 50%;
     min-width: 0;
-    height: 100%;
     border: none;
     background: var(--o-input-bg);
     color: var(--o-input-color);
     font-family: var(--tt-font-code);
     font-size: 14px;
     line-height: 1.6;
+}
+
+// Textarea-spezifisch (resize, padding, outline)
+.o_markdown_editor textarea.o_input {
+    padding: 1rem;
+    resize: none;
+    outline: none;
+}
+
+// CodeMirror-spezifisch (volle Höhe)
+.o_markdown_editor .CodeMirror {
+    height: 100%;
 }
 
 .o_markdown_editor .CodeMirror-scroll {
@@ -356,7 +353,7 @@
 // Listenansicht
 // ============================================================
 
-// Badge-Farben via decoration-success/secondary/muted (Bootstrap-Override)
+// Badge-Farben: published=Grün, archived=Grau, draft=Silber
 .o_list_view {
     // published → Trendtec-Grün (decoration-success)
     .o_field_badge .badge.text-bg-success,

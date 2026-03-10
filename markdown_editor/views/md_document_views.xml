@@ -108,11 +108,10 @@
                     </div>
                     <group>
                         <group>
-                            <field name="version" readonly="1"/>
                             <field name="changed_by" readonly="1"/>
+                            <field name="changed_at" readonly="1"/>
                         </group>
                         <group>
-                            <field name="changed_at" readonly="1"/>
                             <field name="checksum" readonly="1"/>
                         </group>
                     </group>
