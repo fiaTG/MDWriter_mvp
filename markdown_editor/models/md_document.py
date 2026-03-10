@@ -217,6 +217,24 @@ class XMdDocument(models.Model):
     def action_archive_doc(self):
         self.write({"state": "archived"})
 
+    def action_download_md(self):
+        """Lädt die .md-Datei der aktuellen Version herunter.
+
+        Gibt eine act_url-Aktion zurück – Odoo öffnet die URL im Browser,
+        der ?download=true-Parameter löst den Datei-Download aus.
+        target="new" öffnet einen neuen Tab, damit man auf der Seite bleibt.
+        """
+        self.ensure_one()
+        # Aktuelle Version über die gespeicherte Versionsnummer finden
+        latest = self.version_ids.filtered(lambda v: v.version == self.current_version)
+        if not latest or not latest.md_attachment_id:
+            return False
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/web/content/{latest.md_attachment_id.id}?download=true",
+            "target": "new",
+        }
+
     def action_open_diff(self):
         """Öffnet den Versionsdiff-Wizard für dieses Dokument.
 

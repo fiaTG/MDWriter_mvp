@@ -356,10 +356,11 @@ Fallback: Falls `mistune` nicht verfügbar, zeigt PDF den rohen Markdown-Text al
 ### 7.1 Form View
 
 - Titel als `oe_title` (mit grüner Trendtec-Akzentlinie)
-- Header-Buttons für Statusübergänge (kontextsensitiv, `invisible`-Attribut):
+- Header-Buttons (kontextsensitiv, `invisible`-Attribut):
   - **Veröffentlichen** (sichtbar wenn draft oder archived)
   - **Zurück zu Entwurf** (sichtbar wenn published oder archived)
   - **Archivieren** (sichtbar wenn draft oder published)
+  - **Markdown herunterladen** (sichtbar sobald eine Version existiert) → lädt `.md`-Datei der aktuellen Version herunter via `action_download_md()`
 - State-Statusbar: draft → published → archived (nur Anzeige, Übergänge via Buttons)
 - `content_md` mit `widget="markdown_editor"` (Split-View, CodeMirror links, Preview rechts)
 - Notebook mit zwei Tabs:
@@ -442,6 +443,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.21 | 10.03.2026 | PDF-Button umbenannt (→ "Als PDF exportieren"), MD-Download-Button + action_download_md() |
 | 1.1.20 | 10.03.2026 | Scrollbar-Fix: CodeMirror-vscrollbar/hscrollbar gezielt gestylt (CM5 ersetzt native Scrollbars) |
 | 1.1.19 | 10.03.2026 | Scrollbars gestylt: Editor, Preview, Diff in Trendtec-Grün (6px, thin, Chromium + Firefox) |
 | 1.1.18 | 10.03.2026 | Test-Fix: return_value=False statt side_effect=OSError in Fallback-Test |
@@ -476,4 +478,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.20)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.21)
