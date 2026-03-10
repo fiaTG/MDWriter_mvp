@@ -5,25 +5,16 @@
             <t t-foreach="docs" t-as="doc">
 
                 <!-- ============================================================
-                     BRANDING-KONFIGURATION
-                     Für andere Firmen: nur diese t-set-Werte anpassen.
-                     QWeb ersetzt sie serverseitig – wkhtmltopdf bekommt fertige CSS-Werte.
+                     BRANDING-KONFIGURATION (zur Dokumentation)
+                     Für andere Firmen: Werte im <style>-Block unten anpassen.
+                     Gesuchte Stellen mit "BRAND:" kommentiert.
                      ============================================================ -->
-                <t t-set="brand_primary">#97d21d</t>       <!-- Primärfarbe (Trendtec Lime Green) -->
-                <t t-set="brand_dark">#1a1a1a</t>          <!-- Textfarbe -->
-                <t t-set="brand_muted">#5a6370</t>         <!-- Sekundärfarbe / Metadaten -->
-                <t t-set="brand_bg_code">#f5f5f5</t>       <!-- Code-Block Hintergrund -->
-                <t t-set="brand_border">#e0e0e0</t>        <!-- Trennlinien -->
-                <t t-set="brand_font">Mulish, Arial, sans-serif</t>
-                <t t-set="brand_font_code">JetBrains Mono, Courier New, monospace</t>
-                <!-- Logo: statisches Asset-Pfad oder /web/image/<attachment-id> -->
-                <!-- TODO: Trendtec-Logo einsetzen, sobald vorhanden -->
-                <t t-set="brand_logo">/markdown_editor/static/description/icon.svg</t>
                 <t t-set="brand_company">Trendtec AG</t>
+                <t t-set="brand_logo">/markdown_editor/static/description/icon.svg</t>
 
                 <div class="page">
                     <style>
-                        /* Lokale Fonts (werden von wkhtmltopdf über HTTP geladen) */
+                        /* === BRAND: Fonts laden (wkhtmltopdf lädt via HTTP) === */
                         @font-face {
                             font-family: 'Mulish';
                             src: url('/markdown_editor/static/src/fonts/Mulish/Mulish-VariableFont_wght.ttf') format('truetype');
@@ -38,9 +29,9 @@
                         @page { margin: 18mm 15mm 18mm 15mm; }
 
                         body {
-                            font-family: <t t-esc="brand_font"/>;
+                            font-family: Mulish, Arial, sans-serif; /* BRAND: font */
                             font-size: 11pt;
-                            color: <t t-esc="brand_dark"/>;
+                            color: #1a1a1a;                          /* BRAND: brand_dark */
                             line-height: 1.65;
                             margin: 0;
                         }
@@ -51,59 +42,64 @@
                             justify-content: space-between;
                             align-items: center;
                             padding-bottom: 10px;
-                            border-bottom: 3px solid <t t-esc="brand_primary"/>;
+                            border-bottom: 3px solid #97d21d;       /* BRAND: brand_primary */
                             margin-bottom: 20px;
                         }
                         .pdf-header img { height: 36px; }
                         .pdf-company {
                             font-size: 9.5pt;
                             font-weight: 600;
-                            color: <t t-esc="brand_muted"/>;
+                            color: #5a6370;                          /* BRAND: brand_muted */
                         }
 
                         /* ---- Dokumentkopf ---- */
                         .pdf-doc-title {
                             font-size: 20pt;
                             font-weight: 700;
-                            color: <t t-esc="brand_dark"/>;
+                            color: #1a1a1a;                          /* BRAND: brand_dark */
                             margin: 0 0 6px 0;
                         }
                         .pdf-doc-meta {
                             font-size: 9pt;
-                            color: <t t-esc="brand_muted"/>;
+                            color: #5a6370;                          /* BRAND: brand_muted */
                             margin-bottom: 20px;
                             padding-bottom: 14px;
-                            border-bottom: 1px solid <t t-esc="brand_border"/>;
+                            border-bottom: 1px solid #e0e0e0;        /* BRAND: brand_border */
                         }
 
                         /* ---- Überschriften ---- */
                         h1, h2, h3, h4, h5, h6 {
-                            font-family: <t t-esc="brand_font"/>;
-                            color: <t t-esc="brand_primary"/>;
+                            font-family: Mulish, Arial, sans-serif;  /* BRAND: font */
+                            color: #97d21d;                           /* BRAND: brand_primary */
                             margin-top: 1.4em;
                             margin-bottom: 0.4em;
                         }
                         h1 {
                             font-size: 16pt;
-                            border-bottom: 1.5px solid <t t-esc="brand_primary"/>;
+                            border-bottom: 1.5px solid #97d21d;      /* BRAND: brand_primary */
                             padding-bottom: 4px;
                         }
                         h2 { font-size: 13pt; }
                         h3 { font-size: 11.5pt; }
 
+                        /* ---- Absätze + Listen ---- */
+                        p { margin: 0.5em 0; }
+                        ul, ol { padding-left: 1.5em; margin: 0.5em 0; }
+                        li { margin: 0.2em 0; }
+
                         /* ---- Code ---- */
                         code {
-                            font-family: <t t-esc="brand_font_code"/>;
+                            font-family: JetBrains Mono, Courier New, monospace; /* BRAND: font_code */
                             font-size: 9pt;
-                            background: <t t-esc="brand_bg_code"/>;
+                            background: #f5f5f5;                     /* BRAND: brand_bg_code */
                             padding: 1px 5px;
                             border-radius: 2px;
                         }
                         pre {
-                            font-family: <t t-esc="brand_font_code"/>;
+                            font-family: JetBrains Mono, Courier New, monospace; /* BRAND: font_code */
                             font-size: 9pt;
-                            background: <t t-esc="brand_bg_code"/>;
-                            border-left: 3px solid <t t-esc="brand_primary"/>;
+                            background: #f5f5f5;                     /* BRAND: brand_bg_code */
+                            border-left: 3px solid #97d21d;          /* BRAND: brand_primary */
                             padding: 10px 14px;
                             white-space: pre-wrap;
                             word-break: break-word;
@@ -115,34 +111,34 @@
                         /* ---- Tabellen ---- */
                         table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 10pt; }
                         th {
-                            background: <t t-esc="brand_primary"/>;
+                            background: #97d21d;                     /* BRAND: brand_primary */
                             color: #fff;
                             font-weight: 600;
                             padding: 5px 8px;
                             text-align: left;
                         }
-                        td { padding: 4px 8px; border-bottom: 1px solid <t t-esc="brand_border"/>; }
+                        td { padding: 4px 8px; border-bottom: 1px solid #e0e0e0; } /* BRAND: brand_border */
                         tr:nth-child(even) td { background: #fafafa; }
 
                         /* ---- Sonstiges ---- */
                         blockquote {
-                            border-left: 4px solid <t t-esc="brand_primary"/>;
+                            border-left: 4px solid #97d21d;          /* BRAND: brand_primary */
                             margin: 0.8em 0;
                             padding: 4px 14px;
-                            color: <t t-esc="brand_muted"/>;
+                            color: #5a6370;                          /* BRAND: brand_muted */
                             font-style: italic;
                         }
-                        a { color: <t t-esc="brand_primary"/>; }
-                        hr { border: none; border-top: 1px solid <t t-esc="brand_border"/>; margin: 1.2em 0; }
+                        a { color: #97d21d; }                        /* BRAND: brand_primary */
+                        hr { border: none; border-top: 1px solid #e0e0e0; margin: 1.2em 0; } /* BRAND: brand_border */
                         img { max-width: 100%; }
 
                         /* ---- Seiten-Footer ---- */
                         .pdf-footer {
                             margin-top: 32px;
                             padding-top: 8px;
-                            border-top: 1px solid <t t-esc="brand_border"/>;
+                            border-top: 1px solid #e0e0e0;           /* BRAND: brand_border */
                             font-size: 8.5pt;
-                            color: <t t-esc="brand_muted"/>;
+                            color: #5a6370;                          /* BRAND: brand_muted */
                             display: flex;
                             justify-content: space-between;
                         }
@@ -158,17 +154,17 @@
                     <div class="pdf-doc-title"><t t-esc="doc.name"/></div>
                     <div class="pdf-doc-meta">
                         Version <t t-esc="doc.current_version"/>
-                        · <t t-esc="doc.owner_id.name"/>
-                        · <t t-esc="doc.write_date.strftime('%d.%m.%Y') if doc.write_date else ''"/>
+                        &#183; <t t-esc="doc.owner_id.name"/>
+                        &#183; <t t-esc="doc.write_date.strftime('%d.%m.%Y') if doc.write_date else ''"/>
                     </div>
 
-                    <!-- Markdown-Inhalt (HTML, serverseitig durch mistune gerendert) -->
-                    <div t-out="doc.content_html"/>
+                    <!-- Markdown-Inhalt: direkte Methode umgeht fields.Html ORM-Verarbeitung -->
+                    <div t-out="doc._get_report_html()"/>
 
                     <!-- Seiten-Footer -->
                     <div class="pdf-footer">
                         <span><t t-esc="brand_company"/></span>
-                        <span><t t-esc="doc.name"/> · v<t t-esc="doc.current_version"/></span>
+                        <span><t t-esc="doc.name"/> &#183; v<t t-esc="doc.current_version"/></span>
                     </div>
                 </div>
 

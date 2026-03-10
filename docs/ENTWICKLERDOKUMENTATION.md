@@ -443,6 +443,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.26 | 10.03.2026 | PDF-Fix: _get_report_html() umgeht fields.Html ORM, CSS-Werte hardcoded (kein t-esc in style-Block, verhindert arch-Sanitizer-Stripping) |
 | 1.1.25 | 10.03.2026 | PDF-Fix: sanitize=False auf content_html (verhindert doppeltes Escaping durch html_sanitize), report_file=${object.name}, write_date als DD.MM.YYYY |
 | 1.1.24 | 10.03.2026 | Diff-Wizard: res_id=False in action_open_diff erzwingt neuen TransientModel-Datensatz bei jedem Öffnen |
 | 1.1.23 | 10.03.2026 | PDF-Template: Trendtec-Branding via QWeb t-set-Variablen (brand_primary, brand_font, brand_logo usw.), eigener Header/Footer, wkhtmltopdf-kompatibel |
@@ -482,4 +483,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.25)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.26)

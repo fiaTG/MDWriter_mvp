@@ -249,6 +249,21 @@ class XMdDocument(models.Model):
             "target": "new",
         }
 
+    def _get_report_html(self):
+        """Gibt gerendertes HTML für den PDF-Report zurück.
+
+        Direkter Aufruf aus dem QWeb-Template (doc._get_report_html()) – umgeht
+        den fields.Html ORM-Pfad komplett, damit Markup() sicher als t-out-sicherer
+        String ankommt und nicht durch convert_to_cache/read neu verarbeitet wird.
+        """
+        self.ensure_one()
+        if not self.content_md:
+            return Markup("")
+        if _mistune_available:
+            return Markup(mistune.html(self.content_md))
+        _logger.warning("mistune nicht installiert – PDF zeigt Markdown als Plaintext (doc id=%s)", self.id)
+        return Markup("<pre>%s</pre>") % (self.content_md or "")
+
     def action_open_diff(self):
         """Öffnet den Versionsdiff-Wizard für dieses Dokument.
 
