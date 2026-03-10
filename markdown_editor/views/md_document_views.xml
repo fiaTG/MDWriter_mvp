@@ -57,7 +57,10 @@
             <list string="Markdown‑Dokumente">
                 <field name="name"/>
                 <field name="owner_id" widget="many2one_avatar_user"/>
-                <field name="state" widget="badge"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'published'"
+                    decoration-secondary="state == 'draft'"
+                    decoration-muted="state == 'archived'"/>
                 <field name="current_version"/>
                 <field name="write_date" widget="date"/>
             </list>

@@ -328,16 +328,52 @@
     .o_statusbar_status .o_arrow_button.btn-primary {
         background: var(--tt-primary) !important;
         border-color: var(--tt-primary) !important;
-        color: #fff !important;
+        color: #1a1a1a !important;
+        font-weight: 600;
+    }
+
+    // Titelbereich: grüne Akzentlinie unter dem Titel
+    .oe_title {
+        border-bottom: 2px solid var(--tt-primary);
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+
+        h1 {
+            font-family: var(--tt-font-ui);
+            font-weight: 700;
+        }
+    }
+
+    // Notebook: leichter oberer Abstand + Trennlinie
+    .o_notebook {
+        margin-top: 20px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 8px;
     }
 }
 
 // ============================================================
-// Listenansicht — State-Badges
+// Listenansicht
 // ============================================================
 
-.o_list_view .o_field_badge[name="state"] {
-    .badge[data-value="draft"]     { background-color: #aaa !important; }
-    .badge[data-value="published"] { background-color: var(--tt-primary) !important; color: #fff !important; }
-    .badge[data-value="archived"]  { background-color: #666 !important; }
+// Badge-Farben via decoration-success/secondary/muted (Bootstrap-Override)
+.o_list_view {
+    // published → Trendtec-Grün
+    .o_field_badge .badge.bg-success {
+        background-color: var(--tt-primary) !important;
+        color: #1a1a1a !important;
+        font-weight: 600;
+    }
+
+    // Zeilen-Hover: grüner linker Akzent
+    .o_data_row:hover td:first-child {
+        border-left: 3px solid var(--tt-primary);
+        padding-left: calc(0.75rem - 3px);
+    }
+
+    // Titel-Spalte fett
+    .o_data_row td:first-child {
+        font-weight: 600;
+        font-family: var(--tt-font-ui);
+    }
 }
