@@ -350,6 +350,37 @@
 }
 
 // ============================================================
+// Scrollbars (Editor, Preview, Diff)
+// ============================================================
+
+// Gemeinsame Scrollbar-Styles für alle drei Bereiche
+.o_markdown_editor .CodeMirror-scroll,
+.o_markdown_preview,
+.o_md_diff {
+    scrollbar-width: thin;                          // Firefox
+    scrollbar-color: var(--tt-primary) transparent; // Firefox: thumb / track
+
+    // Chromium / Safari
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--tt-primary);
+        border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: var(--tt-primary-dark);
+    }
+}
+
+// ============================================================
 // Listenansicht
 // ============================================================
 
