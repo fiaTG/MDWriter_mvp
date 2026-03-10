@@ -14,6 +14,8 @@
                             invisible="state == 'draft'"/>
                         <button name="action_archive_doc" type="object" string="Archivieren"
                             invisible="state == 'archived'"/>
+                        <button name="action_export_pdf" type="object" string="Als PDF exportieren"
+                            invisible="not current_version"/>
                         <button name="action_download_md" type="object" string="Markdown herunterladen"
                             invisible="not current_version"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,published,archived"/>

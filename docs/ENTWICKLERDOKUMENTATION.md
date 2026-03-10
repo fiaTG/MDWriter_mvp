@@ -443,6 +443,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.22 | 10.03.2026 | Konsistenz: PDF + MD-Download beide im Form-Header; binding_model_id entfernt (kein Zahnrad-Eintrag mehr) |
 | 1.1.21 | 10.03.2026 | PDF-Button umbenannt (→ "Als PDF exportieren"), MD-Download-Button + action_download_md() |
 | 1.1.20 | 10.03.2026 | Scrollbar-Fix: CodeMirror-vscrollbar/hscrollbar gezielt gestylt (CM5 ersetzt native Scrollbars) |
 | 1.1.19 | 10.03.2026 | Scrollbars gestylt: Editor, Preview, Diff in Trendtec-Grün (6px, thin, Chromium + Firefox) |
@@ -478,4 +479,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.21)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.22)

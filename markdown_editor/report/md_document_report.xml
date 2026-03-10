@@ -21,7 +21,6 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">markdown_editor.report_md_document</field>
         <field name="report_file">markdown_editor.report_md_document</field>
-        <field name="binding_model_id" ref="model_x_md_document"/>
-        <field name="binding_type">report</field>
+        <!-- binding_model_id entfernt: Export-Button ist im Form-Header, nicht im Zahnrad-Menü -->
     </record>
 </odoo>

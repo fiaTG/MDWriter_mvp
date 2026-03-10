@@ -217,6 +217,16 @@ class XMdDocument(models.Model):
     def action_archive_doc(self):
         self.write({"state": "archived"})
 
+    def action_export_pdf(self):
+        """Öffnet den PDF-Export für dieses Dokument.
+
+        self.env.ref() sucht den Report-Eintrag über seine XML-ID.
+        report_action(self) rendert den Report für den aktuellen Datensatz
+        und gibt eine Odoo-Aktion zurück, die den Download startet.
+        """
+        self.ensure_one()
+        return self.env.ref("markdown_editor.md_document_pdf").report_action(self)
+
     def action_download_md(self):
         """Lädt die .md-Datei der aktuellen Version herunter.
 
