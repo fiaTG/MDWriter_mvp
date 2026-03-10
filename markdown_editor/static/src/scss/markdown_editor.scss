@@ -365,6 +365,21 @@
         font-weight: 600;
     }
 
+    // draft → gedämpft
+    .o_field_badge .badge.bg-secondary {
+        background-color: #5a6370 !important;
+        color: #fff !important;
+        font-weight: 500;
+    }
+
+    // archived → dunkel
+    .o_field_badge .badge.text-bg-secondary,
+    .o_field_badge .badge.bg-muted {
+        background-color: #3a3f46 !important;
+        color: #aaa !important;
+        font-weight: 500;
+    }
+
     // Zeilen-Hover: grüner linker Akzent
     .o_data_row:hover td:first-child {
         border-left: 3px solid var(--tt-primary);
