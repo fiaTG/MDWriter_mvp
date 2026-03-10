@@ -138,6 +138,15 @@ class XMdDocument(models.Model):
                 "pdf_attachment_id": pdf_attachment.id if pdf_attachment else False,
             })
 
+    def action_set_draft(self):
+        self.write({"state": "draft"})
+
+    def action_publish(self):
+        self.write({"state": "published"})
+
+    def action_archive_doc(self):
+        self.write({"state": "archived"})
+
     def action_open_diff(self):
         """Öffnet den Versionsdiff-Wizard für dieses Dokument."""
         self.ensure_one()
