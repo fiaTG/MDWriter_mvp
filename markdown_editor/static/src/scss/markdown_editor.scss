@@ -374,9 +374,8 @@
         font-weight: 500;
     }
 
-    // draft → Silber (default badge = text-bg-secondary)
-    .o_field_badge .badge.text-bg-secondary,
-    .o_field_badge .badge.bg-secondary {
+    // draft → Silber (Odoo 19 setzt text-bg-300)
+    .o_field_badge .badge.text-bg-300 {
         background-color: #c8d0d8 !important;
         color: #2a2f35 !important;
         font-weight: 500;
