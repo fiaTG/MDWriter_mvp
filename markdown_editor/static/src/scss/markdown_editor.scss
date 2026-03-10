@@ -1,8 +1,37 @@
 // Markdown Editor – Styling
+// Trendtec Branding: #97d21d (Lime Green), clean/minimal, 12px radius
+
+// ============================================================
+// Trendtec Design Tokens
+// ============================================================
+
+:root {
+    --tt-primary:      #97d21d;   // Trendtec Lime Green
+    --tt-primary-dark: #638a13;   // Hover / aktiver State
+    --tt-primary-dim:  rgba(151, 210, 29, 0.15); // Selektions-Hintergrund
+    --tt-radius:       12px;
+    --tt-radius-sm:    6px;
+    --tt-font-ui:      'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --tt-font-code:    'JetBrains Mono', monospace;
+}
 
 // ============================================================
 // Fonts
 // ============================================================
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('/markdown_editor/static/src/fonts/Mulish/Mulish-VariableFont_wght.ttf') format('truetype');
+    font-weight: 200 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('/markdown_editor/static/src/fonts/Mulish/Mulish-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 200 900;
+    font-style: italic;
+}
 
 @font-face {
     font-family: 'JetBrains Mono';
@@ -32,6 +61,10 @@
     font-style: italic;
 }
 
+// ============================================================
+// Split-View Container
+// ============================================================
+
 // Field widget container: volle Breite im Form Sheet
 .o_field_widget[name="content_md"] {
     width: 100% !important;
@@ -45,29 +78,30 @@
     height: 600px;
     width: 100%;
     border: 1px solid var(--border-color);
+    border-radius: var(--tt-radius);
     box-sizing: border-box;
+    overflow: hidden;
 }
 
-// Editor Textarea (linke Haelfte) – versteckt, sobald CodeMirror mountet
+// Editor Textarea (linke Hälfte) – versteckt, sobald CodeMirror mountet
 .o_markdown_editor textarea.o_input {
     flex: 1 1 50%;
     min-width: 0;
-    padding: 0.75rem;
+    padding: 1rem;
     border: none;
     resize: none;
     outline: none;
     background: var(--o-input-bg);
     color: var(--o-input-color);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--tt-font-code);
     font-size: 14px;
     line-height: 1.6;
 }
 
 // ============================================================
-// CodeMirror Integration (linke Haelfte)
+// CodeMirror Integration (linke Hälfte)
 // ============================================================
 
-// CodeMirror-Wrapper übernimmt den Platz der Textarea
 .o_markdown_editor .CodeMirror {
     flex: 1 1 50%;
     min-width: 0;
@@ -75,7 +109,7 @@
     border: none;
     background: var(--o-input-bg);
     color: var(--o-input-color);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--tt-font-code);
     font-size: 14px;
     line-height: 1.6;
 }
@@ -84,79 +118,187 @@
     height: 100%;
 }
 
-// Cursor-Farbe in Odoo-Context
+// Cursor in Trendtec-Grün
 .o_markdown_editor .CodeMirror-cursor {
-    border-left-color: var(--o-input-color);
+    border-left: 2px solid var(--tt-primary) !important;
 }
 
-// Selektions-Hintergrund
+// Selektion in gedämpftem Trendtec-Grün
 .o_markdown_editor .CodeMirror-selected {
-    background: rgba(var(--o-brand-primary-rgb, 113, 75, 103), 0.2) !important;
+    background: var(--tt-primary-dim) !important;
 }
 
 // Trennlinie zwischen Editor und Preview
-.o_markdown_editor .CodeMirror + .o_markdown_preview {
-    border-left: 1px solid var(--border-color);
+.o_markdown_editor .CodeMirror + .o_markdown_preview,
+.o_markdown_editor textarea.o_input + .o_markdown_preview {
+    border-left: 2px solid var(--tt-primary);
 }
 
-// Preview (rechte Haelfte)
+// ============================================================
+// Preview (rechte Hälfte) — Trendtec Typografie
+// ============================================================
+
 .o_markdown_preview {
     flex: 1 1 50%;
     min-width: 0;
-    padding: 0.75rem;
-    border-left: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
     overflow-y: auto;
     background: var(--o-background-color);
     color: var(--o-text-color);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--tt-font-ui);
     font-size: 15px;
-    line-height: 1.7;
+    line-height: 1.75;
+
+    // Überschriften in Trendtec-Grün
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--tt-font-ui);
+        font-weight: 700;
+        color: var(--tt-primary);
+        margin-top: 1.5em;
+        margin-bottom: 0.4em;
+        line-height: 1.3;
+    }
+
+    h1 {
+        font-size: 1.75em;
+        border-bottom: 2px solid var(--tt-primary);
+        padding-bottom: 0.3em;
+        margin-top: 0.5em;
+    }
+
+    h2 { font-size: 1.35em; }
+    h3 { font-size: 1.1em; }
+
+    // Inline Code
+    code {
+        font-family: var(--tt-font-code);
+        font-size: 0.87em;
+        background: var(--tt-primary-dim);
+        color: var(--tt-primary-dark);
+        border-radius: var(--tt-radius-sm);
+        padding: 0.15em 0.45em;
+    }
+
+    // Code-Block
+    pre {
+        background: var(--o-input-bg);
+        border-left: 3px solid var(--tt-primary);
+        border-radius: 0 var(--tt-radius-sm) var(--tt-radius-sm) 0;
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 1em 0;
+
+        code {
+            background: none;
+            color: var(--o-input-color);
+            padding: 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+    }
+
+    // Tabellen
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1em 0;
+        font-size: 0.95em;
+
+        th {
+            background: var(--tt-primary);
+            color: #fff;
+            font-weight: 600;
+            padding: 0.5em 0.85em;
+            text-align: left;
+        }
+
+        td {
+            padding: 0.45em 0.85em;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover td {
+            background: var(--tt-primary-dim);
+        }
+    }
+
+    // Blockquote
+    blockquote {
+        border-left: 4px solid var(--tt-primary);
+        margin: 1em 0;
+        padding: 0.5em 1em;
+        color: var(--o-text-color);
+        opacity: 0.8;
+        font-style: italic;
+    }
+
+    // Links
+    a {
+        color: var(--tt-primary-dark);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    a:hover {
+        color: var(--tt-primary);
+        text-decoration: underline;
+    }
+
+    // Listen
+    ul, ol {
+        padding-left: 1.5em;
+        margin: 0.5em 0;
+    }
+
+    li { margin: 0.2em 0; }
+
+    // Horizontale Linie
+    hr {
+        border: none;
+        border-top: 2px solid var(--tt-primary);
+        opacity: 0.3;
+        margin: 1.5em 0;
+    }
+
+    // Erster Block oben kein extra margin
+    > *:first-child { margin-top: 0; }
 }
 
 // ============================================================
 // Diff-Wizard
 // ============================================================
 
-// Dialog breiter machen (Odoo 19 nutzt CSS-Custom-Property)
 .o_dialog:has(.o_md_diff) {
     --dialog-max-width: 900px;
 }
 
-// Unified-Diff Block
 .o_md_diff {
     display: block;
     width: 100%;
     overflow-x: auto;
     padding: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--tt-font-code);
     font-size: 13px;
     line-height: 1.5;
     background: var(--o-input-bg);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: var(--tt-radius-sm);
     white-space: pre;
 
     span { display: block; }
 
     .o_md_diff_add    { background: #1a4a1a; color: #6ecc6e; }
     .o_md_diff_del    { background: #4a1a1a; color: #cc6e6e; }
-    .o_md_diff_hunk   { color: #6eb5cc; font-weight: bold; }
+    .o_md_diff_hunk   { color: var(--tt-primary); font-weight: bold; }
     .o_md_diff_header { color: var(--o-text-color); opacity: 0.6; }
 }
 
 // ============================================================
-// Odoo Enterprise Layout-Fix
+// Odoo Form Layout Fix + Trendtec Akzente
 // ============================================================
-// Struktur (aus DevTools):
-//   .o_form_renderer.d-flex.flex-column  <-- Enterprise ueberschreibt zu row!
-//     .o_form_sheet_bg
-//       .o_form_sheet
-//         .o_markdown_editor
-//     .oe_chatter
-//
-// Fix: o_form_sheet volle Breite erzwingen (kein mail.thread → kein Chatter-Panel)
 
 .o_form_view:has(.o_markdown_editor) {
+    // Sheet volle Breite (Odoo setzt max-width: 1400px)
     .o_form_sheet_bg {
         flex: 1 1 auto !important;
         max-width: 100% !important;
@@ -169,4 +311,28 @@
         margin: 0 !important;
         padding: 24px !important;
     }
+
+    // Aktiver Notebook-Tab in Trendtec-Grün
+    .o_notebook .nav-link.active {
+        border-bottom-color: var(--tt-primary) !important;
+        color: var(--tt-primary) !important;
+        font-weight: 600;
+    }
+
+    // Aktiver Statusbar-State in Trendtec-Grün
+    .o_statusbar_status .o_arrow_button.btn-primary {
+        background: var(--tt-primary) !important;
+        border-color: var(--tt-primary) !important;
+        color: #fff !important;
+    }
+}
+
+// ============================================================
+// Listenansicht — State-Badges
+// ============================================================
+
+.o_list_view .o_field_badge[name="state"] {
+    .badge[data-value="draft"]     { background-color: #aaa !important; }
+    .badge[data-value="published"] { background-color: var(--tt-primary) !important; color: #fff !important; }
+    .badge[data-value="archived"]  { background-color: #666 !important; }
 }
