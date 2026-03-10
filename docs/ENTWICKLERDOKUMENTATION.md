@@ -442,6 +442,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.20 | 10.03.2026 | Scrollbar-Fix: CodeMirror-vscrollbar/hscrollbar gezielt gestylt (CM5 ersetzt native Scrollbars) |
 | 1.1.19 | 10.03.2026 | Scrollbars gestylt: Editor, Preview, Diff in Trendtec-Grün (6px, thin, Chromium + Firefox) |
 | 1.1.18 | 10.03.2026 | Test-Fix: return_value=False statt side_effect=OSError in Fallback-Test |
 | 1.1.17 | 10.03.2026 | Debounce (300ms) für Live-Preview, Exception-Logging präzisiert, Fallback-Tests hinzugefügt |
@@ -475,4 +476,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.19)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.20)

@@ -353,31 +353,29 @@
 // Scrollbars (Editor, Preview, Diff)
 // ============================================================
 
-// Gemeinsame Scrollbar-Styles für alle drei Bereiche
-.o_markdown_editor .CodeMirror-scroll,
+// Preview + Diff: native Scrollbars (funktionieren mit ::-webkit-scrollbar)
 .o_markdown_preview,
 .o_md_diff {
-    scrollbar-width: thin;                          // Firefox
-    scrollbar-color: var(--tt-primary) transparent; // Firefox: thumb / track
+    scrollbar-width: thin;
+    scrollbar-color: var(--tt-primary) transparent;
 
-    // Chromium / Safari
-    &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
+    &::-webkit-scrollbar        { width: 6px; height: 6px; }
+    &::-webkit-scrollbar-track  { background: transparent; }
+    &::-webkit-scrollbar-thumb  { background-color: var(--tt-primary); border-radius: 999px; }
+    &::-webkit-scrollbar-thumb:hover { background-color: var(--tt-primary-dark); }
+}
 
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
+// CodeMirror 5 ersetzt native Scrollbars durch eigene Wrapper-Divs:
+// .CodeMirror-vscrollbar (vertikal) und .CodeMirror-hscrollbar (horizontal)
+.o_markdown_editor .CodeMirror-vscrollbar,
+.o_markdown_editor .CodeMirror-hscrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--tt-primary) transparent;
 
-    &::-webkit-scrollbar-thumb {
-        background-color: var(--tt-primary);
-        border-radius: 999px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background-color: var(--tt-primary-dark);
-    }
+    &::-webkit-scrollbar        { width: 6px; height: 6px; }
+    &::-webkit-scrollbar-track  { background: transparent; }
+    &::-webkit-scrollbar-thumb  { background-color: var(--tt-primary); border-radius: 999px; }
+    &::-webkit-scrollbar-thumb:hover { background-color: var(--tt-primary-dark); }
 }
 
 // ============================================================
