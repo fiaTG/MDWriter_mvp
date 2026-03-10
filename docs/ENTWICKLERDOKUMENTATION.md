@@ -4,7 +4,7 @@
 **Modulversion:** 19.0.1.1.0
 **Autor:** Timo Giese
 **Datum:** März 2026
-**Status:** In Entwicklung (MVP funktionsfähig)
+**Status:** MVP vollständig implementiert
 
 ---
 
@@ -42,26 +42,39 @@ markdown_editor/
 ├── __manifest__.py                         # Modulmetadaten, Assets, Dependencies
 ├── models/
 │   ├── __init__.py
-│   └── md_document.py                      # Modelle: x.md.document, x.md.document.version
+│   ├── md_document.py                      # x.md.document, x.md.document.version
+│   └── md_document_diff.py                 # x.md.document.diff.wizard
 ├── views/
-│   └── md_document_views.xml               # Form-, List-, Search-Views, Menü
+│   ├── md_document_views.xml               # Form-, List-, Search-, Version-Form-Views
+│   └── md_document_diff_views.xml          # Diff-Wizard-View
 ├── static/
 │   ├── description/
-│   │   └── icon.png                        # Modul-Icon
+│   │   ├── icon.png                        # Modul-Icon
+│   │   └── icon.svg
 │   ├── lib/
-│   │   └── markdown-it.min.js              # Markdown-Renderer (lokal, kein CDN)
+│   │   ├── markdown-it.min.js              # Markdown-Renderer (lokal, kein CDN)
+│   │   └── codemirror/
+│   │       ├── codemirror.min.js           # Syntax-Editor
+│   │       ├── markdown.min.js             # Markdown-Modus
+│   │       └── codemirror.min.css
 │   └── src/
 │       ├── js/
 │       │   └── markdown_editor.js          # OWL-Komponente MarkdownField
 │       ├── scss/
-│       │   └── markdown_editor.scss        # Split-View-Layout, Odoo-Layout-Fixes
-│       └── xml/
-│           └── markdown_editor_templates.xml  # OWL-Template für MarkdownField
+│       │   └── markdown_editor.scss        # Split-View, Trendtec-Branding, Odoo-Fixes
+│       ├── xml/
+│       │   └── markdown_editor_templates.xml  # OWL-Template
+│       └── fonts/
+│           ├── Mulish/                     # UI-Font (Variable Font, TTF)
+│           ├── JetBrains_Mono/             # Code-Font (Variable Font, TTF)
+│           └── Inter/                      # Fallback UI-Font (Variable Font, TTF)
 ├── security/
 │   ├── ir.model.access.csv                 # ACL-Definitionen
 │   └── markdown_editor_security.xml        # Record Rules
-└── report/
-    └── md_document_report.xml              # QWeb PDF-Template + Report-Action
+├── report/
+│   └── md_document_report.xml              # QWeb PDF-Template + Report-Action
+└── tests/
+    └── test_md_document.py                 # TransactionCase-Tests (Versionierung, ACL, Diff)
 ```
 
 ---
@@ -214,19 +227,35 @@ Dateiname: [static/src/scss/markdown_editor.scss](../markdown_editor/static/src/
 
 **Dark-Mode:** Alle Farbwerte nutzen Odoo CSS-Variablen (`var(--o-input-bg)`, `var(--o-background-color)`, `var(--o-text-color)`, `var(--border-color)`). Dark-Mode-Kompatibilität ist dadurch automatisch gegeben – Odoos eigener Theme-Switcher wird vollständig respektiert.
 
+**Trendtec-Branding:**
+
+Das Modul verwendet das Trendtec Corporate Design. Die Design-Tokens sind als CSS Custom Properties definiert:
+
+```scss
+:root {
+    --tt-primary:      #97d21d;                          /* Trendtec Lime Green */
+    --tt-primary-dark: #638a13;                          /* Hover / aktiver State */
+    --tt-primary-dim:  rgba(151, 210, 29, 0.15);        /* Selektions-Hintergrund */
+    --tt-radius:       12px;
+    --tt-radius-sm:    6px;
+    --tt-font-ui:      'Mulish', 'Inter', sans-serif;
+    --tt-font-code:    'JetBrains Mono', monospace;
+}
+```
+
+Alle Odoo-eigenen CSS-Variablen (`var(--o-*)`) bleiben als Fallback erhalten → Dark-Mode-Kompatibilität.
+
 **Fonts:**
 
 Alle Fonts liegen lokal unter `static/src/fonts/` — kein CDN.
 
 | Font | Verwendung | Datei |
 |---|---|---|
-| JetBrains Mono | Editor-Textarea | `JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf` |
-| Inter | Preview-Bereich | `Inter/Inter-VariableFont_opsz,wght.ttf` |
+| Mulish | UI (Preview, Labels) | `Mulish/Mulish-VariableFont_wght.ttf` |
+| JetBrains Mono | Code-Editor (CodeMirror) | `JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf` |
+| Inter | Fallback Preview-Font | `Inter/Inter-VariableFont_opsz,wght.ttf` |
 
-Variable Fonts decken alle Gewichte (100–800 / 100–900) in einer Datei ab.
-Fallback: `monospace` (Editor), System-Fonts (Preview).
-
-Weitere Fonts im Repo (Fira Code, Space Grotesk) sind verfügbar aber nicht aktiv eingebunden.
+Variable Fonts decken alle Gewichte in einer Datei ab. Italic-Varianten sind jeweils eingebunden.
 
 **Odoo Layout-Fixes:**
 ```scss
@@ -329,17 +358,33 @@ Fallback: Falls `mistune` nicht verfügbar, zeigt PDF den rohen Markdown-Text al
 
 ### 7.1 Form View
 
-- Titel als `oe_title`
-- `content_md` mit `widget="markdown_editor"` (Split-View)
+- Titel als `oe_title` (mit grüner Trendtec-Akzentlinie)
+- Header-Buttons für Statusübergänge (kontextsensitiv, `invisible`-Attribut):
+  - **Veröffentlichen** (sichtbar wenn draft oder archived)
+  - **Zurück zu Entwurf** (sichtbar wenn published oder archived)
+  - **Archivieren** (sichtbar wenn draft oder published)
+- State-Statusbar: draft → published → archived (nur Anzeige, Übergänge via Buttons)
+- `content_md` mit `widget="markdown_editor"` (Split-View, CodeMirror links, Preview rechts)
 - Notebook mit zwei Tabs:
   - **Metadaten:** owner_id, current_version, create_date, write_date
-  - **Versionen:** Liste aller Versionen (read-only) mit Version, User, Datum, Checksum, Attachments; Klick auf eine Version öffnet die Detail-Form mit "Wiederherstellen"-Button
-- State-Statusbar: draft → published → archived
+  - **Versionen:** Liste aller Versionen (read-only) mit Version, User, Datum, Checksum, Attachments; Button "Versionen vergleichen" öffnet Diff-Wizard; Klick auf Version öffnet Detail-Form mit "Wiederherstellen"-Button
 - Kein Chatter (mail.thread bewusst nicht verwendet)
+
+Die Statusübergänge rufen Python-Methoden auf `x.md.document` auf:
+```python
+def action_publish(self):    self.write({"state": "published"})
+def action_set_draft(self):  self.write({"state": "draft"})
+def action_archive_doc(self): self.write({"state": "archived"})
+```
 
 ### 7.2 List View
 
 Spalten: Name, Eigentümer (Avatar), Status (Badge), Aktuelle Version, Zuletzt geändert
+
+Badge-Farben werden per SCSS gesteuert (Odoo 19 erlaubt nur `decoration-success` und `decoration-warning` in `<list>`):
+- **Entwurf:** Silber (`text-bg-300`, Odoo-19-spezifische Klasse)
+- **Veröffentlicht:** Trendtec-Grün (`text-bg-success` → `#97d21d`)
+- **Archiviert:** Dunkelgrau (`text-bg-warning` → `#5a6370`)
 
 ### 7.3 Search View
 
@@ -400,6 +445,10 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.14 | 10.03.2026 | Badge-Selektor auf text-bg-300 korrigiert (Odoo-19-spezifische Klasse für Draft) |
+| 1.1.13 | 10.03.2026 | Badge-Farben nach State differenziert: decoration-success/warning, SCSS-Overrides |
+| 1.1.12 | 10.03.2026 | Statusübergänge: action_publish/set_draft/archive_doc + Header-Buttons mit invisible |
+| 1.1.11 | 10.03.2026 | Trendtec-Branding: CSS Design Tokens, Mulish-Font, Editor-Kontrast, Preview-Typografie, Listenansicht |
 | 1.1.10 | 09.03.2026 | Layout-Fix: o_form_sheet_bg max-width:1400px überschreiben, flex-direction:column Override entfernt |
 | 1.1.9 | 09.03.2026 | mail.thread + mail.activity.mixin entfernt (Chatter-Panel-Injection verhindert, Layout bereinigt) |
 | 1.1.8 | 09.03.2026 | Odoo-19-Fixes: groups_id in Tests entfernt, _render_qweb_pdf API korrigiert, t-raw→t-out+Markup(), icon.png hinzugefügt |
@@ -424,4 +473,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 09.03.2026 (v1.1.10)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.14)
