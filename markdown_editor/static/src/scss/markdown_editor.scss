@@ -77,10 +77,13 @@
     flex-direction: row;
     height: 600px;
     width: 100%;
-    border: 1px solid var(--border-color);
+    border: 1.5px solid var(--tt-primary);
     border-radius: var(--tt-radius);
     box-sizing: border-box;
     overflow: hidden;
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.12),
+        0 0 0 3px rgba(151, 210, 29, 0.15);
 }
 
 // Editor Textarea (linke Hälfte) – versteckt, sobald CodeMirror mountet
