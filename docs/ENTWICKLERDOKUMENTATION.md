@@ -442,6 +442,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.18 | 10.03.2026 | Test-Fix: return_value=False statt side_effect=OSError in Fallback-Test |
 | 1.1.17 | 10.03.2026 | Debounce (300ms) für Live-Preview, Exception-Logging präzisiert, Fallback-Tests hinzugefügt |
 | 1.1.16 | 10.03.2026 | Anfängerfreundliche Kommentare in md_document.py, md_document_diff.py, markdown_editor.js und tests/ |
 | 1.1.15 | 10.03.2026 | Refactoring: _create_version aufgeteilt, _render/_updateState extrahiert, SCSS DRY-Fix, XML-Duplikat entfernt |
@@ -473,4 +474,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.17)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.18)

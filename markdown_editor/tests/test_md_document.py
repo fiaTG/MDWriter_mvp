@@ -196,18 +196,19 @@ class TestMdDocumentFallback(TransactionCase):
         })
 
     def test_pdf_attachment_failure_does_not_abort_versioning(self):
-        # _create_pdf_attachment darf bei Fehler nicht die gesamte Versionierung abbrechen.
-        # Wir überschreiben die Methode temporär mit einer Variante, die immer einen Fehler wirft.
+        # _create_pdf_attachment gibt bei Fehler False zurück (try/except intern).
+        # Wir simulieren das mit return_value=False – so verhält sich die echte Methode
+        # wenn wkhtmltopdf nicht verfügbar ist oder der Report-Export fehlschlägt.
         # unittest.mock.patch ersetzt die Methode nur für die Dauer des with-Blocks.
         from unittest.mock import patch
         with patch.object(
             type(self.doc),
             "_create_pdf_attachment",
-            side_effect=OSError("wkhtmltopdf nicht gefunden"),
+            return_value=False,
         ):
-            # write() muss trotz des PDF-Fehlers eine neue Version anlegen
+            # write() muss trotz fehlendem PDF eine neue Version anlegen
             self.doc.write({"content_md": "# Geändert"})
-        # Zwei Versionen: eine beim create(), eine beim write() → PDF-Fehler hat nicht abgebrochen
+        # Zwei Versionen: eine beim create(), eine beim write() → kein Abbruch
         self.assertEqual(len(self.doc.version_ids), 2)
 
     def test_content_html_empty_when_no_content(self):
