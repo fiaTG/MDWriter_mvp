@@ -325,12 +325,12 @@ Versionen sind für normale User read-only – Append-only-Charakter ist damit a
 
 ```xml
 <template id="report_md_document">
-    <t t-call="web.html_container">        <!-- Pflicht: liefert <main>-Element -->
+    <t t-call="web.html_container">
         <t t-foreach="docs" t-as="doc">
-            <t t-call="web.external_layout">  <!-- Odoo-Header/Footer -->
+            <t t-call="web.external_layout">  <!-- Odoo-Standard-Header/Footer, stabile wkhtmltopdf-Basis -->
                 <div class="page">
                     <h1><t t-esc="doc.name"/></h1>
-                    <div t-out="doc.content_html"/>  <!-- t-raw ist in Odoo 19 deprecated -->
+                    <div t-out="doc.content_html"/>
                 </div>
             </t>
         </t>
@@ -338,7 +338,7 @@ Versionen sind für normale User read-only – Append-only-Charakter ist damit a
 </template>
 ```
 
-`web.html_container` ist in Odoo 19 zwingend nötig – ohne ihn schlägt `_prepare_html` mit `IndexError: list index out of range` fehl (erwartet `//main` im DOM).
+`web.external_layout` ist der Odoo-Standard für PDF-Reports: korrekte HTML-Struktur für wkhtmltopdf, CSS im `<head>`, automatischer Odoo-Company-Header/Footer. `web.html_container` ist zusätzlich zwingend nötig — ohne ihn schlägt `_prepare_html` fehl (`IndexError: list index out of range`).
 
 ### 6.3 Python-Dependency: mistune
 
@@ -443,6 +443,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.27 | 10.03.2026 | PDF-Template: Revert auf web.external_layout + doc.content_html (bewährt stabil); custom CSS-Template entfernt |
 | 1.1.26 | 10.03.2026 | PDF-Fix: _get_report_html() umgeht fields.Html ORM, CSS-Werte hardcoded (kein t-esc in style-Block, verhindert arch-Sanitizer-Stripping) |
 | 1.1.25 | 10.03.2026 | PDF-Fix: sanitize=False auf content_html (verhindert doppeltes Escaping durch html_sanitize), report_file=${object.name}, write_date als DD.MM.YYYY |
 | 1.1.24 | 10.03.2026 | Diff-Wizard: res_id=False in action_open_diff erzwingt neuen TransientModel-Datensatz bei jedem Öffnen |
@@ -483,4 +484,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.26)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.27)
