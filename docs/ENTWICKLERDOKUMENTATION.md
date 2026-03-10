@@ -443,6 +443,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.24 | 10.03.2026 | Diff-Wizard: res_id=False in action_open_diff erzwingt neuen TransientModel-Datensatz bei jedem Öffnen |
 | 1.1.23 | 10.03.2026 | PDF-Template: Trendtec-Branding via QWeb t-set-Variablen (brand_primary, brand_font, brand_logo usw.), eigener Header/Footer, wkhtmltopdf-kompatibel |
 | 1.1.22 | 10.03.2026 | Konsistenz: PDF + MD-Download beide im Form-Header; binding_model_id entfernt (kein Zahnrad-Eintrag mehr) |
 | 1.1.21 | 10.03.2026 | PDF-Button umbenannt (→ "Als PDF exportieren"), MD-Download-Button + action_download_md() |
@@ -480,4 +481,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.23)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.24)

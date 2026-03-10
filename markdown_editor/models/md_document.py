@@ -257,6 +257,7 @@ class XMdDocument(models.Model):
             "res_model": "x.md.document.diff.wizard",
             "view_mode": "form",
             "target": "new",   # "new" = Dialog-Fenster statt neue Seite
+            "res_id": False,   # Immer neuen Wizard-Datensatz anlegen (verhindert Odoo-seitiges Caching)
             "context": {"default_document_id": self.id},  # Dokument vorausfüllen
         }
 
