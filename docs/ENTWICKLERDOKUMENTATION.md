@@ -126,10 +126,13 @@ def write(self, vals):
     return res
 ```
 
-`_create_version()` erstellt pro Dokument:
-1. Markdown-Attachment (`.md`-Datei)
-2. PDF-Attachment via QWeb-Report (bei Fehler: nur Warnung, kein Absturz)
-3. Version-Record mit Checksum (MD5)
+`_create_version()` ist in drei Methoden aufgeteilt (Single Responsibility):
+
+| Methode | Aufgabe |
+|---|---|
+| `_create_md_attachment(record, content, version_num)` | Erstellt und speichert die `.md`-Datei als Odoo-Attachment |
+| `_create_pdf_attachment(record, version_num)` | Rendert und speichert die `.pdf`-Datei (bei Fehler: `False`, kein Absturz) |
+| `_create_version()` | Koordiniert beide Hilfsmethoden und legt den Version-Record an |
 
 ### 3.4 PDF-Rendering (Backend)
 
@@ -159,39 +162,33 @@ Dateiname: [static/src/js/markdown_editor.js](../markdown_editor/static/src/js/m
 
 Die Komponente wird als Odoo Field Widget registriert und über `widget="markdown_editor"` in Views eingebunden.
 
-**Initialisierung:**
+**Methoden:**
+
+| Methode | Aufgabe |
+|---|---|
+| `setup()` | Initialisiert markdown-it, State, CodeMirror-Ref und Lifecycle-Callbacks |
+| `_render(value)` | Wandelt Markdown-Text in sicheres HTML um (DRY: zentrale Render-Logik) |
+| `_updateState(value)` | Aktualisiert State + speichert Wert im Odoo-Datensatz |
+| `_onInput(ev)` | Fallback-Handler wenn CodeMirror nicht geladen wurde |
 
 ```javascript
-import { Component, useState, markup } from "@odoo/owl";
+_render(value) {
+    return this.md ? markup(this.md.render(value)) : markup(value);
+}
 
-this.md = window.markdownit
-    ? window.markdownit({ html: false, xhtmlOut: false, breaks: true, linkify: true })
-    : null;
-this.state = useState({
-    value: initial,
-    html: this.md ? markup(this.md.render(initial)) : markup(initial)
-});
-```
-
-- `html: false` – eingebettetes HTML in Markdown wird escaped (XSS-Schutz)
-- `breaks: true` – einzelne Zeilenumbrüche erzeugen `<br>`
-- `linkify: true` – URLs werden automatisch verlinkt
-- `markup()` aus `@odoo/owl` markiert den String als sicheres HTML für `t-out`
-
-**XSS-Schutz:** `markdown-it({ html: false })` escaped eingebettetes HTML. `markup()` signalisiert OWL, dass der Inhalt sicher gerendert werden darf — ohne `markup()` würde `t-out` den Inhalt escapen.
-
-**Input-Handler:**
-
-```javascript
-_onInput(ev) {
-    const value = ev.target.value;
+_updateState(value) {
     this.state.value = value;
-    this.state.html = this.md ? markup(this.md.render(value)) : markup(value);
+    this.state.html = this._render(value);
     this.props.record.update({ [this.props.name]: value });
 }
 ```
 
-Kein direktes `innerHTML` mehr — das Rendering läuft rein reaktiv über OWL State + `t-out`.
+- `html: false` – eingebettetes HTML in Markdown wird escaped (XSS-Schutz)
+- `markup()` aus `@odoo/owl` markiert den String als sicheres HTML für `t-out`
+- `onMounted`: Guard-Clause verhindert Fehler wenn CodeMirror nicht verfügbar ist
+- `onWillUnmount`: `cm.toTextArea()` räumt CodeMirror auf (kein Memory Leak)
+
+**XSS-Schutz:** `markdown-it({ html: false })` escaped eingebettetes HTML. `markup()` signalisiert OWL, dass der Inhalt sicher gerendert werden darf — ohne `markup()` würde `t-out` den Inhalt escapen.
 
 ### 4.2 OWL-Template
 
@@ -445,6 +442,9 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.17 | 10.03.2026 | Debounce (300ms) für Live-Preview, Exception-Logging präzisiert, Fallback-Tests hinzugefügt |
+| 1.1.16 | 10.03.2026 | Anfängerfreundliche Kommentare in md_document.py, md_document_diff.py, markdown_editor.js und tests/ |
+| 1.1.15 | 10.03.2026 | Refactoring: _create_version aufgeteilt, _render/_updateState extrahiert, SCSS DRY-Fix, XML-Duplikat entfernt |
 | 1.1.14 | 10.03.2026 | Badge-Selektor auf text-bg-300 korrigiert (Odoo-19-spezifische Klasse für Draft) |
 | 1.1.13 | 10.03.2026 | Badge-Farben nach State differenziert: decoration-success/warning, SCSS-Overrides |
 | 1.1.12 | 10.03.2026 | Statusübergänge: action_publish/set_draft/archive_doc + Header-Buttons mit invisible |
@@ -473,4 +473,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.14)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.17)

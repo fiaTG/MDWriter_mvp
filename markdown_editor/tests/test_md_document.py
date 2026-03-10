@@ -174,3 +174,43 @@ class TestMdDocumentDiff(TransactionCase):
             "version_to_id": v1.id,
         })
         self.assertIn("Keine Unterschiede", wizard.diff_html)
+
+    def test_diff_html_empty_without_versions(self):
+        # Wizard ohne Versionen → diff_html soll leer sein, kein Absturz
+        wizard = self.env["x.md.document.diff.wizard"].create({
+            "document_id": self.doc.id,
+        })
+        self.assertEqual(wizard.diff_html, "")
+
+
+# =============================================================================
+# TestMdDocumentFallback – Tests für Fehler- und Fallback-Pfade
+# =============================================================================
+class TestMdDocumentFallback(TransactionCase):
+
+    def setUp(self):
+        super().setUp()
+        self.doc = self.env["x.md.document"].create({
+            "name": "Fallback-Test",
+            "content_md": "# Test",
+        })
+
+    def test_pdf_attachment_failure_does_not_abort_versioning(self):
+        # _create_pdf_attachment darf bei Fehler nicht die gesamte Versionierung abbrechen.
+        # Wir überschreiben die Methode temporär mit einer Variante, die immer einen Fehler wirft.
+        # unittest.mock.patch ersetzt die Methode nur für die Dauer des with-Blocks.
+        from unittest.mock import patch
+        with patch.object(
+            type(self.doc),
+            "_create_pdf_attachment",
+            side_effect=OSError("wkhtmltopdf nicht gefunden"),
+        ):
+            # write() muss trotz des PDF-Fehlers eine neue Version anlegen
+            self.doc.write({"content_md": "# Geändert"})
+        # Zwei Versionen: eine beim create(), eine beim write() → PDF-Fehler hat nicht abgebrochen
+        self.assertEqual(len(self.doc.version_ids), 2)
+
+    def test_content_html_empty_when_no_content(self):
+        # Leerer Inhalt → content_html soll leer sein, kein Fehler
+        self.doc.write({"content_md": ""})
+        self.assertEqual(self.doc.content_html, "")

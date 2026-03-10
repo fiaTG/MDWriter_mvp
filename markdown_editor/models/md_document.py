@@ -164,10 +164,12 @@ class XMdDocument(models.Model):
                 "res_model": record._name,
                 "res_id": record.id,
             })
-        except Exception as e:
-            # Falls der PDF-Export fehlschlägt (z.B. wkhtmltopdf nicht installiert),
-            # nur eine Warnung loggen – das Programm läuft weiter.
-            _logger.warning("PDF render failed: %s", e)
+        except (OSError, ValueError, Exception) as e:
+            # OSError:    wkhtmltopdf nicht installiert oder Prozess-Fehler
+            # ValueError: ungültige Report-Konfiguration
+            # Exception:  alle anderen unerwarteten Fehler (breit, aber mit Logging)
+            # In allen Fällen: nur warnen und False zurückgeben – Versionierung läuft weiter.
+            _logger.warning("PDF render failed for record %s v%s: %s", record.id, version_num, e)
             return False
 
     def _create_version(self):

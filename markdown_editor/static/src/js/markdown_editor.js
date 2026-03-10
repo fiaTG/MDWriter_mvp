@@ -61,7 +61,8 @@ class MarkdownField extends Component {
         // useRef gibt uns Zugriff auf das <textarea>-Element im Template.
         // CodeMirror braucht dieses Element, um sich darauf zu mounten.
         this.editorRef = useRef("editor");
-        this.cm = null; // Hier speichern wir die CodeMirror-Instanz (zunächst null)
+        this.cm = null;           // Hier speichern wir die CodeMirror-Instanz (zunächst null)
+        this._debounce = null;    // Timer-ID für Debouncing (verhindert zu häufiges Rendern)
 
         // onMounted: Dieser Code läuft, nachdem das HTML der Komponente in die Seite eingefügt wurde.
         // Erst dann existiert das <textarea>-Element im DOM, auf das CodeMirror zugreift.
@@ -83,14 +84,22 @@ class MarkdownField extends Component {
             // Initialwert in CodeMirror setzen
             this.cm.setValue(this.state.value);
 
-            // Event-Listener: Bei jeder Texteingabe im Editor State aktualisieren.
-            // cm ist die CodeMirror-Instanz, cm.getValue() gibt den aktuellen Text zurück.
-            this.cm.on("change", (cm) => this._updateState(cm.getValue()));
+            // Event-Listener: Bei Texteingabe State aktualisieren – mit Debounce (300ms).
+            // Debounce bedeutet: Erst wenn der User 300ms lang nicht tippt, wird die Preview neu
+            // gerendert. Ohne Debounce würde markdown-it bei jedem einzelnen Tastendruck
+            // den gesamten Text neu parsen – bei großen Dokumenten spürbar langsam.
+            // clearTimeout() verwirft den vorherigen Timer, setTimeout() startet einen neuen.
+            this.cm.on("change", (cm) => {
+                clearTimeout(this._debounce);
+                this._debounce = setTimeout(() => this._updateState(cm.getValue()), 300);
+            });
         });
 
         // onWillUnmount: Aufräumen, bevor die Komponente entfernt wird.
         // toTextArea() macht CodeMirror rückgängig und stellt die originale Textarea wieder her.
         onWillUnmount(() => {
+            // Debounce-Timer abbrechen, damit kein Update mehr nach dem Unmount feuert.
+            clearTimeout(this._debounce);
             if (this.cm) {
                 this.cm.toTextArea();
                 this.cm = null;
