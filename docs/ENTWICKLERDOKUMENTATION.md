@@ -89,7 +89,7 @@ Dateiname: [models/md_document.py](../markdown_editor/models/md_document.py)
 |---|---|---|
 | `name` | Char | Dokumenttitel (required) |
 | `content_md` | Text | Markdown-Primärinhalt |
-| `content_html` | Html | Gerendertes HTML (computed, sanitize=True) – für PDF |
+| `content_html` | Html | Gerendertes HTML (computed, sanitize=False) – für PDF |
 | `state` | Selection | draft / published / archived |
 | `owner_id` | Many2one → res.users | Eigentümer (default: aktueller User) |
 | `version_ids` | One2many → x.md.document.version | Alle Versionen |
@@ -150,7 +150,7 @@ def _compute_content_html(self):
             doc.content_html = Markup("<pre>%s</pre>") % (doc.content_md or "")
 ```
 
-`Markup()` aus `markupsafe` kennzeichnet den HTML-String als sicher, damit `t-out` im QWeb-Template ihn unescaped rendert. `sanitize=True` auf dem Html-Field aktiviert zusätzlich Odoos eingebaute HTML-Sanitization.
+`Markup()` aus `markupsafe` kennzeichnet den HTML-String als sicher, damit `t-out` im QWeb-Template ihn unescaped rendert. `sanitize=False` ist bewusst gesetzt: `sanitize=True` würde Odoos `html_sanitize()` auslösen, was die `Markup`-Kennzeichnung entfernt — `t-out` würde den String danach escapen statt rendern (`<h1>` → `&lt;h1&gt;`). XSS-Schutz erfolgt stattdessen durch `html:false` in markdown-it (Frontend) und `mistune` (erzeugt kein schädliches HTML).
 
 ---
 
@@ -306,7 +306,7 @@ Versionen sind für normale User read-only – Append-only-Charakter ist damit a
 ### 5.3 XSS-Schutz
 
 - **Frontend:** `markdown-it({ html: false })` – HTML in Markdown wird escaped
-- **Backend:** `content_html` field mit `sanitize=True` – Odoo sanitized HTML vor Speicherung
+- **Backend:** `content_html` field mit `sanitize=False` – XSS-Schutz via mistune (kein schädliches HTML) + `Markup()` (signalisiert Vertrauenswürdigkeit an QWeb)
 - **PDF-Template:** `t-out` auf `doc.content_html` – `Markup()` im Python-Code signalisiert dass der Inhalt sicher ist; `t-raw` ist in Odoo 19 deprecated
 
 ---
@@ -315,11 +315,11 @@ Versionen sind für normale User read-only – Append-only-Charakter ist damit a
 
 ### 6.1 Funktionsweise
 
-1. User klickt im ⚙️-Menü auf "Markdown Dokument"
-2. Odoo ruft `ir.actions.report` auf (`binding_model_id = x.md.document`)
+1. User klickt im Form-Header auf "Als PDF exportieren"
+2. `action_export_pdf()` gibt `report_action(self)` zurück → Odoo löst `ir.actions.report` aus
 3. Report rendert QWeb-Template `markdown_editor.report_md_document`
-4. Template ruft `doc.content_html` auf → computed field mit `mistune.html(content_md)`
-5. `wkhtmltopdf` konvertiert HTML → PDF
+4. Template ruft `doc.content_html` auf → computed field mit `mistune.html(content_md)` (als `Markup()`)
+5. `wkhtmltopdf` konvertiert HTML → PDF; Dateiname = `${object.name}.pdf`
 
 ### 6.2 Template-Struktur
 
@@ -443,6 +443,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.25 | 10.03.2026 | PDF-Fix: sanitize=False auf content_html (verhindert doppeltes Escaping durch html_sanitize), report_file=${object.name}, write_date als DD.MM.YYYY |
 | 1.1.24 | 10.03.2026 | Diff-Wizard: res_id=False in action_open_diff erzwingt neuen TransientModel-Datensatz bei jedem Öffnen |
 | 1.1.23 | 10.03.2026 | PDF-Template: Trendtec-Branding via QWeb t-set-Variablen (brand_primary, brand_font, brand_logo usw.), eigener Header/Footer, wkhtmltopdf-kompatibel |
 | 1.1.22 | 10.03.2026 | Konsistenz: PDF + MD-Download beide im Form-Header; binding_model_id entfernt (kein Zahnrad-Eintrag mehr) |
@@ -481,4 +482,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 10.03.2026 (v1.1.24)
+**Letzte Aktualisierung:** 10.03.2026 (v1.1.25)

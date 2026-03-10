@@ -159,7 +159,7 @@
                     <div class="pdf-doc-meta">
                         Version <t t-esc="doc.current_version"/>
                         · <t t-esc="doc.owner_id.name"/>
-                        · <t t-esc="doc.write_date"/>
+                        · <t t-esc="doc.write_date.strftime('%d.%m.%Y') if doc.write_date else ''"/>
                     </div>
 
                     <!-- Markdown-Inhalt (HTML, serverseitig durch mistune gerendert) -->
@@ -182,7 +182,7 @@
         <field name="model">x.md.document</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">markdown_editor.report_md_document</field>
-        <field name="report_file">markdown_editor.report_md_document</field>
+        <field name="report_file">${object.name}</field>
         <!-- binding_model_id entfernt: Export-Button ist im Form-Header, nicht im Zahnrad-Menü -->
     </record>
 </odoo>

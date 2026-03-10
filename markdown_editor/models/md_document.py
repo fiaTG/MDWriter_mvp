@@ -93,7 +93,11 @@ class XMdDocument(models.Model):
     content_html = fields.Html(
         string="HTML-Vorschau",
         compute="_compute_content_html",
-        sanitize=True,  # Odoo bereinigt das HTML automatisch (Schutz vor XSS-Angriffen)
+        sanitize=False,  # Kein Re-Sanitizing: Markup() in _compute_content_html signalisiert
+                         # bereits, dass der Inhalt sicher ist (mistune-Output, kein User-HTML).
+                         # sanitize=True würde Odoos html_sanitize() auslösen, was die Markup-
+                         # Kennzeichnung entfernt → t-out escaped den HTML-String danach
+                         # statt ihn zu rendern → <h1> wird als &lt;h1&gt; im PDF ausgegeben.
     )
 
     # -------------------------------------------------------------------------
