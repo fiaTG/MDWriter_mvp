@@ -230,7 +230,7 @@ class XMdDocument(models.Model):
         """
         self.ensure_one()
         action = self.env.ref("markdown_editor.md_document_pdf").report_action(self)
-        action["name"] = self.name  # Dateiname = Dokumenttitel (statt Report-Action-Name)
+        action["report_file"] = self.name  # Dateiname = Dokumenttitel
         return action
 
     def action_download_md(self):
