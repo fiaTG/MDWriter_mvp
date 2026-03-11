@@ -17,7 +17,7 @@
 
     <!-- Report action definition -->
     <record id="md_document_pdf" model="ir.actions.report">
-        <field name="name">Als PDF exportieren</field>
+        <field name="name">x.md.document.pdf</field>
         <field name="model">x.md.document</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">markdown_editor.report_md_document</field>
