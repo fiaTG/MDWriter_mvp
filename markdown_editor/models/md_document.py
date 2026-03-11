@@ -229,7 +229,9 @@ class XMdDocument(models.Model):
         und gibt eine Odoo-Aktion zurück, die den Download startet.
         """
         self.ensure_one()
-        return self.env.ref("markdown_editor.md_document_pdf").report_action(self)
+        action = self.env.ref("markdown_editor.md_document_pdf").report_action(self)
+        action["name"] = self.name  # Dateiname = Dokumenttitel (statt Report-Action-Name)
+        return action
 
     def action_download_md(self):
         """Lädt die .md-Datei der aktuellen Version herunter.
