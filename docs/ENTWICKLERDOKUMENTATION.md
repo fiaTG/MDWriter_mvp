@@ -443,7 +443,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
-| 1.1.28 | 11.03.2026 | PDF-Fix: action_export_pdf() setzt action["report_file"]=self.name; report_file-Mako-Template entfernt (wird in Odoo 19 nicht ausgewertet) |
+| 1.1.28 | 11.03.2026 | PDF-Fix: report_file=${object.name} (Mako) → object.name (Python-Ausdruck); wird von Odoo via safe_eval mit object-Kontext ausgewertet |
 | 1.1.27 | 10.03.2026 | PDF-Template: Revert auf web.external_layout + doc.content_html (bewährt stabil); custom CSS-Template entfernt |
 | 1.1.26 | 10.03.2026 | PDF-Fix: _get_report_html() umgeht fields.Html ORM, CSS-Werte hardcoded (kein t-esc in style-Block, verhindert arch-Sanitizer-Stripping) |
 | 1.1.25 | 10.03.2026 | PDF-Fix: sanitize=False auf content_html (verhindert doppeltes Escaping durch html_sanitize), report_file=${object.name}, write_date als DD.MM.YYYY |

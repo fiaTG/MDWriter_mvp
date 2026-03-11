@@ -21,7 +21,7 @@
         <field name="model">x.md.document</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">markdown_editor.report_md_document</field>
-        <field name="report_file">document</field>
+        <field name="report_file">object.name</field>
         <!-- binding_model_id entfernt: Export-Button ist im Form-Header -->
     </record>
 </odoo>
