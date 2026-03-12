@@ -330,7 +330,7 @@
     }
 
     // .o_statusbar_status setzt --o-statusbar-*-active direkt auf sich selbst
-    .o_form_view .o_form_statusbar {
+    .o_form_statusbar {
         --o-statusbar-border-active:     var(--tt-primary);
         --o-statusbar-background-active: var(--tt-primary-dim);
         --o-statusbar-color-active:      var(--tt-primary-dark);
