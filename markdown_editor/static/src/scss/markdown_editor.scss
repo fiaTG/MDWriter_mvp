@@ -391,6 +391,17 @@
         --btn-active-border-color: var(--tt-primary-dark);
     }
 
+    .btn-outline-primary {
+        --btn-color:               var(--tt-primary);
+        --btn-border-color:        var(--tt-primary);
+        --btn-hover-bg:            var(--tt-primary);
+        --btn-hover-border-color:  var(--tt-primary);
+        --btn-hover-color:         var(--tt-on-primary);
+        --btn-active-bg:           var(--tt-primary-dark);
+        --btn-active-border-color: var(--tt-primary-dark);
+        --btn-active-color:        var(--tt-on-primary);
+    }
+
     // Zeilen-Hover in eingebetteten Listen (z.B. Versionsliste im Notebook)
     .o_data_row:hover td:first-child {
         border-left: 3px solid var(--tt-primary);
