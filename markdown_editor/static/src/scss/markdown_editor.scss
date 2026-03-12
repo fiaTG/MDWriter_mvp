@@ -319,7 +319,6 @@
         border-bottom-color: var(--tt-primary) !important;
         color: var(--tt-primary) !important;
         font-weight: 600;
-        border-top-color: var(--tt-primary) !important;
     }
 
     // Aktiver Statusbar-State in Trendtec-Grün
@@ -332,7 +331,7 @@
 
     // Titelbereich: grüne Akzentlinie unter dem Titel
     .oe_title {
-        border-bottom: 2px solid var(--tt-primary);
+        border-bottom: 1px solid var(--tt-primary);
         padding-bottom: 12px;
         margin-bottom: 20px;
 
@@ -345,7 +344,7 @@
     // Notebook: leichter oberer Abstand + Trennlinie
     .o_notebook {
         margin-top: 20px;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--tt-primary);
         padding-top: 8px;
     }
 }
