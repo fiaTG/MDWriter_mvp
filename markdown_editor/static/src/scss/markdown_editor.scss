@@ -8,7 +8,7 @@
 :root {
     --tt-primary:      #97d21d;   // Trendtec Lime Green
     --tt-primary-dark: #638a13;   // Hover / aktiver State
-    --tt-primary-dim:  v // Selektions-Hintergrund
+    --tt-primary-dim:  rgba(151, 210, 29, 0.15); // Selektions-Hintergrund
     --tt-on-primary:   #1a1a1a;   // Text auf Primary-Hintergrund (Kontrast)
     --tt-radius:       12px;
     --tt-radius-sm:    6px;
@@ -110,7 +110,6 @@
     box-shadow:
         0 4px 16px var(--tt-shadow-neutral),
         0 0 0 3px var(--tt-primary-dim);
-    background: var(--tt-badge-archived-bg);
 }
 
 // ============================================================
@@ -330,23 +329,57 @@
 body:has(.o_markdown_editor),
 body:has(.o_md_document_list) {
 
-    // Odoo Enterprise-Akzentfarbe → tt-primary
-    // Beeinflusst automatisch: Focus-Ringe, Checkbox-checked, Radio, etc.
-    --o-enterprise-color:     var(--tt-primary);
-    --o-enterprise-color-rgb: var(--tt-primary-rgb);
-
     // Navbar
     .o_navbar {
         background: var(--tt-navbar-bg);
 
         // Odoo setzt --NavBar-entry-color direkt auf .o_navbar
-        --NavBar-entry-color:       var(--tt-navbar-text);
+        --NavBar-entry-color:        var(--tt-navbar-text);
         --NavBar-entry-color--hover: var(--tt-navbar-text-hover);
     }
 
     // App-Titel / Brand in der Navbar
     .o_menu_brand {
         color: var(--tt-navbar-brand) !important;
+    }
+
+    // Buttons — gilt für Form UND Liste (kein Duplikat nötig)
+    .btn-primary {
+        --btn-bg:                  var(--tt-primary);
+        --btn-border-color:        var(--tt-primary);
+        --btn-color:               var(--tt-on-primary);
+        --btn-hover-bg:            var(--tt-primary-dark);
+        --btn-hover-border-color:  var(--tt-primary-dark);
+        --btn-active-bg:           var(--tt-primary-dark);
+        --btn-active-border-color: var(--tt-primary-dark);
+    }
+
+    .btn-secondary {
+        --btn-bg:                  var(--tt-primary-dim);
+        --btn-border-color:        var(--tt-primary);
+        --btn-color:               var(--tt-primary-dark);
+        --btn-hover-bg:            var(--tt-primary);
+        --btn-hover-border-color:  var(--tt-primary);
+        --btn-hover-color:         var(--tt-on-primary);
+        --btn-active-bg:           var(--tt-primary-dark);
+        --btn-active-border-color: var(--tt-primary-dark);
+    }
+
+    .btn-outline-primary {
+        --btn-color:               var(--tt-primary);
+        --btn-border-color:        var(--tt-primary);
+        --btn-hover-bg:            var(--tt-primary);
+        --btn-hover-border-color:  var(--tt-primary);
+        --btn-hover-color:         var(--tt-on-primary);
+        --btn-active-bg:           var(--tt-primary-dark);
+        --btn-active-border-color: var(--tt-primary-dark);
+        --btn-active-color:        var(--tt-on-primary);
+    }
+
+    // Zeilen-Hover — gilt für Form UND Liste (kein Duplikat nötig)
+    .o_data_row:hover td:first-child {
+        border-left: 3px solid var(--tt-primary);
+        padding-left: calc(0.75rem - 3px);
     }
 }
 
@@ -407,45 +440,6 @@ body:has(.o_md_document_list) {
     // Aktiver Notebook-Tab: Farbe via Bootstrap-Variable, kein !important nötig
     .o_notebook .nav-link.active {
         font-weight: 600;
-    }
-
-    // Alle btn-primary und btn-secondary via Bootstrap-Variablen umbiegen — kein !important nötig
-    .btn-secondary {
-        --btn-bg:                  var(--tt-primary-dim);
-        --btn-border-color:        var(--tt-primary);
-        --btn-color:               var(--tt-primary-dark);
-        --btn-hover-bg:            var(--tt-primary);
-        --btn-hover-border-color:  var(--tt-primary);
-        --btn-hover-color:         var(--tt-on-primary);
-        --btn-active-bg:           var(--tt-primary-dark);
-        --btn-active-border-color: var(--tt-primary-dark);
-    }
-
-    .btn-primary {
-        --btn-bg:                  var(--tt-primary);
-        --btn-border-color:        var(--tt-primary);
-        --btn-color:               var(--tt-on-primary);
-        --btn-hover-bg:            var(--tt-primary-dark);
-        --btn-hover-border-color:  var(--tt-primary-dark);
-        --btn-active-bg:           var(--tt-primary-dark);
-        --btn-active-border-color: var(--tt-primary-dark);
-    }
-
-    .btn-outline-primary {
-        --btn-color:               var(--tt-primary);
-        --btn-border-color:        var(--tt-primary);
-        --btn-hover-bg:            var(--tt-primary);
-        --btn-hover-border-color:  var(--tt-primary);
-        --btn-hover-color:         var(--tt-on-primary);
-        --btn-active-bg:           var(--tt-primary-dark);
-        --btn-active-border-color: var(--tt-primary-dark);
-        --btn-active-color:        var(--tt-on-primary);
-    }
-
-    // Zeilen-Hover in eingebetteten Listen (z.B. Versionsliste im Notebook)
-    .o_data_row:hover td:first-child {
-        border-left: 3px solid var(--tt-primary);
-        padding-left: calc(0.75rem - 3px);
     }
 
     // Titelbereich: grüne Akzentlinie unter dem Titel
@@ -528,37 +522,9 @@ body:has(.o_md_document_list) {
         font-weight: 500;
     }
 
-    // Zeilen-Hover: grüner linker Akzent
-    .o_data_row:hover td:first-child {
-        border-left: 3px solid var(--tt-primary);
-        padding-left: calc(0.75rem - 3px);
-    }
-
     // Titel-Spalte fett
     .o_data_row td:first-child {
         font-weight: 600;
         font-family: var(--tt-font-ui);
-    }
-
-    // Buttons (New, etc.) in Trendtec-Grün
-    .btn-primary {
-        --btn-bg:                  var(--tt-primary);
-        --btn-border-color:        var(--tt-primary);
-        --btn-color:               var(--tt-on-primary);
-        --btn-hover-bg:            var(--tt-primary-dark);
-        --btn-hover-border-color:  var(--tt-primary-dark);
-        --btn-active-bg:           var(--tt-primary-dark);
-        --btn-active-border-color: var(--tt-primary-dark);
-    }
-
-    .btn-outline-primary {
-        --btn-color:               var(--tt-primary);
-        --btn-border-color:        var(--tt-primary);
-        --btn-hover-bg:            var(--tt-primary);
-        --btn-hover-border-color:  var(--tt-primary);
-        --btn-hover-color:         var(--tt-on-primary);
-        --btn-active-bg:           var(--tt-primary-dark);
-        --btn-active-border-color: var(--tt-primary-dark);
-        --btn-active-color:        var(--tt-on-primary);
     }
 }
