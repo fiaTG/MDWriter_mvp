@@ -317,7 +317,7 @@
     // .o_notebook setzt diese Variablen direkt auf sich selbst
     .o_notebook {
         --Notebook__link-border-top-color--active: var(--tt-primary);
-        --nav-tabs-link-active-color: var(--tt-primary);  // Bootstrap-Variable für Tab-Textfarbe
+        --Notebook__link-color--active: var(--tt-primary);  // Odoo-Quelle für nav-tabs-link-active-color
     }
 
     // .o_statusbar_status setzt --o-statusbar-*-active direkt auf sich selbst
