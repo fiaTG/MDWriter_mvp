@@ -369,6 +369,12 @@
         --btn-active-border-color: var(--tt-primary-dark);
     }
 
+    // Zeilen-Hover in eingebetteten Listen (z.B. Versionsliste im Notebook)
+    .o_data_row:hover td:first-child {
+        border-left: 3px solid var(--tt-primary);
+        padding-left: calc(0.75rem - 3px);
+    }
+
     // Titelbereich: grüne Akzentlinie unter dem Titel
     .oe_title {
         margin-bottom: 20px;
