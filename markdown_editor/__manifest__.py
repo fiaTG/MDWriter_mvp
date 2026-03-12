@@ -4,7 +4,7 @@
     "version": "19.0.1.0.0",
     "author": "Timo",
     "maintainers": ["Timo"],
-    "website": "https://github.com/fiaTG/MDWriter",
+    "website": "https://github.com/fiaTG/MDWriter_mvp",
     "license": "LGPL-3",
     "category": "Productivity",
     "images": ["static/description/icon.png"],
