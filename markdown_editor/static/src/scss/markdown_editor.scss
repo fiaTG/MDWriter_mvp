@@ -37,6 +37,9 @@
     --tt-navbar-text-hover:  var(--tt-primary); // Navbar-Eintrag Hover
     --tt-navbar-brand:       var(--tt-primary); // App-Titel / Brand-Text
 
+    // Notebook-Tokens
+    --tt-notebook-tab-bg:    transparent;       // Inaktive Tab-Hintergrundfarbe (Odoo-Standard: #1B1D26)
+
     // Odoo Enterprise-Farbe RGB (für rgba()-Berechnungen, z.B. Focus-Ringe)
     // Muss zum tt-primary-Wert passen: #97d21d = rgb(151, 210, 29)
     --tt-primary-rgb:        151, 210, 29;
@@ -394,7 +397,8 @@ body:has(.o_md_document_list) {
     // .o_notebook setzt diese Variablen direkt auf sich selbst
     .o_notebook {
         --Notebook__link-border-top-color--active: var(--tt-primary);
-        --Notebook__link-color--active: var(--tt-primary);  // Odoo-Quelle für nav-tabs-link-active-color
+        --Notebook__link-color--active:            var(--tt-primary);  // Odoo-Quelle für nav-tabs-link-active-color
+        --Notebook__link-background-color:         var(--tt-notebook-tab-bg); // inaktive Tab-Hintergrundfarbe
     }
 
     // Notebook Fokusring: Odoo-Lila (rgba(107,62,102,0.25)) → Trendtec-Grün
