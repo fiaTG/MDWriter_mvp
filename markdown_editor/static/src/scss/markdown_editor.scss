@@ -299,14 +299,30 @@
 // ============================================================
 
 .o_form_view:has(.o_markdown_editor) {
-    // Odoo CSS-Variablen auf Trendtec umbiegen — kein !important nötig, da Scope-Spezifität greift
-    --Notebook__link-border-top-color--active: var(--tt-primary);   // aktiver Tab-Indikator
-    --o-statusbar-border-active:       var(--tt-primary);           // aktiver Statusbar-State-Border
-    --o-statusbar-background-active:   var(--tt-primary-dim);       // aktiver Statusbar-State-Hintergrund
-    --o-input-border-color:            var(--tt-primary);           // Input-Fokus-Rahmen
-    --o-caret-color:                   var(--tt-primary);           // Text-Cursor native Inputs
-    --link-color:                      var(--tt-primary-dark);      // Many2one-Links, Breadcrumbs
-    --link-hover-color:                var(--tt-primary);           // Link Hover
+    // CSS-Variablen müssen jeweils auf dem Element gesetzt werden, das sie definiert —
+    // nicht auf dem Parent, da Kind-Elemente ihre eigenen Definitionen überschreiben.
+
+    // .o_notebook setzt --Notebook__link-border-top-color--active direkt auf sich selbst
+    .o_notebook {
+        --Notebook__link-border-top-color--active: var(--tt-primary);
+    }
+
+    // .o_statusbar_status setzt --o-statusbar-*-active direkt auf sich selbst
+    .o_statusbar_status {
+        --o-statusbar-border-active:     var(--tt-primary);
+        --o-statusbar-background-active: var(--tt-primary-dim);
+    }
+
+    // .o_field_widget:focus-within setzt --o-input-border-color und --o-caret-color direkt
+    .o_field_widget:focus-within {
+        --o-input-border-color: var(--tt-primary);
+        --o-caret-color:        var(--tt-primary);
+    }
+
+    // --link-color ist auf :root — Vererbung greift hier, Bootstrap nutzt aber --bs-link-color intern
+    // Deshalb direkt auf a-Elemente targeten
+    a { color: var(--tt-primary-dark); }
+    a:hover { color: var(--tt-primary); }
 
     // Sheet volle Breite (Odoo setzt max-width: 1400px)
     .o_form_sheet_bg {
