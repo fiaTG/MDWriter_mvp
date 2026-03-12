@@ -222,13 +222,22 @@ class XMdDocument(models.Model):
         self.write({"state": "archived"})
 
     def action_export_pdf(self):
-        """Öffnet den PDF-Export für dieses Dokument.
+        """Lädt das PDF der aktuellen Version herunter.
 
-        self.env.ref() sucht den Report-Eintrag über seine XML-ID.
-        report_action(self) rendert den Report für den aktuellen Datensatz
-        und gibt eine Odoo-Aktion zurück, die den Download startet.
+        Nutzt das gespeicherte PDF-Attachment der aktuellen Version (analoges
+        Vorgehen wie action_download_md), damit der Dateiname aus dem
+        Attachment-Namen kommt und nicht von Odoos report_file-Auswertung abhängt.
+        Fallback: Odoo-Standard-Report-Rendering, falls kein Attachment vorhanden.
         """
         self.ensure_one()
+        latest = self.version_ids.filtered(lambda v: v.version == self.current_version)
+        if latest and latest.pdf_attachment_id:
+            return {
+                "type": "ir.actions.act_url",
+                "url": f"/web/content/{latest.pdf_attachment_id.id}?download=true",
+                "target": "new",
+            }
+        # Fallback falls kein PDF-Attachment existiert (z.B. wkhtmltopdf nicht verfügbar)
         return self.env.ref("markdown_editor.md_document_pdf").report_action(self)
 
     def action_download_md(self):

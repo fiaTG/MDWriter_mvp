@@ -316,10 +316,14 @@ Versionen sind für normale User read-only – Append-only-Charakter ist damit a
 ### 6.1 Funktionsweise
 
 1. User klickt im Form-Header auf "Als PDF exportieren"
-2. `action_export_pdf()` gibt `report_action(self)` zurück → Odoo löst `ir.actions.report` aus
-3. Report rendert QWeb-Template `markdown_editor.report_md_document`
-4. Template ruft `doc.content_html` auf → computed field mit `mistune.html(content_md)` (als `Markup()`)
-5. `wkhtmltopdf` konvertiert HTML → PDF; Dateiname = `${object.name}.pdf`
+2. `action_export_pdf()` liest `pdf_attachment_id` der aktuellen Version
+3. Falls vorhanden: gibt `act_url`-Aktion zurück → Download via `/web/content/{id}?download=true`
+4. Dateiname kommt direkt aus `ir.attachment.name` → `{Dokumenttitel}_v{N}.pdf`
+5. Fallback (kein Attachment): `report_action(self)` → Odoo rendert QWeb-Template on demand
+6. Template ruft `doc.content_html` auf → computed field mit `mistune.html(content_md)` (als `Markup()`)
+7. `wkhtmltopdf` konvertiert HTML → PDF
+
+Hinweis: Analoges Vorgehen wie `action_download_md`. Vermeidet Abhängigkeit von Odoos `report_file`-Auswertung, die in Odoo 19 den Dateinamen nicht zuverlässig aus dem Dokumenttitel ableitet.
 
 ### 6.2 Template-Struktur
 
@@ -443,6 +447,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.29 | 12.03.2026 | PDF-Fix: action_export_pdf nutzt gespeichertes pdf_attachment_id (analog action_download_md); Dateiname zuverlässig aus Attachment-Name statt report_file-Auswertung |
 | 1.1.28 | 11.03.2026 | PDF-Fix: report_file=${object.name} (Mako) → object.name (Python-Ausdruck); wird von Odoo via safe_eval mit object-Kontext ausgewertet |
 | 1.1.27 | 10.03.2026 | PDF-Template: Revert auf web.external_layout + doc.content_html (bewährt stabil); custom CSS-Template entfernt |
 | 1.1.26 | 10.03.2026 | PDF-Fix: _get_report_html() umgeht fields.Html ORM, CSS-Werte hardcoded (kein t-esc in style-Block, verhindert arch-Sanitizer-Stripping) |
