@@ -299,6 +299,15 @@
 // ============================================================
 
 .o_form_view:has(.o_markdown_editor) {
+    // Odoo CSS-Variablen auf Trendtec umbiegen — kein !important nötig, da Scope-Spezifität greift
+    --Notebook__link-border-top-color--active: var(--tt-primary);   // aktiver Tab-Indikator
+    --o-statusbar-border-active:       var(--tt-primary);           // aktiver Statusbar-State-Border
+    --o-statusbar-background-active:   var(--tt-primary-dim);       // aktiver Statusbar-State-Hintergrund
+    --o-input-border-color:            var(--tt-primary);           // Input-Fokus-Rahmen
+    --o-caret-color:                   var(--tt-primary);           // Text-Cursor native Inputs
+    --link-color:                      var(--tt-primary-dark);      // Many2one-Links, Breadcrumbs
+    --link-hover-color:                var(--tt-primary);           // Link Hover
+
     // Sheet volle Breite (Odoo setzt max-width: 1400px)
     .o_form_sheet_bg {
         flex: 1 1 auto !important;
@@ -316,8 +325,8 @@
     }
 
     // Aktiver Notebook-Tab in Trendtec-Grün
+    // border-top-color ist der sichtbare Indikator (--Notebook__link-border-top-color--active greift über Variable)
     .o_notebook .nav-link.active {
-        border-bottom-color: var(--tt-primary) !important;
         color: var(--tt-primary) !important;
         font-weight: 600;
     }
