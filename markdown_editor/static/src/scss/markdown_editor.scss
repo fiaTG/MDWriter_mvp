@@ -26,6 +26,10 @@
     --tt-badge-archived-fg:  #e0e0e0;
     --tt-badge-draft-bg:     #c8d0d8;
     --tt-badge-draft-fg:     #2a2f35;
+
+    // Schatten / Fokusring
+    --tt-shadow-neutral:     rgba(0, 0, 0, 0.12);  // neutraler Dropdown-Schatten
+    --tt-focus-ring:         rgba(151, 210, 29, 0.25); // Fokusring (tt-primary @ 25%)
 }
 
 // ============================================================
@@ -94,7 +98,7 @@
     box-sizing: border-box;
     overflow: hidden;
     box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.12),
+        0 4px 16px var(--tt-shadow-neutral),
         0 0 0 3px var(--tt-primary-dim);
 }
 
@@ -320,6 +324,11 @@
         --Notebook__link-color--active: var(--tt-primary);  // Odoo-Quelle für nav-tabs-link-active-color
     }
 
+    // Notebook Fokusring: Odoo-Lila (rgba(107,62,102,0.25)) → Trendtec-Grün
+    .o_notebook .nav-link:focus-visible {
+        box-shadow: inset 0 0 0 0.25rem var(--tt-focus-ring);
+    }
+
     // .o_statusbar_status setzt --o-statusbar-*-active direkt auf sich selbst
     .o_statusbar_status {
         --o-statusbar-border-active:     var(--tt-primary);
@@ -401,7 +410,7 @@
         margin-top: 20px;
         padding-top: 8px;
     }
-    .o_nav{
+    .o_notebook .nav-tabs {
         border-bottom: 2px solid var(--tt-primary);
         background: var(--tt-primary-dim);
     }
