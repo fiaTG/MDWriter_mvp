@@ -8,7 +8,7 @@
 :root {
     --tt-primary:      #97d21d;   // Trendtec Lime Green
     --tt-primary-dark: #638a13;   // Hover / aktiver State
-    --tt-primary-dim:  rgba(151, 210, 29, 0.15); // Selektions-Hintergrund
+    --tt-primary-dim:  v // Selektions-Hintergrund
     --tt-on-primary:   #1a1a1a;   // Text auf Primary-Hintergrund (Kontrast)
     --tt-radius:       12px;
     --tt-radius-sm:    6px;
@@ -28,8 +28,18 @@
     --tt-badge-draft-fg:     #2a2f35;
 
     // Schatten / Fokusring
-    --tt-shadow-neutral:     rgba(0, 0, 0, 0.12);  // neutraler Dropdown-Schatten
+    --tt-shadow-neutral:     rgba(0, 0, 0, 0.12);      // neutraler Dropdown-Schatten
     --tt-focus-ring:         rgba(151, 210, 29, 0.25); // Fokusring (tt-primary @ 25%)
+
+    // Navbar-Tokens (Standardwerte = Odoo-Standard, überschreibbar)
+    --tt-navbar-bg:          #262A36;          // Navbar-Hintergrund
+    --tt-navbar-text:        #E4E4E4;          // Navbar-Eintrag normal
+    --tt-navbar-text-hover:  var(--tt-primary); // Navbar-Eintrag Hover
+    --tt-navbar-brand:       var(--tt-primary); // App-Titel / Brand-Text
+
+    // Odoo Enterprise-Farbe RGB (für rgba()-Berechnungen, z.B. Focus-Ringe)
+    // Muss zum tt-primary-Wert passen: #97d21d = rgb(151, 210, 29)
+    --tt-primary-rgb:        151, 210, 29;
 }
 
 // ============================================================
@@ -308,6 +318,35 @@
     .o_md_diff_del    { background: var(--tt-diff-del-bg); color: var(--tt-diff-del-fg); }
     .o_md_diff_hunk   { color: var(--tt-primary); font-weight: bold; }
     .o_md_diff_header { color: var(--o-text-color); opacity: 0.6; }
+}
+
+// ============================================================
+// MDWriter Page Scope — gilt für alle MDWriter-Views (Form + Liste)
+// body:has() greift, sobald eine MDWriter-View aktiv ist.
+// Andere Odoo-Apps sind NICHT betroffen.
+// ============================================================
+
+body:has(.o_markdown_editor),
+body:has(.o_md_document_list) {
+
+    // Odoo Enterprise-Akzentfarbe → tt-primary
+    // Beeinflusst automatisch: Focus-Ringe, Checkbox-checked, Radio, etc.
+    --o-enterprise-color:     var(--tt-primary);
+    --o-enterprise-color-rgb: var(--tt-primary-rgb);
+
+    // Navbar
+    .o_navbar {
+        background: var(--tt-navbar-bg);
+
+        // Odoo setzt --NavBar-entry-color direkt auf .o_navbar
+        --NavBar-entry-color:       var(--tt-navbar-text);
+        --NavBar-entry-color--hover: var(--tt-navbar-text-hover);
+    }
+
+    // App-Titel / Brand in der Navbar
+    .o_menu_brand {
+        color: var(--tt-navbar-brand) !important;
+    }
 }
 
 // ============================================================
