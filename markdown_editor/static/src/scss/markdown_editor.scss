@@ -13,6 +13,7 @@
     --tt-radius-sm:    6px;
     --tt-font-ui:      'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --tt-font-code:    'JetBrains Mono', monospace;
+
 }
 
 // ============================================================
@@ -329,6 +330,13 @@
         font-weight: 600;
     }
 
+    .o_statusbar_buttons .btn-primary {
+        background: var(--tt-primary) !important;
+        border-color: var(--tt-primary) !important;
+        color: #1a1a1a !important;
+        font-weight: 600;
+    }
+
     // Titelbereich: grüne Akzentlinie unter dem Titel
     .oe_title {
         border-bottom: 1px solid var(--tt-primary);
@@ -344,7 +352,6 @@
     // Notebook: leichter oberer Abstand + Trennlinie
     .o_notebook {
         margin-top: 20px;
-        border-top: 1px solid var(--tt-primary);
         padding-top: 8px;
     }
 }
