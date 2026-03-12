@@ -64,7 +64,7 @@
         <field name="name">x.md.document.list</field>
         <field name="model">x.md.document</field>
         <field name="arch" type="xml">
-            <list string="Markdown‑Dokumente">
+            <list string="Markdown‑Dokumente" class="o_md_document_list">
                 <field name="name"/>
                 <field name="owner_id" widget="many2one_avatar_user"/>
                 <field name="state" widget="badge"

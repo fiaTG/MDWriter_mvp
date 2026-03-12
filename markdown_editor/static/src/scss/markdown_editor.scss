@@ -314,9 +314,10 @@
     // CSS-Variablen müssen jeweils auf dem Element gesetzt werden, das sie definiert —
     // nicht auf dem Parent, da Kind-Elemente ihre eigenen Definitionen überschreiben.
 
-    // .o_notebook setzt --Notebook__link-border-top-color--active direkt auf sich selbst
+    // .o_notebook setzt diese Variablen direkt auf sich selbst
     .o_notebook {
         --Notebook__link-border-top-color--active: var(--tt-primary);
+        --nav-tabs-link-active-color: var(--tt-primary);  // Bootstrap-Variable für Tab-Textfarbe
     }
 
     // .o_statusbar_status setzt --o-statusbar-*-active direkt auf sich selbst
@@ -352,32 +353,24 @@
         padding: 24px !important;
     }
 
-    // Aktiver Notebook-Tab in Trendtec-Grün
-    // border-top-color ist der sichtbare Indikator (--Notebook__link-border-top-color--active greift über Variable)
+    // Aktiver Notebook-Tab: Farbe via Bootstrap-Variable, kein !important nötig
     .o_notebook .nav-link.active {
-        color: var(--tt-primary) !important;
         font-weight: 600;
     }
 
-    // Aktiver Statusbar-State in Trendtec-Grün
-    .o_statusbar_status .o_arrow_button.btn-primary {
-        background: var(--tt-primary) !important;
-        border-color: var(--tt-primary) !important;
-        color: var(--tt-on-primary) !important;
-        font-weight: 600;
-    }
-
-    .o_statusbar_buttons .btn-primary {
-        background: var(--tt-primary) !important;
-        border-color: var(--tt-primary) !important;
-        color: var(--tt-on-primary) !important;
-        font-weight: 600;
+    // Alle btn-primary via Bootstrap-Variablen umbiegen — kein !important nötig
+    .btn-primary {
+        --btn-bg:                  var(--tt-primary);
+        --btn-border-color:        var(--tt-primary);
+        --btn-color:               var(--tt-on-primary);
+        --btn-hover-bg:            var(--tt-primary-dark);
+        --btn-hover-border-color:  var(--tt-primary-dark);
+        --btn-active-bg:           var(--tt-primary-dark);
+        --btn-active-border-color: var(--tt-primary-dark);
     }
 
     // Titelbereich: grüne Akzentlinie unter dem Titel
     .oe_title {
-        border-bottom: 1px solid var(--tt-primary);
-        padding-bottom: 12px;
         margin-bottom: 20px;
 
         h1 {
@@ -427,7 +420,8 @@
 // ============================================================
 
 // Badge-Farben: published=Grün, archived=Grau, draft=Silber
-.o_list_view {
+// Scope: nur MDWriter-Listenansicht (class="o_md_document_list" in views XML)
+.o_md_document_list {
     // published → Trendtec-Grün (decoration-success)
     .o_field_badge .badge.text-bg-success,
     .o_field_badge .badge.bg-success {
