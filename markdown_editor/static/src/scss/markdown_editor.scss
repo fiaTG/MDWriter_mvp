@@ -411,7 +411,7 @@ body:has(.o_md_document_list) {
         --o-statusbar-border-active:     var(--tt-primary);
         --o-statusbar-background-active: var(--tt-primary-dim);
         --o-statusbar-color-active:      var(--tt-primary-dark);
-        --o-statusbar-background-color: var(--tt-primary-dim);
+        background: var(--tt-primary-dim);
     }
 
     // .o_field_widget:focus-within setzt --o-input-border-color und --o-caret-color direkt
