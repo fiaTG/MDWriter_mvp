@@ -9,11 +9,23 @@
     --tt-primary:      #97d21d;   // Trendtec Lime Green
     --tt-primary-dark: #638a13;   // Hover / aktiver State
     --tt-primary-dim:  rgba(151, 210, 29, 0.15); // Selektions-Hintergrund
+    --tt-on-primary:   #1a1a1a;   // Text auf Primary-Hintergrund (Kontrast)
     --tt-radius:       12px;
     --tt-radius-sm:    6px;
     --tt-font-ui:      'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --tt-font-code:    'JetBrains Mono', monospace;
 
+    // Diff-Farben (semantisch: grün = Addition, rot = Löschung)
+    --tt-diff-add-bg:  #1a4a1a;
+    --tt-diff-add-fg:  #6ecc6e;
+    --tt-diff-del-bg:  #4a1a1a;
+    --tt-diff-del-fg:  #cc6e6e;
+
+    // Badge-Zustandsfarben
+    --tt-badge-archived-bg:  #5a6370;
+    --tt-badge-archived-fg:  #e0e0e0;
+    --tt-badge-draft-bg:     #c8d0d8;
+    --tt-badge-draft-fg:     #2a2f35;
 }
 
 // ============================================================
@@ -207,7 +219,7 @@
 
         th {
             background: var(--tt-primary);
-            color: #fff;
+            color: var(--tt-on-primary);
             font-weight: 600;
             padding: 0.5em 0.85em;
             text-align: left;
@@ -288,8 +300,8 @@
 
     span { display: block; }
 
-    .o_md_diff_add    { background: #1a4a1a; color: #6ecc6e; }
-    .o_md_diff_del    { background: #4a1a1a; color: #cc6e6e; }
+    .o_md_diff_add    { background: var(--tt-diff-add-bg); color: var(--tt-diff-add-fg); }
+    .o_md_diff_del    { background: var(--tt-diff-del-bg); color: var(--tt-diff-del-fg); }
     .o_md_diff_hunk   { color: var(--tt-primary); font-weight: bold; }
     .o_md_diff_header { color: var(--o-text-color); opacity: 0.6; }
 }
@@ -351,14 +363,14 @@
     .o_statusbar_status .o_arrow_button.btn-primary {
         background: var(--tt-primary) !important;
         border-color: var(--tt-primary) !important;
-        color: #1a1a1a !important;
+        color: var(--tt-on-primary) !important;
         font-weight: 600;
     }
 
     .o_statusbar_buttons .btn-primary {
         background: var(--tt-primary) !important;
         border-color: var(--tt-primary) !important;
-        color: #1a1a1a !important;
+        color: var(--tt-on-primary) !important;
         font-weight: 600;
     }
 
@@ -420,22 +432,22 @@
     .o_field_badge .badge.text-bg-success,
     .o_field_badge .badge.bg-success {
         background-color: var(--tt-primary) !important;
-        color: #1a1a1a !important;
+        color: var(--tt-on-primary) !important;
         font-weight: 600;
     }
 
     // archived → gedämpft (decoration-warning)
     .o_field_badge .badge.text-bg-warning,
     .o_field_badge .badge.bg-warning {
-        background-color: #5a6370 !important;
-        color: #e0e0e0 !important;
+        background-color: var(--tt-badge-archived-bg) !important;
+        color: var(--tt-badge-archived-fg) !important;
         font-weight: 500;
     }
 
     // draft → Silber (Odoo 19 setzt text-bg-300)
     .o_field_badge .badge.text-bg-300 {
-        background-color: #c8d0d8 !important;
-        color: #2a2f35 !important;
+        background-color: var(--tt-badge-draft-bg) !important;
+        color: var(--tt-badge-draft-fg) !important;
         font-weight: 500;
     }
 
