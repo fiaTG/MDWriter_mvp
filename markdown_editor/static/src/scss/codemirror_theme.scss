@@ -11,7 +11,7 @@
     --tt-cm-selection:       rgba(151, 210, 29, 0.25);
     --tt-cm-activeline:      rgba(151, 210, 29, 0.08);
 
-    // Markdown-Elemente
+    // Markdown‑Elemente
     --tt-cm-header:          var(--tt-primary, #97d21d);   // # Überschriften
     --tt-cm-quote:           #6a9a4a;                       // > Blockquote
     --tt-cm-hr:              var(--tt-primary-dark, #638a13); // ---
@@ -20,25 +20,28 @@
     --tt-cm-strong:          inherit;                        // **bold**
     --tt-cm-strikethrough:   #888;                           // ~~strikethrough~~
 
-    // Code
-    --tt-cm-comment:         #888;                           // inline code / fenced
-    --tt-cm-string:          #c87941;                        // Strings
-    --tt-cm-string-2:        #f50;                           // Strings (alt)
-    --tt-cm-keyword:         #708;
-    --tt-cm-atom:            #219;
-    --tt-cm-number:          #164;
-    --tt-cm-def:             #00c;
-    --tt-cm-variable:        inherit;
-    --tt-cm-variable-2:      #05a;
-    --tt-cm-variable-3:      #085;
-    --tt-cm-type:            #085;
-    --tt-cm-builtin:         #30a;
-    --tt-cm-bracket:         #997;
-    --tt-cm-tag:             #170;
-    --tt-cm-attribute:       #00c;
-    --tt-cm-qualifier:       #555;
-    --tt-cm-meta:            #555;
-    --tt-cm-error:           red;
+    // Code (Syntax‑Highlighting)
+    // light-dark() — erste Farbe: Light-Mode, zweite: Dark-Mode
+    // Basiert auf Prism.js Default / Tomorrow Palette
+    // Benötigt color-scheme: dark auf html-Ebene (Odoo Enterprise setzt das)
+    --tt-cm-comment:         light-dark(#708090, #999999); // Kommentare
+    --tt-cm-string:          light-dark(#669900, #7ec699); // Strings
+    --tt-cm-string-2:        light-dark(#9a6e3a, #67cdcc); // alternative Strings / Operatoren
+    --tt-cm-keyword:         light-dark(#0077aa, #cc99cd); // Keywords & At‑Rules
+    --tt-cm-atom:            light-dark(#990055, #e2777a); // Booleans/Constants
+    --tt-cm-number:          light-dark(#990055, #f08d49); // Zahlen
+    --tt-cm-def:             light-dark(#DD4A68, #6196cc); // Funktions-/Klassennamen
+    --tt-cm-variable:        inherit;                       // Variablen (nicht hervorheben)
+    --tt-cm-variable-2:      light-dark(#0077aa, #6196cc); // alternative Variablen
+    --tt-cm-variable-3:      light-dark(#ee9900, #f8c555); // Typen & weitere Variablen
+    --tt-cm-type:            light-dark(#ee9900, #f8c555); // Typen
+    --tt-cm-builtin:         light-dark(#DD4A68, #f08d49); // eingebaute Funktionen
+    --tt-cm-bracket:         light-dark(#999999, #cccccc); // Klammern/Punctuation
+    --tt-cm-tag:             light-dark(#990055, #e2777a); // HTML‑Tags
+    --tt-cm-attribute:       light-dark(#0077aa, #cc99cd); // Attribut‑Namen/Werte
+    --tt-cm-qualifier:       light-dark(#555555, #555555); // Qualifier & Meta‑Information
+    --tt-cm-meta:            light-dark(#555555, #555555);
+    --tt-cm-error:           red;                           // Fehler
 }
 
 // ============================================================
