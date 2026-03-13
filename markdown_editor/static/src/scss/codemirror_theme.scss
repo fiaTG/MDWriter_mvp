@@ -1,0 +1,121 @@
+// ============================================================
+// CodeMirror Syntax Highlighting — Trendtec Theme
+// Alle Farben als --tt-cm-* Variablen steuerbar
+// ============================================================
+
+:root {
+    // Basis
+    --tt-cm-bg:              var(--o-input-bg, #fff);
+    --tt-cm-color:           var(--o-text-color, #000);
+    --tt-cm-cursor:          var(--tt-primary, #97d21d);
+
+    // Gutters (Zeilennummern)
+    --tt-cm-gutter-bg:       var(--o-input-bg, #f7f7f7);
+    --tt-cm-gutter-border:   var(--border-color, #ddd);
+    --tt-cm-linenumber:      #999;
+
+    // Selektion
+    --tt-cm-selection:       rgba(151, 210, 29, 0.25);
+    --tt-cm-activeline:      rgba(151, 210, 29, 0.08);
+
+    // Markdown-Elemente
+    --tt-cm-header:          var(--tt-primary, #97d21d);   // # Überschriften
+    --tt-cm-quote:           #6a9a4a;                       // > Blockquote
+    --tt-cm-hr:              var(--tt-primary-dark, #638a13); // ---
+    --tt-cm-link:            var(--tt-primary-dark, #638a13); // [link]
+    --tt-cm-em:              inherit;                        // *italic*
+    --tt-cm-strong:          inherit;                        // **bold**
+    --tt-cm-strikethrough:   #888;                           // ~~strikethrough~~
+
+    // Code
+    --tt-cm-comment:         #888;                           // inline code / fenced
+    --tt-cm-string:          #c87941;                        // Strings
+    --tt-cm-string-2:        #f50;                           // Strings (alt)
+    --tt-cm-keyword:         #708;
+    --tt-cm-atom:            #219;
+    --tt-cm-number:          #164;
+    --tt-cm-def:             #00c;
+    --tt-cm-variable:        inherit;
+    --tt-cm-variable-2:      #05a;
+    --tt-cm-variable-3:      #085;
+    --tt-cm-type:            #085;
+    --tt-cm-builtin:         #30a;
+    --tt-cm-bracket:         #997;
+    --tt-cm-tag:             #170;
+    --tt-cm-attribute:       #00c;
+    --tt-cm-qualifier:       #555;
+    --tt-cm-meta:            #555;
+    --tt-cm-error:           red;
+}
+
+// ============================================================
+// Overrides: cm-s-default → tt-Variablen
+// Scoped auf .o_markdown_editor damit andere Apps unberührt
+// ============================================================
+
+.o_markdown_editor {
+    // Basis-Container
+    .CodeMirror {
+        background: var(--tt-cm-bg);
+        color:      var(--tt-cm-color);
+    }
+
+    // Cursor
+    .CodeMirror-cursor {
+        border-left-color: var(--tt-cm-cursor);
+    }
+
+    // Gutters
+    .CodeMirror-gutters {
+        background-color: var(--tt-cm-gutter-bg);
+        border-right-color: var(--tt-cm-gutter-border);
+    }
+    .CodeMirror-linenumber {
+        color: var(--tt-cm-linenumber);
+    }
+
+    // Selektion
+    .CodeMirror-selected,
+    .CodeMirror-focused .CodeMirror-selected {
+        background: var(--tt-cm-selection);
+    }
+    .CodeMirror-line::selection,
+    .CodeMirror-line > span::selection,
+    .CodeMirror-line > span > span::selection {
+        background: var(--tt-cm-selection);
+    }
+
+    // Aktive Zeile
+    .CodeMirror-activeline-background {
+        background: var(--tt-cm-activeline);
+    }
+
+    // Markdown-Elemente
+    .cm-s-default .cm-header    { color: var(--tt-cm-header); }
+    .cm-s-default .cm-quote     { color: var(--tt-cm-quote); }
+    .cm-s-default .cm-hr        { color: var(--tt-cm-hr); }
+    .cm-s-default .cm-link      { color: var(--tt-cm-link); }
+    .cm-s-default .cm-em        { color: var(--tt-cm-em); }
+    .cm-s-default .cm-strong    { color: var(--tt-cm-strong); }
+    .cm-strikethrough            { color: var(--tt-cm-strikethrough); }
+
+    // Code & generische Token
+    .cm-s-default .cm-comment   { color: var(--tt-cm-comment); }
+    .cm-s-default .cm-string    { color: var(--tt-cm-string); }
+    .cm-s-default .cm-string-2  { color: var(--tt-cm-string-2); }
+    .cm-s-default .cm-keyword   { color: var(--tt-cm-keyword); }
+    .cm-s-default .cm-atom      { color: var(--tt-cm-atom); }
+    .cm-s-default .cm-number    { color: var(--tt-cm-number); }
+    .cm-s-default .cm-def       { color: var(--tt-cm-def); }
+    .cm-s-default .cm-variable  { color: var(--tt-cm-variable); }
+    .cm-s-default .cm-variable-2  { color: var(--tt-cm-variable-2); }
+    .cm-s-default .cm-variable-3,
+    .cm-s-default .cm-type      { color: var(--tt-cm-type); }
+    .cm-s-default .cm-builtin   { color: var(--tt-cm-builtin); }
+    .cm-s-default .cm-bracket   { color: var(--tt-cm-bracket); }
+    .cm-s-default .cm-tag       { color: var(--tt-cm-tag); }
+    .cm-s-default .cm-attribute { color: var(--tt-cm-attribute); }
+    .cm-s-default .cm-qualifier { color: var(--tt-cm-qualifier); }
+    .cm-s-default .cm-meta      { color: var(--tt-cm-meta); }
+    .cm-s-default .cm-error     { color: var(--tt-cm-error); }
+}

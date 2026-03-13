@@ -28,6 +28,7 @@
             "markdown_editor/static/src/js/markdown_editor.js",
             "markdown_editor/static/src/xml/markdown_editor_templates.xml",
             "markdown_editor/static/src/scss/markdown_editor.scss",
+            "markdown_editor/static/src/scss/codemirror_theme.scss",
         ],
     },
     "installable": True,
