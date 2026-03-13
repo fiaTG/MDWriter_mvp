@@ -109,6 +109,8 @@
 
 .o_markdown_editor .CodeMirror {
     height: 100%;
+    background: var(--o-input-bg);
+    color: var(--o-text-color);
 }
 
 .o_markdown_editor .CodeMirror-scroll {
