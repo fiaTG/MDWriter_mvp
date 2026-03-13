@@ -4,15 +4,8 @@
 // ============================================================
 
 :root {
-    // Basis
-    --tt-cm-bg:              var(--o-input-bg, #fff);
-    --tt-cm-color:           var(--o-text-color, #000);
+    // Cursor & Selektion (keine Odoo-Variablen, Dark-Mode-unabhängig)
     --tt-cm-cursor:          var(--tt-primary, #97d21d);
-
-    // Gutters (Zeilennummern)
-    --tt-cm-gutter-bg:       var(--o-input-bg, #f7f7f7);
-    --tt-cm-gutter-border:   var(--border-color, #ddd);
-    --tt-cm-linenumber:      #999;
 
     // Selektion
     --tt-cm-selection:       rgba(151, 210, 29, 0.25);
@@ -54,6 +47,13 @@
 // ============================================================
 
 .o_markdown_editor {
+    // Basis-Tokens auf Element-Ebene: erben Odoo Dark-Mode-Werte korrekt
+    --tt-cm-bg:          var(--o-input-bg);
+    --tt-cm-color:       var(--o-text-color);
+    --tt-cm-gutter-bg:   var(--o-input-bg);
+    --tt-cm-gutter-border: var(--border-color);
+    --tt-cm-linenumber:  #999;
+
     // Basis-Container
     .CodeMirror {
         background: var(--tt-cm-bg);
@@ -67,7 +67,7 @@
 
     // Gutters
     .CodeMirror-gutters {
-        background-color: var(--tt-cm-gutter-bg);
+        background-color:   var(--tt-cm-gutter-bg);
         border-right-color: var(--tt-cm-gutter-border);
     }
     .CodeMirror-linenumber {
