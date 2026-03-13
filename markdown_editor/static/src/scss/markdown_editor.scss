@@ -43,6 +43,9 @@
     // Odoo Enterprise-Farbe RGB (für rgba()-Berechnungen, z.B. Focus-Ringe)
     // Muss zum tt-primary-Wert passen: #97d21d = rgb(151, 210, 29)
     --tt-primary-rgb:        151, 210, 29;
+
+    // Code-Block-Hintergrund (Preview): sichtbar in Light + Dark Mode
+    --tt-code-bg:            light-dark(#f0f2f5, #1e2030);
 }
 
 // ============================================================
@@ -119,24 +122,24 @@
 // Editor (linke Hälfte) — Textarea + CodeMirror teilen gemeinsame Styles
 // ============================================================
 
-// Gemeinsame Styles: Textarea (Fallback) und CodeMirror
+// Gemeinsame Layout/Font-Styles: Textarea (Fallback) und CodeMirror
 .o_markdown_editor textarea.o_input,
 .o_markdown_editor .CodeMirror {
     flex: 1 1 50%;
     min-width: 0;
     border: none;
-    background: var(--o-input-bg);
-    color: var(--o-input-color);
     font-family: var(--tt-font-code);
     font-size: 14px;
     line-height: 1.6;
 }
 
-// Textarea-spezifisch (resize, padding, outline)
+// Textarea-spezifisch (Farben hier, CodeMirror-Farben via codemirror_theme.scss)
 .o_markdown_editor textarea.o_input {
     padding: 1rem;
     resize: none;
     outline: none;
+    background: var(--o-input-bg);
+    color: var(--o-input-color);
 }
 
 // CodeMirror-spezifisch (volle Höhe)
@@ -146,16 +149,6 @@
 
 .o_markdown_editor .CodeMirror-scroll {
     height: 100%;
-}
-
-// Cursor in Trendtec-Grün
-.o_markdown_editor .CodeMirror-cursor {
-    border-left: 2px solid var(--tt-primary) !important;
-}
-
-// Selektion in gedämpftem Trendtec-Grün
-.o_markdown_editor .CodeMirror-selected {
-    background: var(--tt-primary-dim) !important;
 }
 
 // Trennlinie zwischen Editor und Preview
@@ -211,7 +204,7 @@
 
     // Code-Block
     pre {
-        background: var(--o-input-bg);
+        background: var(--tt-code-bg);
         border-left: 3px solid var(--tt-primary);
         border-radius: 0 var(--tt-radius-sm) var(--tt-radius-sm) 0;
         padding: 1rem;
@@ -448,7 +441,8 @@ body:has(.o_md_document_list) {
 
     // Titelbereich: grüne Akzentlinie unter dem Titel
     .oe_title {
-        margin-bottom: 20px;
+        margin-bottom: 15px;
+
 
         h1 {
             font-family: var(--tt-font-ui);
@@ -462,7 +456,6 @@ body:has(.o_md_document_list) {
         padding-top: 8px;
     }
     .o_notebook .nav-tabs {
-        border-bottom: 2px solid var(--tt-primary);
         background: var(--tt-primary-dim);
     }
 }
