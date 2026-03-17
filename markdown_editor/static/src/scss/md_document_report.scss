@@ -54,6 +54,31 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Space Grotesk';
+    src: url('/markdown_editor/static/src/fonts/Space_Grotesk/static/SpaceGrotesk-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Space Grotesk';
+    src: url('/markdown_editor/static/src/fonts/Space_Grotesk/static/SpaceGrotesk-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Space Grotesk';
+    src: url('/markdown_editor/static/src/fonts/Space_Grotesk/static/SpaceGrotesk-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Space Grotesk';
+    src: url('/markdown_editor/static/src/fonts/Space_Grotesk/static/SpaceGrotesk-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
 // ============================================================
 // Branding-Variablen — hier anpassen für andere Firmen
 // ============================================================
@@ -70,8 +95,9 @@ $pdf-border:        #e1e4e8;   // Rahmen (Code, Tabellen)
 $pdf-border-light:  #dddddd;   // Hellere Trennlinien
 $pdf-link:          #0969da;   // Link-Farbe
 
-// Inter für Fließtext, JetBrains Mono für Code — beide lokal vorhanden
+// Inter für Fließtext, Space Grotesk für Überschriften, JetBrains Mono für Code
 $pdf-font-body:     'Inter', Arial, sans-serif;
+$pdf-font-heading:  'Space Grotesk', Arial, sans-serif;
 $pdf-font-code:     'JetBrains Mono', 'Courier New', monospace;
 
 $pdf-size-base:     11pt;
@@ -100,8 +126,9 @@ body {
     margin-bottom: 18px;
 
     h1 {
+        font-family: $pdf-font-heading;
         font-size: 22pt;
-        font-weight: bold;
+        font-weight: 700;
         margin: 0 0 6px 0;
         color: $pdf-text;
         border: none;  // kein doppelter Strich unter Titel
@@ -120,7 +147,7 @@ body {
 // ============================================================
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: $pdf-font-body;
+    font-family: $pdf-font-heading;
     color: $pdf-text;
     margin-top: 20px;
     margin-bottom: 8px;
