@@ -25,17 +25,15 @@
                     </svg>
                 </div>
             </div>
-            <!-- Rechte Hälfte: Wrapper (Positionierungskontext für Progress-Indikator) -->
-            <div class="o_md_preview_wrapper">
-                <div class="o_markdown_preview" t-ref="preview">
-                    <t t-out="state.html"/>
-                </div>
-                <!-- Scroll-Fortschrittsanzeige (absolut im Wrapper, außerhalb des Scroll-Containers) -->
-                <div class="o_md_scroll_progress o_md_scroll_hidden" t-ref="scrollProgress">
-                    <div class="o_md_scroll_label">SCROLL TO TOP</div>
-                    <div class="o_md_scroll_track">
-                        <div class="o_md_scroll_bar" t-ref="scrollBar"/>
-                    </div>
+            <!-- Rechte Hälfte: Live-HTML-Vorschau -->
+            <div class="o_markdown_preview" t-ref="preview">
+                <t t-out="state.html"/>
+            </div>
+            <!-- Scroll-Fortschrittsanzeige: absolut im Editor-Container, overlay über Preview -->
+            <div class="o_md_scroll_progress o_md_scroll_hidden" t-ref="scrollProgress">
+                <div class="o_md_scroll_label">SCROLL TO TOP</div>
+                <div class="o_md_scroll_track">
+                    <div class="o_md_scroll_bar" t-ref="scrollBar"/>
                 </div>
             </div>
         </div>

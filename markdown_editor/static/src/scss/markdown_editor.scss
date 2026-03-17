@@ -90,6 +90,7 @@
     border-radius: var(--tt-radius);
     box-sizing: border-box;
     overflow: hidden;
+    position: relative; // Positionierungskontext für absolut platzierten Progress-Indikator
     box-shadow:
         0 4px 16px var(--tt-shadow),
         0 0 0 3px var(--tt-primary-dim);
@@ -208,16 +209,9 @@
 // Preview (rechte Hälfte)
 // ============================================================
 
-.o_md_preview_wrapper {
+.o_markdown_preview {
     flex: 0 0 var(--preview-ratio);
     min-width: 0;
-    position: relative;
-    overflow: hidden;
-}
-
-.o_markdown_preview {
-    width: 100%;
-    height: 100%;
     padding: 1.25rem 1.5rem;
     overflow-y: auto;
     background: var(--o-background-color);
