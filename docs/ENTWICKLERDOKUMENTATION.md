@@ -61,13 +61,15 @@ markdown_editor/
 │       ├── js/
 │       │   └── markdown_editor.js          # OWL-Komponente MarkdownField
 │       ├── scss/
-│       │   └── markdown_editor.scss        # Split-View, Trendtec-Branding, Odoo-Fixes
+│       │   ├── markdown_editor.scss        # Split-View, Trendtec-Branding, Odoo-Fixes
+│       │   └── md_document_report.scss     # PDF-Styling (web.report_assets_common)
 │       ├── xml/
 │       │   └── markdown_editor_templates.xml  # OWL-Template
 │       └── fonts/
 │           ├── Mulish/                     # UI-Font (Variable Font, TTF)
 │           ├── JetBrains_Mono/             # Code-Font (Variable Font, TTF)
-│           └── Inter/                      # Fallback UI-Font (Variable Font, TTF)
+│           ├── Inter/                      # Fließtext-Font (Variable Font, TTF)
+│           └── Space_Grotesk/              # Überschriften-Font (Variable Font + statische Schnitte)
 ├── security/
 │   ├── ir.model.access.csv                 # ACL-Definitionen
 │   └── markdown_editor_security.xml        # Record Rules
@@ -236,6 +238,7 @@ Das Modul verwendet das Trendtec Corporate Design. Die Design-Tokens sind als CS
     --tt-radius:       12px;
     --tt-radius-sm:    6px;
     --tt-font-ui:      'Mulish', 'Inter', sans-serif;
+    --tt-font-heading: 'Space Grotesk', 'Mulish', sans-serif;
     --tt-font-code:    'JetBrains Mono', monospace;
 }
 ```
@@ -248,11 +251,12 @@ Alle Fonts liegen lokal unter `static/src/fonts/` — kein CDN.
 
 | Font | Verwendung | Datei |
 |---|---|---|
-| Mulish | UI (Preview, Labels) | `Mulish/Mulish-VariableFont_wght.ttf` |
-| JetBrains Mono | Code-Editor (CodeMirror) | `JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf` |
-| Inter | Fallback Preview-Font | `Inter/Inter-VariableFont_opsz,wght.ttf` |
+| Mulish | UI-Elemente | `Mulish/Mulish-VariableFont_wght.ttf` |
+| Inter | Fließtext (Preview) | `Inter/Inter-VariableFont_opsz,wght.ttf` |
+| Space Grotesk | Überschriften h1–h6 (Preview + PDF) | `Space_Grotesk/SpaceGrotesk-VariableFont_wght.ttf` |
+| JetBrains Mono | Code-Editor (CodeMirror) + Code-Blöcke (PDF) | `JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf` |
 
-Variable Fonts decken alle Gewichte in einer Datei ab. Italic-Varianten sind jeweils eingebunden.
+Variable Fonts decken alle Gewichte in einer Datei ab. Italic-Varianten sind jeweils eingebunden. Für das PDF werden statische Schnitte verwendet (wkhtmltopdf unterstützt keine Variable Fonts).
 
 **Odoo Layout-Fixes:**
 ```scss
@@ -327,7 +331,7 @@ Hinweis: Analoges Vorgehen wie `action_download_md`. Vermeidet Abhängigkeit von
 
 ### 6.2 Template-Struktur
 
-Das Template enthält inline CSS (wkhtmltopdf ignoriert externe Stylesheets) und einen Metadaten-Header:
+Das Template verwendet einen Metadaten-Header und referenziert das externe SCSS:
 
 ```xml
 <template id="report_md_document">
@@ -335,7 +339,7 @@ Das Template enthält inline CSS (wkhtmltopdf ignoriert externe Stylesheets) und
         <t t-foreach="docs" t-as="doc">
             <t t-call="web.external_layout">
                 <div class="page">
-                    <style>/* Inline CSS für wkhtmltopdf */</style>
+                    <!-- Styling: static/src/scss/md_document_report.scss -->
                     <!-- Metadaten-Header: Titel, Autor, Version, Status, Datum -->
                     <div class="md-doc-header">
                         <h1><t t-esc="doc.name"/></h1>
@@ -352,11 +356,25 @@ Das Template enthält inline CSS (wkhtmltopdf ignoriert externe Stylesheets) und
 </template>
 ```
 
-**Inline-CSS umfasst:** Typografie (DejaVu Sans, line-height 1.6), Überschriften-Hierarchie mit Trennlinien, Code-Blöcke mit grünem Akzentstreifen, Tabellen mit formatiertem Header, Blockquotes — alles wkhtmltopdf-kompatibel.
-
 `web.external_layout` ist der Odoo-Standard für PDF-Reports: korrekte HTML-Struktur für wkhtmltopdf, CSS im `<head>`, automatischer Odoo-Company-Header/Footer. `web.html_container` ist zusätzlich zwingend nötig — ohne ihn schlägt `_prepare_html` fehl (`IndexError: list index out of range`).
 
-### 6.3 Python-Dependency: mistune
+### 6.3 PDF-Styling (SCSS)
+
+Dateiname: [static/src/scss/md_document_report.scss](../markdown_editor/static/src/scss/md_document_report.scss)
+Bundle: `web.report_assets_common` (wird von Odoo in den PDF-HTML-Head eingebettet)
+
+**Branding anpassen:** Nur den Variablen-Block oben in der Datei ändern:
+
+```scss
+$pdf-primary:      #97d21d;   // Akzentfarbe
+$pdf-font-body:    'Inter', Arial, sans-serif;
+$pdf-font-heading: 'Space Grotesk', Arial, sans-serif;
+$pdf-font-code:    'JetBrains Mono', 'Courier New', monospace;
+```
+
+**Hinweis zu Fonts:** wkhtmltopdf (QtWebKit) unterstützt keine Variable Fonts. Das SCSS bindet daher statische TTF-Schnitte ein (`Inter_18pt-Regular.ttf`, `SpaceGrotesk-Bold.ttf`, `JetBrainsMono-Regular.ttf` usw.). SCSS-Variablen (`$var`) werden zur Compile-Zeit aufgelöst — CSS Custom Properties (`var(--)`) werden von wkhtmltopdf nicht unterstützt und dürfen in diesem File nicht verwendet werden.
+
+### 6.4 Python-Dependency: mistune
 
 Eingebunden via `requirements.txt` im Repo-Root (wird von Odoo.sh automatisch installiert):
 ```
@@ -459,6 +477,9 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.33 | 17.03.2026 | Fonts: Space Grotesk für h1–h6 (Preview + PDF), JetBrains Mono wieder primärer Code-Font (Fira Code entfernt) |
+| 1.1.32 | 17.03.2026 | PDF-Fonts: Inter + JetBrains Mono + Space Grotesk via @font-face (statische Schnitte, wkhtmltopdf-kompatibel) |
+| 1.1.31 | 17.03.2026 | PDF-Styling: Inline-CSS → md_document_report.scss (web.report_assets_common), Branding-Variablen-Block |
 | 1.1.30 | 17.03.2026 | PDF-Template: Inline-CSS für wkhtmltopdf (Typografie, Code-Blöcke, Tabellen, Blockquotes), Metadaten-Header (Autor, Version, Status, Datum) |
 | 1.1.29 | 12.03.2026 | PDF-Fix: action_export_pdf nutzt gespeichertes pdf_attachment_id (analog action_download_md); Dateiname zuverlässig aus Attachment-Name statt report_file-Auswertung |
 | 1.1.28 | 11.03.2026 | PDF-Fix: report_file=${object.name} (Mako) → object.name (Python-Ausdruck); wird von Odoo via safe_eval mit object-Kontext ausgewertet |
