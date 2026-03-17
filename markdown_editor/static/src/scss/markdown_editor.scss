@@ -15,7 +15,7 @@
     --tt-radius-sm:    6px;
     --tt-font-ui:      'Mulish', 'Inter', -apple-system, sans-serif;
     --tt-font-heading: 'Space Grotesk', 'Mulish', sans-serif;
-    --tt-font-code:    'Fira Code', 'JetBrains Mono', monospace;
+    --tt-font-code:    'JetBrains Mono', monospace;
     --tt-shadow:       rgba(0, 0, 0, 0.12);
     --tt-code-bg:      light-dark(#f0f2f5, #1e2030);
 
@@ -68,12 +68,6 @@
 @font-face {
     font-family: 'Space Grotesk';
     src: url('/markdown_editor/static/src/fonts/Space_Grotesk/SpaceGrotesk-VariableFont_wght.ttf') format('truetype');
-    font-weight: 300 700;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'Fira Code';
-    src: url('/markdown_editor/static/src/fonts/Fira_Code/FiraCode-VariableFont_wght.ttf') format('truetype');
     font-weight: 300 700;
     font-style: normal;
 }
