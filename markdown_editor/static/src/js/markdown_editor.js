@@ -62,6 +62,8 @@ class MarkdownField extends Component {
         this.editorRef = useRef("editor");
         this.containerRef = useRef("container");
         this.previewRef = useRef("preview");
+        this.scrollProgressRef = useRef("scrollProgress");
+        this.scrollBarRef = useRef("scrollBar");
         this.cm = null;           // Hier speichern wir die CodeMirror-Instanz (zunächst null)
         this._debounce = null;    // Timer-ID für Debouncing (verhindert zu häufiges Rendern)
         this._syncing = false;    // Verhindert Scroll-Feedback-Schleifen
@@ -101,17 +103,40 @@ class MarkdownField extends Component {
                 this._syncing = false;
             });
 
-            // Synchrones Scrollen: Preview → Editor
+            // Synchrones Scrollen + Fortschrittsanzeige: Preview → Editor
             const preview = this.previewRef.el;
             if (preview) {
                 preview.addEventListener("scroll", () => {
-                    if (this._syncing) return;
-                    const info = this.cm.getScrollInfo();
-                    const ratio = preview.scrollTop / Math.max(1, preview.scrollHeight - preview.clientHeight);
-                    this._syncing = true;
-                    this.cm.scrollTo(null, ratio * Math.max(0, info.height - info.clientHeight));
-                    this._syncing = false;
+                    // Synchrones Scrollen
+                    if (!this._syncing) {
+                        const info = this.cm.getScrollInfo();
+                        const ratio = preview.scrollTop / Math.max(1, preview.scrollHeight - preview.clientHeight);
+                        this._syncing = true;
+                        this.cm.scrollTo(null, ratio * Math.max(0, info.height - info.clientHeight));
+                        this._syncing = false;
+                    }
+
+                    // Scroll-Fortschrittsanzeige aktualisieren
+                    const progress = this.scrollProgressRef.el;
+                    const bar = this.scrollBarRef.el;
+                    if (!progress || !bar) return;
+                    const scrollable = preview.scrollHeight - preview.clientHeight;
+                    const pct = scrollable > 0 ? (preview.scrollTop / scrollable) * 100 : 0;
+                    bar.style.height = pct + "%";
+                    if (preview.scrollTop > 50) {
+                        progress.classList.remove("o_md_scroll_hidden");
+                    } else {
+                        progress.classList.add("o_md_scroll_hidden");
+                    }
                 });
+
+                // Klick auf Fortschrittsanzeige → zurück nach oben
+                const progress = this.scrollProgressRef.el;
+                if (progress) {
+                    progress.addEventListener("click", () => {
+                        preview.scrollTo({ top: 0, behavior: "smooth" });
+                    });
+                }
             }
 
             // Event-Listener: Bei Texteingabe State aktualisieren – mit Debounce (300ms).
