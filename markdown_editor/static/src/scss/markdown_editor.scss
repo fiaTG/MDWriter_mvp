@@ -141,44 +141,66 @@
 
 .o_md_splitter {
     flex: 0 0 auto;
-    width: 16px;
+    width: 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     cursor: col-resize;
     background: var(--o-input-bg);
     border-left: 1px solid var(--tt-primary);
     border-right: 1px solid var(--tt-primary);
     z-index: 1;
     user-select: none;
+    transition: background 0.15s ease;
 
     &:hover {
         background: var(--tt-primary-dim);
+
+        .o_md_splitter_handle {
+            opacity: 1;
+        }
     }
 }
 
+// Sechs Punkte als Drag-Indikator (2 Spalten × 3 Zeilen via box-shadow)
 .o_md_splitter_handle {
-    width: 4px;
-    height: 28px;
-    border-left: 2px dotted var(--tt-primary);
-    border-right: 2px dotted var(--tt-primary);
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--tt-primary);
     pointer-events: none;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+    // 2 Spalten, 3 Zeilen: box-shadow erzeugt die restlichen 5 Punkte
+    box-shadow:
+        5px  0px 0 var(--tt-primary),   // rechts
+        0px  6px 0 var(--tt-primary),   // unten
+        5px  6px 0 var(--tt-primary),   // rechts unten
+        0px 12px 0 var(--tt-primary),   // 2× unten
+        5px 12px 0 var(--tt-primary);   // rechts 2× unten
 }
 
 .o_md_snap_btn {
     all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
     cursor: pointer;
     color: var(--tt-primary);
-    font-size: 10px;
+    font-size: 9px;
     line-height: 1;
-    padding: 2px 3px;
-    border-radius: 2px;
+    border-radius: var(--tt-radius-sm);
+    border: 1px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 
     &:hover {
         background: var(--tt-primary);
         color: var(--tt-on-primary);
+        border-color: var(--tt-primary-dark);
     }
 }
 
