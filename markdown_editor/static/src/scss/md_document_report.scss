@@ -1,0 +1,217 @@
+// =============================================================================
+// MDWriter — PDF Report Styling
+// Bundle: web.report_assets_common (wird von wkhtmltopdf genutzt)
+//
+// WICHTIG: wkhtmltopdf (QtWebKit) unterstützt KEINE CSS Custom Properties
+// (var(--...)). Hier werden deshalb SCSS-Variablen verwendet, die zur
+// Compile-Zeit zu statischen Werten aufgelöst werden.
+//
+// BRANDING ANPASSEN: Nur diesen Block ändern — alle Farben, Schriften und
+// Abstände des PDFs werden von hier gesteuert.
+// =============================================================================
+
+// ============================================================
+// Branding-Variablen — hier anpassen für andere Firmen
+// ============================================================
+
+$pdf-primary:       #97d21d;   // Akzentfarbe (Header, Code-Streifen, Tabellen-Header)
+$pdf-primary-dark:  #638a13;   // Dunklere Variante (Links)
+$pdf-text:          #1a1a1a;   // Fließtext
+$pdf-text-muted:    #555555;   // Metadaten, sekundärer Text
+$pdf-bg-code:       #f6f8fa;   // Hintergrund Code-Blöcke
+$pdf-bg-code-inline:#f3f4f6;   // Hintergrund Inline-Code
+$pdf-bg-alt-row:    #f9fafb;   // Jede zweite Tabellenzeile
+$pdf-bg-quote:      #f9fafb;   // Blockquote-Hintergrund
+$pdf-border:        #e1e4e8;   // Rahmen (Code, Tabellen)
+$pdf-border-light:  #dddddd;   // Hellere Trennlinien
+$pdf-link:          #0969da;   // Link-Farbe
+
+$pdf-font-body:     'DejaVu Sans', Arial, sans-serif;   // Fließtext (wkhtmltopdf-sicher)
+$pdf-font-code:     'DejaVu Sans Mono', 'Courier New', monospace;
+
+$pdf-size-base:     11pt;
+$pdf-size-meta:     9pt;
+$pdf-size-code:     9pt;
+$pdf-line-height:   1.6;
+
+// ============================================================
+// Basis-Typografie
+// ============================================================
+
+body {
+    font-family: $pdf-font-body;
+    font-size: $pdf-size-base;
+    color: $pdf-text;
+    line-height: $pdf-line-height;
+}
+
+// ============================================================
+// Dokumentkopf (Titel + Metadaten)
+// ============================================================
+
+.md-doc-header {
+    border-bottom: 2px solid $pdf-primary;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+
+    h1 {
+        font-size: 22pt;
+        font-weight: bold;
+        margin: 0 0 6px 0;
+        color: $pdf-text;
+        border: none;  // kein doppelter Strich unter Titel
+    }
+}
+
+.md-doc-meta {
+    font-size: $pdf-size-meta;
+    color: $pdf-text-muted;
+
+    b { color: $pdf-text; }
+}
+
+// ============================================================
+// Überschriften
+// ============================================================
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: $pdf-font-body;
+    color: $pdf-text;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.md-doc-content {
+    h1 {
+        font-size: 18pt;
+        border-bottom: 1px solid $pdf-border-light;
+        padding-bottom: 4px;
+    }
+
+    h2 {
+        font-size: 15pt;
+        border-bottom: 1px solid $pdf-border-light;
+        padding-bottom: 3px;
+        opacity: 0.85;
+    }
+
+    h3 { font-size: 13pt; }
+    h4 { font-size: 11pt; }
+}
+
+// ============================================================
+// Fließtext
+// ============================================================
+
+p { margin: 0 0 10px 0; }
+
+// ============================================================
+// Inline-Code
+// ============================================================
+
+code {
+    font-family: $pdf-font-code;
+    font-size: 9.5pt;
+    background-color: $pdf-bg-code-inline;
+    border: 1px solid $pdf-border;
+    border-radius: 3px;
+    padding: 1px 4px;
+    color: $pdf-text;
+}
+
+// ============================================================
+// Code-Blöcke
+// ============================================================
+
+pre {
+    font-family: $pdf-font-code;
+    font-size: $pdf-size-code;
+    background-color: $pdf-bg-code;
+    border: 1px solid $pdf-border;
+    border-left: 4px solid $pdf-primary;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: $pdf-text;
+    page-break-inside: avoid;
+
+    code {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: inherit;
+    }
+}
+
+// ============================================================
+// Blockquote
+// ============================================================
+
+blockquote {
+    border-left: 4px solid $pdf-primary;
+    margin: 12px 0;
+    padding: 6px 14px;
+    background-color: $pdf-bg-quote;
+    color: $pdf-text-muted;
+    font-style: italic;
+}
+
+// ============================================================
+// Listen
+// ============================================================
+
+ul, ol {
+    margin: 0 0 10px 0;
+    padding-left: 24px;
+}
+
+li { margin-bottom: 4px; }
+
+// ============================================================
+// Tabellen
+// ============================================================
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+
+    th {
+        background-color: $pdf-primary;
+        color: $pdf-text;
+        font-weight: bold;
+        text-align: left;
+        padding: 7px 10px;
+        border: 1px solid $pdf-border-light;
+    }
+
+    td {
+        padding: 6px 10px;
+        border: 1px solid $pdf-border-light;
+        vertical-align: top;
+    }
+
+    tr:nth-child(even) td {
+        background-color: $pdf-bg-alt-row;
+    }
+}
+
+// ============================================================
+// Sonstige Elemente
+// ============================================================
+
+hr {
+    border: none;
+    border-top: 1px solid $pdf-border-light;
+    margin: 16px 0;
+}
+
+a {
+    color: $pdf-link;
+    text-decoration: none;
+}

@@ -29,6 +29,9 @@
             "markdown_editor/static/src/xml/markdown_editor_templates.xml",
             "markdown_editor/static/src/scss/markdown_editor.scss",
         ],
+        "web.report_assets_common": [
+            "markdown_editor/static/src/scss/md_document_report.scss",
+        ],
     },
     "installable": True,
     "application": True,
