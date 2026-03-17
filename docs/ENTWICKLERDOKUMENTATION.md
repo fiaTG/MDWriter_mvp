@@ -1,7 +1,7 @@
 # Entwicklerdokumentation: MDWriter Odoo 19 Modul
 
 **Projekt:** MDWriter – Markdown Editor für Odoo 19
-**Modulversion:** 19.0.1.1.0
+**Modulversion:** 19.0.1.2.0
 **Autor:** Timo Giese
 **Datum:** März 2026
 **Status:** MVP vollständig implementiert
@@ -62,6 +62,7 @@ markdown_editor/
 │       │   └── markdown_editor.js          # OWL-Komponente MarkdownField
 │       ├── scss/
 │       │   ├── markdown_editor.scss        # Split-View, Trendtec-Branding, Odoo-Fixes
+│       │   ├── codemirror_theme.scss       # CodeMirror Syntax-Highlighting-Theme (web.assets_backend)
 │       │   └── md_document_report.scss     # PDF-Styling (web.report_assets_common)
 │       ├── xml/
 │       │   └── markdown_editor_templates.xml  # OWL-Template
@@ -168,22 +169,42 @@ Die Komponente wird als Odoo Field Widget registriert und über `widget="markdow
 
 | Methode | Aufgabe |
 |---|---|
-| `setup()` | Initialisiert markdown-it, State, CodeMirror-Ref und Lifecycle-Callbacks |
-| `_render(value)` | Wandelt Markdown-Text in sicheres HTML um (DRY: zentrale Render-Logik) |
+| `setup()` | Initialisiert markdown-it, State, Refs, Scroll-Sync und Lifecycle-Callbacks |
+| `_render(value)` | Wandelt Markdown-Text in sicheres HTML um |
 | `_updateState(value)` | Aktualisiert State + speichert Wert im Odoo-Datensatz |
 | `_onInput(ev)` | Fallback-Handler wenn CodeMirror nicht geladen wurde |
+| `_setRatio(ratio)` | Setzt Editor/Preview-Verhältnis via CSS Custom Properties (direkte DOM-Manipulation, kein OWL-Rerender) |
+| `_onSplitterMousedown(ev)` | Startet Drag-Resize: berechnet neues Verhältnis aus Mausposition |
+| `_snapEditor()` | Toggle: Editor auf 95% / zurück auf 50/50 |
+| `_snapPreview()` | Toggle: Preview auf 95% / zurück auf 50/50 |
 
 ```javascript
 _render(value) {
     return this.md ? markup(this.md.render(value)) : markup(value);
 }
 
-_updateState(value) {
-    this.state.value = value;
-    this.state.html = this._render(value);
-    this.props.record.update({ [this.props.name]: value });
+_setRatio(ratio) {
+    ratio = Math.min(95, Math.max(5, ratio));
+    const el = this.containerRef.el;
+    if (el) {
+        el.style.setProperty("--editor-ratio", ratio + "%");
+        el.style.setProperty("--preview-ratio", (100 - ratio) + "%");
+    }
+    if (this.cm) this.cm.refresh(); // CodeMirror nach Resize neu messen
 }
 ```
+
+**Scroll-Sync:**
+Editor und Preview scrollen synchron. Die Synchronisierung läuft in beide Richtungen:
+- `cm.on("scroll")` → aktualisiert den Fortschrittsbalken im Editor + setzt `preview.scrollTop`
+- `preview.addEventListener("scroll")` → setzt `cm.scrollTo()` + zeigt/versteckt Scroll-to-top-Button
+
+Zwei Flags verhindern Feedback-Schleifen:
+- `_syncing` – verhindert, dass ein Sync-Event den anderen Sync auslöst
+- `_noSync` – deaktiviert den Sync während des programmatischen smooth scrolls beim Scroll-to-top-Klick (mit 800ms Timeout-Reset)
+
+**Bekanntes Problem: Scroll-Sync bei langen Bild-URLs**
+Der Sync basiert auf Pixel-Höhen-Verhältnissen (`info.top / info.height`). Bei `lineWrapping: true` bläht eine lange URL wie `![Icon](https://sehr-langer-pfad...)` die visuelle Scrollhöhe des Editors auf — ohne dass die Preview proportional größer wird. Dadurch driftet die Synchronisierung ab. Eine zeilenbasierte Variante (`cm.lineAtHeight()` / `cm.heightAtLine()`) wurde implementiert und getestet, verursachte aber sichtbares Ruckeln und wurde rückgängig gemacht. Das Problem ist bekannt und offen.
 
 - `html: false` – eingebettetes HTML in Markdown wird escaped (XSS-Schutz)
 - `markup()` aus `@odoo/owl` markiert den String als sicheres HTML für `t-out`
@@ -198,52 +219,141 @@ Dateiname: [static/src/xml/markdown_editor_templates.xml](../markdown_editor/sta
 
 ```xml
 <t t-name="markdown_editor.MarkdownField">
-    <div class="o_markdown_editor">
-        <textarea
-            t-ref="editor"
-            class="o_input"
-            t-on-input="_onInput"
-            t-model="state.value"
-            placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
-        />
-        <div class="o_markdown_preview">
+    <div class="o_markdown_editor" t-ref="container">
+
+        <!-- Editor-Pane: CodeMirror mountet auf die Textarea -->
+        <div class="o_md_editor_pane">
+            <textarea t-ref="editor" class="o_input" t-on-input="_onInput"
+                placeholder="Geben Sie hier Ihren Markdown‑Text ein..."/>
+            <!-- Fortschrittsbalken: rechte Kante des Editors, ersetzt CM-Scrollbar -->
+            <div class="o_md_editor_progress">
+                <div class="o_md_editor_bar" t-ref="scrollBar"/>
+            </div>
+        </div>
+
+        <!-- Splitter: schmale Linie + 44px-Kreis mit SVG-Doppelpfeil -->
+        <div class="o_md_splitter" t-on-mousedown="_onSplitterMousedown">
+            <div class="o_md_splitter_handle">
+                <svg viewBox="0 0 26 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 0L0 10l9 10z"/>
+                    <path d="M17 0l9 10-9 10z"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Preview: Live-HTML via markdown-it -->
+        <div class="o_markdown_preview" t-ref="preview">
             <t t-out="state.html"/>
         </div>
+
+        <!-- Scroll-to-top: erscheint ab preview.scrollTop > 50px -->
+        <div class="o_md_scroll_progress o_md_scroll_hidden" t-ref="scrollProgress">
+            <div class="o_md_scroll_label">SCROLL TO TOP</div>
+        </div>
+
     </div>
 </t>
 ```
 
-`t-out` mit `markup()`-gewraptem State ist der korrekte Weg in Odoo 19 — `t-raw` ist deprecated. Ohne `markup()` würde `t-out` den HTML-String escapen statt rendern.
+**Wichtige Designentscheidungen:**
+- Der Fortschrittsbalken liegt **innerhalb** von `.o_md_editor_pane` (position: absolute, rechte Kante) — so ist er stets über dem Editor, nicht über der Preview
+- Der Scroll-to-top-Button liegt als direktes Kind von `.o_markdown_editor` (position: absolute) — `.o_markdown_editor` hat `position: relative` + `overflow: hidden` und ist der korrekte Positionierungskontext
+- `position: sticky` im Scroll-Container (`.o_markdown_preview` hat `overflow-y: auto`) funktioniert nicht — war ein früherer Implementierungsversuch, wurde durch die absolute Positionierung im Parent ersetzt
+- `t-out` mit `markup()`-gewraptem State ist der korrekte Weg in Odoo 19 — `t-raw` ist deprecated
 
 ### 4.3 Styling (SCSS)
 
-Dateiname: [static/src/scss/markdown_editor.scss](../markdown_editor/static/src/scss/markdown_editor.scss)
+Dateien:
+- [static/src/scss/markdown_editor.scss](../markdown_editor/static/src/scss/markdown_editor.scss) — Layout, Branding, Splitter, Scroll-Indikatoren
+- [static/src/scss/codemirror_theme.scss](../markdown_editor/static/src/scss/codemirror_theme.scss) — CodeMirror Syntax-Highlighting-Farben
 
-**Split-View:**
-- `.o_markdown_editor` – `display: flex`, `height: 600px`
-- Textarea (links) und Preview (rechts) je `flex: 1 1 50%`
-- `white-space` ist bewusst **nicht** gesetzt – HTML-Rendering der Preview funktioniert korrekt
+**Hinweis:** `codemirror_theme.scss` war in frühen Versionen zwar vorhanden, aber nicht in `__manifest__.py` registriert. Dadurch wurden CodeMirror-Überschriften immer im Standard-Blau angezeigt (CM5-Default: `cm-s-default .cm-header { color: blue }`). Die fehlende Registrierung im `web.assets_backend`-Bundle war der Root Cause.
 
-**Dark-Mode:** Alle Farbwerte nutzen Odoo CSS-Variablen (`var(--o-input-bg)`, `var(--o-background-color)`, `var(--o-text-color)`, `var(--border-color)`). Dark-Mode-Kompatibilität ist dadurch automatisch gegeben – Odoos eigener Theme-Switcher wird vollständig respektiert.
+---
 
-**Trendtec-Branding:**
+**Resizable Split-View:**
 
-Das Modul verwendet das Trendtec Corporate Design. Die Design-Tokens sind als CSS Custom Properties definiert:
+Das Verhältnis zwischen Editor und Preview wird über zwei CSS Custom Properties gesteuert, die per JS direkt auf dem Container-Element gesetzt werden (kein OWL-State-Update = kein Rerender während des Ziehens):
 
 ```scss
-:root {
-    --tt-primary:      #97d21d;                          /* Trendtec Lime Green */
-    --tt-primary-dark: #638a13;                          /* Hover / aktiver State */
-    --tt-primary-dim:  rgba(151, 210, 29, 0.15);        /* Selektions-Hintergrund */
-    --tt-radius:       12px;
-    --tt-radius-sm:    6px;
-    --tt-font-ui:      'Mulish', 'Inter', sans-serif;
-    --tt-font-heading: 'Space Grotesk', 'Mulish', sans-serif;
-    --tt-font-code:    'JetBrains Mono', monospace;
+.o_markdown_editor {
+    display: flex;
+    height: 600px;
+    position: relative;   /* Positionierungskontext für absolut platzierte Elemente */
+    overflow: hidden;
+    --editor-ratio:  50%; /* Startwert; per JS via _setRatio() überschrieben */
+    --preview-ratio: 50%;
+}
+
+.o_md_editor_pane {
+    flex: 0 0 var(--editor-ratio);
+    position: relative;   /* Positionierungskontext für Fortschrittsbalken */
+}
+
+.o_markdown_preview {
+    flex: 0 0 var(--preview-ratio);
+    overflow-y: auto;
 }
 ```
 
-Alle Odoo-eigenen CSS-Variablen (`var(--o-*)`) bleiben als Fallback erhalten → Dark-Mode-Kompatibilität.
+Der Splitter ist eine 30px breite Zone mit `cursor: col-resize`. Die sichtbare Linie ist ein `::before`-Pseudoelement (2px breit, 50% Opazität), der Kreis mit SVG-Pfeilen ein `position: absolute`-Element mittig auf der Linie.
+
+---
+
+**Design Tokens:**
+
+```scss
+:root {
+    --tt-primary:       #97d21d;                        /* Trendtec Lime Green */
+    --tt-primary-dark:  #638a13;                        /* Hover / aktiver State */
+    --tt-primary-dim:   rgba(151, 210, 29, 0.15);       /* Selektions-Hintergrund */
+    --tt-radius:        12px;
+    --tt-radius-sm:     6px;
+    --tt-font-ui:       'Mulish', 'Inter', sans-serif;
+    --tt-font-heading:  'Space Grotesk', 'Mulish', sans-serif;
+    --tt-font-code:     'JetBrains Mono', monospace;
+    --tt-heading-color: light-dark(#97d21d, #c8e840);   /* dunkler/heller Modus */
+    --tt-code-bg:       light-dark(#f0f2f5, #1e2030);
+    --tt-editor-bg:     light-dark(#f0f2f5, #1e2030);   /* CodeMirror Hintergrund */
+    --tt-preview-bg:    light-dark(#f7f8fa, #22243a);   /* Preview etwas heller */
+}
+```
+
+`--tt-editor-bg` und `--tt-preview-bg` ersetzen Odoos `var(--o-input-bg)` / `var(--o-background-color)`. Die Odoo-Werte sind zu extrem (fast weiß / fast schwarz); die eigenen Tokens liegen bewusst zwischen den Extremen. Preview ist leicht heller als Editor, was den Split optisch trennt ohne harten Kontrast.
+
+`light-dark()` setzt voraus, dass auf `<html>` `color-scheme: dark` gesetzt ist — Odoo Enterprise tut das automatisch beim Theme-Wechsel.
+
+---
+
+**CodeMirror-Theme (`codemirror_theme.scss`):**
+
+Alle Syntax-Highlight-Farben sind als `--tt-cm-*` Variablen definiert und nutzen `light-dark()` für Dark-Mode-Kompatibilität. Das Theme ist auf `.o_markdown_editor` gescoped, damit andere Odoo-Module unberührt bleiben:
+
+```scss
+.o_markdown_editor {
+    --tt-cm-bg:    var(--tt-editor-bg);
+    --tt-cm-color: var(--o-text-color);
+
+    .cm-s-default .cm-header { color: var(--tt-cm-header); } /* light-dark(#97d21d, #c8e840) */
+    .cm-s-default .cm-link   { color: var(--tt-cm-link);   }
+    /* ... weitere Token ... */
+}
+```
+
+Der native CodeMirror-Vertikalscrollbalken ist ausgeblendet (`display: none !important`), ersetzt durch den eigenen Fortschrittsbalken.
+
+---
+
+**Scroll-Indikatoren:**
+
+| Element | Klasse | Positionierung | Funktion |
+|---|---|---|---|
+| Fortschrittsbalken | `.o_md_editor_progress` / `.o_md_editor_bar` | `position: absolute; right: 0` im Editor-Pane | Zeigt Editor-Scrolltiefe (wächst von oben) |
+| Scroll-to-top Button | `.o_md_scroll_progress` / `.o_md_scroll_label` | `position: absolute; bottom/right` im `.o_markdown_editor` | Erscheint ab `scrollTop > 50px`, Klick → beide Panes nach oben |
+
+Beide Elemente nutzen `.o_md_scroll_hidden` (`opacity: 0; pointer-events: none`) für das Ein-/Ausblenden.
+
+---
 
 **Fonts:**
 
@@ -258,12 +368,14 @@ Alle Fonts liegen lokal unter `static/src/fonts/` — kein CDN.
 
 Variable Fonts decken alle Gewichte in einer Datei ab. Italic-Varianten sind jeweils eingebunden. Für das PDF werden statische Schnitte verwendet (wkhtmltopdf unterstützt keine Variable Fonts).
 
+---
+
 **Odoo Layout-Fixes:**
 ```scss
 .o_form_view:has(.o_markdown_editor) {
     .o_form_sheet_bg {
         flex: 1 1 auto !important;      /* füllt den Renderer vollständig */
-        max-width: 100% !important;     /* überschreibt Odoос max-width: 1400px */
+        max-width: 100% !important;     /* überschreibt Odoos max-width: 1400px */
     }
     .o_form_sheet {
         overflow: visible !important;
@@ -469,7 +581,10 @@ pip install mistune
 | Restore-Funktion | ✅ Implementiert | Ältere Version wiederherstellen via Button in der Versions-Form |
 | Syntax-Highlighting | ✅ Implementiert | CodeMirror 5 (Markdown-Modus), lokal eingebunden |
 | Automatisierte Tests | ✅ Implementiert | TransactionCase-Tests: Versionierung, ACL, Restore, Diff |
+| Resizable Split-View | ✅ Implementiert | Splitter mit Drag + CSS Custom Properties, kein OWL-Rerender |
+| Scroll-Sync | ✅ Implementiert | Editor ↔ Preview synchron, pixel-höhenbasiert |
 | Performance | ⚠️ Beobachten | Bei sehr großen Dokumenten (>10.000 Zeilen) kann Live-Preview verlangsamen |
+| Scroll-Sync bei langen Bild-URLs | ⚠️ Bekanntes Problem | `![Icon](sehr-langer-pfad)` bläht bei `lineWrapping: true` die visuelle Scrollhöhe des Editors auf, ohne dass die Preview proportional mitwächst. Ursache: Pixel-höhenbasierter Sync vergleicht `info.height` (CM, visuell) mit `preview.scrollHeight` (gerendert). Zeilenbasierter Ansatz (`cm.lineAtHeight()` / `cm.heightAtLine()`) wurde implementiert und getestet — verursachte aber sichtbares Ruckeln durch asynchrone CM-Scroll-Events und wurde rückgängig gemacht. Workaround: Bilder mit kurzen Pfaden oder relativen Pfaden einfügen. |
 
 ---
 
@@ -477,6 +592,15 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.2.8 | 17.03.2026 | Scroll-Sync: zeilenbasierter Ansatz (cm.lineAtHeight) implementiert und wieder rückgängig gemacht (zu starkes Ruckeln durch asynchrone CM-Events); pixel-höhenbasierter Sync wiederhergestellt |
+| 1.2.7 | 17.03.2026 | Scroll-to-top scrollt jetzt auch Editor zurück (cm.scrollTo(null, 0) beim Click) |
+| 1.2.6 | 17.03.2026 | Hintergrundfarben: eigene Tokens --tt-editor-bg / --tt-preview-bg mit light-dark() (sanftes Grau/Mitternachtsblau statt Odoos Extremwerte) |
+| 1.2.5 | 17.03.2026 | Scroll-Indikatoren umstrukturiert: Fortschrittsbalken im Editor (ersetzt CM-vscrollbar), nur Scroll-to-top-Button in Preview; _noSync-Flag verhindert Feedback-Schleife beim smooth scroll |
+| 1.2.4 | 17.03.2026 | Scroll-to-top-Fix: position:sticky funktioniert nicht in overflow-y:auto — Indicator als position:absolute direkt in .o_markdown_editor (hat position:relative + overflow:hidden) |
+| 1.2.3 | 17.03.2026 | Scroll-Sync Editor ↔ Preview (bidirektional), _syncing-Flag gegen Feedback-Schleifen, Scroll-Fortschrittsanzeige in Preview |
+| 1.2.2 | 17.03.2026 | Splitter-Redesign: schmale Linie via ::before, 44px-Kreis mit SVG-Doppelpfeil (position:absolute mittig auf der Linie) |
+| 1.2.1 | 17.03.2026 | Resizable Split-View: draggbarer Splitter, CSS Custom Properties --editor-ratio/--preview-ratio, _setRatio() via direkter DOM-Manipulation (kein OWL-Rerender) |
+| 1.2.0 | 17.03.2026 | Dark-Mode Überschriften-Fix: --tt-heading-color mit light-dark() in Preview; codemirror_theme.scss in __manifest__.py registriert (war vorhanden aber nie geladen — Root Cause für blaue CM-Überschriften) |
 | 1.1.33 | 17.03.2026 | Fonts: Space Grotesk für h1–h6 (Preview + PDF), JetBrains Mono wieder primärer Code-Font (Fira Code entfernt) |
 | 1.1.32 | 17.03.2026 | PDF-Fonts: Inter + JetBrains Mono + Space Grotesk via @font-face (statische Schnitte, wkhtmltopdf-kompatibel) |
 | 1.1.31 | 17.03.2026 | PDF-Styling: Inline-CSS → md_document_report.scss (web.report_assets_common), Branding-Variablen-Block |
@@ -524,4 +648,4 @@ pip install mistune
 
 ---
 
-**Letzte Aktualisierung:** 11.03.2026 (v1.1.28)
+**Letzte Aktualisierung:** 17.03.2026 (v1.2.8)
