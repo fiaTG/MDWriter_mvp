@@ -11,6 +11,50 @@
 // =============================================================================
 
 // ============================================================
+// Fonts — @font-face für wkhtmltopdf
+// Hinweis: Variable Fonts werden von wkhtmltopdf (QtWebKit) nicht
+// unterstützt — hier statische Schnitte verwenden.
+// ============================================================
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/markdown_editor/static/src/fonts/Inter/static/Inter_18pt-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('/markdown_editor/static/src/fonts/Inter/static/Inter_18pt-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('/markdown_editor/static/src/fonts/Inter/static/Inter_18pt-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('/markdown_editor/static/src/fonts/Inter/static/Inter_18pt-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/markdown_editor/static/src/fonts/JetBrains_Mono/static/JetBrainsMono-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/markdown_editor/static/src/fonts/JetBrains_Mono/static/JetBrainsMono-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+// ============================================================
 // Branding-Variablen — hier anpassen für andere Firmen
 // ============================================================
 
@@ -26,8 +70,9 @@ $pdf-border:        #e1e4e8;   // Rahmen (Code, Tabellen)
 $pdf-border-light:  #dddddd;   // Hellere Trennlinien
 $pdf-link:          #0969da;   // Link-Farbe
 
-$pdf-font-body:     'DejaVu Sans', Arial, sans-serif;   // Fließtext (wkhtmltopdf-sicher)
-$pdf-font-code:     'DejaVu Sans Mono', 'Courier New', monospace;
+// Inter für Fließtext, JetBrains Mono für Code — beide lokal vorhanden
+$pdf-font-body:     'Inter', Arial, sans-serif;
+$pdf-font-code:     'JetBrains Mono', 'Courier New', monospace;
 
 $pdf-size-base:     11pt;
 $pdf-size-meta:     9pt;
