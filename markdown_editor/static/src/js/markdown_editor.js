@@ -109,9 +109,7 @@ class MarkdownField extends Component {
                 if (this._syncing || this._noSync) return;
                 const preview = this.previewRef.el;
                 if (!preview) return;
-                // Zeilenbasiert: lange URLs zählen als eine Zeile, unabhängig von Wrapping
-                const firstLine = this.cm.lineAtHeight(info.top, "local");
-                const ratio = firstLine / Math.max(1, this.cm.lineCount() - 1);
+                const ratio = info.top / Math.max(1, info.height - info.clientHeight);
                 this._syncing = true;
                 preview.scrollTop = ratio * Math.max(0, preview.scrollHeight - preview.clientHeight);
                 this._syncing = false;
@@ -123,11 +121,10 @@ class MarkdownField extends Component {
                 preview.addEventListener("scroll", () => {
                     // Editor synchronisieren
                     if (!this._syncing && !this._noSync) {
+                        const info = this.cm.getScrollInfo();
                         const ratio = preview.scrollTop / Math.max(1, preview.scrollHeight - preview.clientHeight);
-                        const targetLine = Math.round(ratio * (this.cm.lineCount() - 1));
-                        const targetPx = this.cm.heightAtLine(targetLine, "local");
                         this._syncing = true;
-                        this.cm.scrollTo(null, targetPx);
+                        this.cm.scrollTo(null, ratio * Math.max(0, info.height - info.clientHeight));
                         this._syncing = false;
                     }
 
