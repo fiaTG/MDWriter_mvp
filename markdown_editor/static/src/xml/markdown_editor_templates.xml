@@ -26,7 +26,7 @@
                 </div>
             </div>
             <!-- Rechte Hälfte: Live-HTML-Vorschau -->
-            <div class="o_markdown_preview">
+            <div class="o_markdown_preview" t-ref="preview">
                 <t t-out="state.html"/>
             </div>
         </div>

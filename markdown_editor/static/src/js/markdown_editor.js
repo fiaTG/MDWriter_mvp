@@ -61,8 +61,10 @@ class MarkdownField extends Component {
         // useRef gibt uns Zugriff auf das <textarea>-Element und den Container im Template.
         this.editorRef = useRef("editor");
         this.containerRef = useRef("container");
+        this.previewRef = useRef("preview");
         this.cm = null;           // Hier speichern wir die CodeMirror-Instanz (zunächst null)
         this._debounce = null;    // Timer-ID für Debouncing (verhindert zu häufiges Rendern)
+        this._syncing = false;    // Verhindert Scroll-Feedback-Schleifen
 
         // onMounted: Dieser Code läuft, nachdem das HTML der Komponente in die Seite eingefügt wurde.
         // Erst dann existiert das <textarea>-Element im DOM, auf das CodeMirror zugreift.
@@ -86,6 +88,31 @@ class MarkdownField extends Component {
 
             // Startverhältnis setzen (50/50)
             this._setRatio(50);
+
+            // Synchrones Scrollen: Editor → Preview
+            this.cm.on("scroll", () => {
+                if (this._syncing) return;
+                const preview = this.previewRef.el;
+                if (!preview) return;
+                const info = this.cm.getScrollInfo();
+                const ratio = info.top / Math.max(1, info.height - info.clientHeight);
+                this._syncing = true;
+                preview.scrollTop = ratio * Math.max(0, preview.scrollHeight - preview.clientHeight);
+                this._syncing = false;
+            });
+
+            // Synchrones Scrollen: Preview → Editor
+            const preview = this.previewRef.el;
+            if (preview) {
+                preview.addEventListener("scroll", () => {
+                    if (this._syncing) return;
+                    const info = this.cm.getScrollInfo();
+                    const ratio = preview.scrollTop / Math.max(1, preview.scrollHeight - preview.clientHeight);
+                    this._syncing = true;
+                    this.cm.scrollTo(null, ratio * Math.max(0, info.height - info.clientHeight));
+                    this._syncing = false;
+                });
+            }
 
             // Event-Listener: Bei Texteingabe State aktualisieren – mit Debounce (300ms).
             // Debounce bedeutet: Erst wenn der User 300ms lang nicht tippt, wird die Preview neu
