@@ -144,6 +144,7 @@ class MarkdownField extends Component {
                     progress.addEventListener("click", () => {
                         this._noSync = true;
                         preview.scrollTo({ top: 0, behavior: "smooth" });
+                        this.cm.scrollTo(null, 0);
                         setTimeout(() => { this._noSync = false; }, 800);
                     });
                 }
