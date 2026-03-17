@@ -327,20 +327,32 @@ Hinweis: Analoges Vorgehen wie `action_download_md`. Vermeidet Abhängigkeit von
 
 ### 6.2 Template-Struktur
 
+Das Template enthält inline CSS (wkhtmltopdf ignoriert externe Stylesheets) und einen Metadaten-Header:
+
 ```xml
 <template id="report_md_document">
     <t t-call="web.html_container">
         <t t-foreach="docs" t-as="doc">
-            <t t-call="web.external_layout">  <!-- Odoo-Standard-Header/Footer, stabile wkhtmltopdf-Basis -->
+            <t t-call="web.external_layout">
                 <div class="page">
-                    <h1><t t-esc="doc.name"/></h1>
-                    <div t-out="doc.content_html"/>
+                    <style>/* Inline CSS für wkhtmltopdf */</style>
+                    <!-- Metadaten-Header: Titel, Autor, Version, Status, Datum -->
+                    <div class="md-doc-header">
+                        <h1><t t-esc="doc.name"/></h1>
+                        <div class="md-doc-meta">...</div>
+                    </div>
+                    <!-- Dokumentinhalt -->
+                    <div class="md-doc-content">
+                        <t t-out="doc.content_html"/>
+                    </div>
                 </div>
             </t>
         </t>
     </t>
 </template>
 ```
+
+**Inline-CSS umfasst:** Typografie (DejaVu Sans, line-height 1.6), Überschriften-Hierarchie mit Trennlinien, Code-Blöcke mit grünem Akzentstreifen, Tabellen mit formatiertem Header, Blockquotes — alles wkhtmltopdf-kompatibel.
 
 `web.external_layout` ist der Odoo-Standard für PDF-Reports: korrekte HTML-Struktur für wkhtmltopdf, CSS im `<head>`, automatischer Odoo-Company-Header/Footer. `web.html_container` ist zusätzlich zwingend nötig — ohne ihn schlägt `_prepare_html` fehl (`IndexError: list index out of range`).
 
@@ -447,6 +459,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.1.30 | 17.03.2026 | PDF-Template: Inline-CSS für wkhtmltopdf (Typografie, Code-Blöcke, Tabellen, Blockquotes), Metadaten-Header (Autor, Version, Status, Datum) |
 | 1.1.29 | 12.03.2026 | PDF-Fix: action_export_pdf nutzt gespeichertes pdf_attachment_id (analog action_download_md); Dateiname zuverlässig aus Attachment-Name statt report_file-Auswertung |
 | 1.1.28 | 11.03.2026 | PDF-Fix: report_file=${object.name} (Mako) → object.name (Python-Ausdruck); wird von Odoo via safe_eval mit object-Kontext ausgewertet |
 | 1.1.27 | 10.03.2026 | PDF-Template: Revert auf web.external_layout + doc.content_html (bewährt stabil); custom CSS-Template entfernt |
