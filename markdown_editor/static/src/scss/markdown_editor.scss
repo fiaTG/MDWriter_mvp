@@ -16,6 +16,7 @@
     --tt-font-ui:      'Mulish', 'Inter', -apple-system, sans-serif;
     --tt-font-heading: 'Space Grotesk', 'Mulish', sans-serif;
     --tt-font-code:    'JetBrains Mono', monospace;
+    --tt-heading-color: light-dark(#97d21d, #c8e840);
     --tt-shadow:       rgba(0, 0, 0, 0.12);
     --tt-code-bg:      light-dark(#f0f2f5, #1e2030);
 
@@ -148,7 +149,7 @@
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--tt-font-heading);
         font-weight: 700;
-        color: var(--tt-primary);
+        color: var(--tt-heading-color);
         margin-top: 1.5em;
         margin-bottom: 0.4em;
         line-height: 1.3;

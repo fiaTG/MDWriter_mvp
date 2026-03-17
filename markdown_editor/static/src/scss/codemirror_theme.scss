@@ -12,10 +12,10 @@
     --tt-cm-activeline:      rgba(151, 210, 29, 0.08);
 
     // Markdown‑Elemente
-    --tt-cm-header:          var(--tt-primary, #97d21d);   // # Überschriften
-    --tt-cm-quote:           #6a9a4a;                       // > Blockquote
-    --tt-cm-hr:              var(--tt-primary-dark, #638a13); // ---
-    --tt-cm-link:            var(--tt-primary-dark, #638a13); // [link]
+    --tt-cm-header:          light-dark(#97d21d, #c8e840);  // # Überschriften
+    --tt-cm-quote:           light-dark(#6a9a4a, #8fba6a);  // > Blockquote
+    --tt-cm-hr:              light-dark(#638a13, #97d21d);  // ---
+    --tt-cm-link:            light-dark(#638a13, #97d21d);  // [link]
     --tt-cm-em:              inherit;                        // *italic*
     --tt-cm-strong:          inherit;                        // **bold**
     --tt-cm-strikethrough:   #888;                           // ~~strikethrough~~
