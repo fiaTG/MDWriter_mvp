@@ -58,9 +58,9 @@ class MarkdownField extends Component {
             html: this._render(initial), // Das gerenderte HTML (für die Vorschau)
         });
 
-        // useRef gibt uns Zugriff auf das <textarea>-Element im Template.
-        // CodeMirror braucht dieses Element, um sich darauf zu mounten.
+        // useRef gibt uns Zugriff auf das <textarea>-Element und den Container im Template.
         this.editorRef = useRef("editor");
+        this.containerRef = useRef("container");
         this.cm = null;           // Hier speichern wir die CodeMirror-Instanz (zunächst null)
         this._debounce = null;    // Timer-ID für Debouncing (verhindert zu häufiges Rendern)
 
@@ -83,6 +83,9 @@ class MarkdownField extends Component {
 
             // Initialwert in CodeMirror setzen
             this.cm.setValue(this.state.value);
+
+            // Startverhältnis setzen (50/50)
+            this._setRatio(50);
 
             // Event-Listener: Bei Texteingabe State aktualisieren – mit Debounce (300ms).
             // Debounce bedeutet: Erst wenn der User 300ms lang nicht tippt, wird die Preview neu
@@ -136,6 +139,65 @@ class MarkdownField extends Component {
     _onInput(ev) {
         // Nur handeln wenn kein CodeMirror aktiv ist
         if (!this.cm) this._updateState(ev.target.value);
+    }
+
+    /**
+     * Setzt das Breiten-Verhältnis zwischen Editor und Preview.
+     * ratio: 0–100 (Prozentanteil des Editor-Pane).
+     * Direkte DOM-Manipulation via CSS Custom Property für flüssiges Dragging ohne OWL-Rerender.
+     */
+    _setRatio(ratio) {
+        ratio = Math.min(95, Math.max(5, ratio));
+        const el = this.containerRef.el;
+        if (el) {
+            el.style.setProperty("--editor-ratio", ratio + "%");
+            el.style.setProperty("--preview-ratio", (100 - ratio) + "%");
+        }
+        // CodeMirror neu messen – sonst stimmen Cursor-Position und Scrollbar nach Resize nicht
+        if (this.cm) this.cm.refresh();
+    }
+
+    /**
+     * Startet das Ziehen des Splitters.
+     * Berechnet anhand der Mausposition das neue Verhältnis und aktualisiert es live.
+     */
+    _onSplitterMousedown(ev) {
+        ev.preventDefault();
+        const container = this.containerRef.el;
+        if (!container) return;
+        const onMove = (e) => {
+            const rect = container.getBoundingClientRect();
+            const ratio = (e.clientX - rect.left) / rect.width * 100;
+            this._setRatio(ratio);
+        };
+        const onUp = () => {
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+    }
+
+    /**
+     * Snap-Button ◀: Editor maximieren (95%).
+     * Zweiter Klick: zurück auf 50/50.
+     */
+    _snapEditor() {
+        const el = this.containerRef.el;
+        if (!el) return;
+        const current = parseFloat(el.style.getPropertyValue("--editor-ratio")) || 50;
+        this._setRatio(current > 90 ? 50 : 95);
+    }
+
+    /**
+     * Snap-Button ▶: Preview maximieren (5% Editor = 95% Preview).
+     * Zweiter Klick: zurück auf 50/50.
+     */
+    _snapPreview() {
+        const el = this.containerRef.el;
+        if (!el) return;
+        const current = parseFloat(el.style.getPropertyValue("--editor-ratio")) || 50;
+        this._setRatio(current < 10 ? 50 : 5);
     }
 }
 

@@ -93,42 +93,93 @@
     box-shadow:
         0 4px 16px var(--tt-shadow),
         0 0 0 3px var(--tt-primary-dim);
+    // Startwerte; werden per JS via _setRatio() überschrieben
+    --editor-ratio:  50%;
+    --preview-ratio: 50%;
 }
 
 // ============================================================
-// Editor (linke Hälfte)
+// Editor-Pane (linke Hälfte, Wrapper)
 // ============================================================
 
-.o_markdown_editor textarea.o_input,
-.o_markdown_editor .CodeMirror {
-    flex: 1 1 50%;
+.o_md_editor_pane {
+    flex: 0 0 var(--editor-ratio);
     min-width: 0;
-    border: none;
-    font-family: var(--tt-font-code);
-    font-size: 14px;
-    line-height: 1.6;
+    overflow: hidden;
+    display: flex;
+
+    textarea.o_input,
+    .CodeMirror {
+        flex: 1 1 auto;
+        width: 100%;
+        height: 100%;
+        border: none;
+        font-family: var(--tt-font-code);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    textarea.o_input {
+        padding: 1rem;
+        resize: none;
+        outline: none;
+    }
+
+    .CodeMirror {
+        background: var(--o-input-bg);
+        color: var(--o-text-color);
+    }
+
+    .CodeMirror-scroll {
+        height: 100%;
+    }
 }
 
-.o_markdown_editor textarea.o_input {
-    padding: 1rem;
-    resize: none;
-    outline: none;
-}
+// ============================================================
+// Splitter-Handle
+// ============================================================
 
-.o_markdown_editor .CodeMirror {
-    height: 100%;
+.o_md_splitter {
+    flex: 0 0 auto;
+    width: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: col-resize;
     background: var(--o-input-bg);
-    color: var(--o-text-color);
+    border-left: 1px solid var(--tt-primary);
+    border-right: 1px solid var(--tt-primary);
+    z-index: 1;
+    user-select: none;
+
+    &:hover {
+        background: var(--tt-primary-dim);
+    }
 }
 
-.o_markdown_editor .CodeMirror-scroll {
-    height: 100%;
+.o_md_splitter_handle {
+    width: 4px;
+    height: 28px;
+    border-left: 2px dotted var(--tt-primary);
+    border-right: 2px dotted var(--tt-primary);
+    pointer-events: none;
 }
 
-// Trennlinie Editor / Preview
-.o_markdown_editor .CodeMirror + .o_markdown_preview,
-.o_markdown_editor textarea.o_input + .o_markdown_preview {
-    border-left: 2px solid var(--tt-primary);
+.o_md_snap_btn {
+    all: unset;
+    cursor: pointer;
+    color: var(--tt-primary);
+    font-size: 10px;
+    line-height: 1;
+    padding: 2px 3px;
+    border-radius: 2px;
+
+    &:hover {
+        background: var(--tt-primary);
+        color: var(--tt-on-primary);
+    }
 }
 
 // ============================================================
@@ -136,7 +187,7 @@
 // ============================================================
 
 .o_markdown_preview {
-    flex: 1 1 50%;
+    flex: 0 0 var(--preview-ratio);
     min-width: 0;
     padding: 1.25rem 1.5rem;
     overflow-y: auto;

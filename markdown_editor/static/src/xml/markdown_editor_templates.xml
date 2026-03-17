@@ -6,15 +6,23 @@
         Rechts: Live‑HTML‑Vorschau via markdown‑it + t‑out.
     -->
     <t t-name="markdown_editor.MarkdownField">
-        <div class="o_markdown_editor">
-            <!-- Eingabefeld: CodeMirror mountet fromTextArea auf dieses Element -->
-            <textarea
-                t-ref="editor"
-                class="o_input"
-                t-on-input="_onInput"
-                placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
-            />
-            <!-- Vorschau-Bereich fuer gerendertes HTML -->
+        <div class="o_markdown_editor" t-ref="container">
+            <!-- Linke Hälfte: Editor-Pane (Wrapper damit flex-basis auf den Wrapper wirkt) -->
+            <div class="o_md_editor_pane">
+                <textarea
+                    t-ref="editor"
+                    class="o_input"
+                    t-on-input="_onInput"
+                    placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
+                />
+            </div>
+            <!-- Splitter: ziehbar + zwei Snap-Buttons -->
+            <div class="o_md_splitter" t-on-mousedown="_onSplitterMousedown">
+                <button class="o_md_snap_btn" t-on-click="_snapEditor" title="Editor maximieren">◀</button>
+                <div class="o_md_splitter_handle"></div>
+                <button class="o_md_snap_btn" t-on-click="_snapPreview" title="Vorschau maximieren">▶</button>
+            </div>
+            <!-- Rechte Hälfte: Live-HTML-Vorschau -->
             <div class="o_markdown_preview">
                 <t t-out="state.html"/>
             </div>
