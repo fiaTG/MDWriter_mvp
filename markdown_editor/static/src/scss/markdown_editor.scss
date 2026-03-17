@@ -19,6 +19,8 @@
     --tt-heading-color: light-dark(#97d21d, #c8e840);
     --tt-shadow:       rgba(0, 0, 0, 0.12);
     --tt-code-bg:      light-dark(#f0f2f5, #1e2030);
+    --tt-editor-bg:    light-dark(#f0f2f5, #1e2030);
+    --tt-preview-bg:   light-dark(#f7f8fa, #22243a);
 
     --tt-diff-add-bg:  #1a4a1a;
     --tt-diff-add-fg:  #6ecc6e;
@@ -174,8 +176,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 44px;
-    height: 44px;
+    width: 33px;
+    height: 33px;
     border-radius: 50%;
     background: #1a1a1a;
     display: flex;
@@ -186,8 +188,8 @@
     transition: background 0.2s ease, box-shadow 0.2s ease;
 
     svg {
-        width: 18px;
-        height: 14px;
+        width: 14px;
+        height: 10px;
         pointer-events: none;
 
         path {
@@ -215,7 +217,7 @@
     min-width: 0;
     padding: 1.25rem 1.5rem;
     overflow-y: auto;
-    background: var(--o-background-color);
+    background: var(--tt-preview-bg);
     color: var(--o-text-color);
     font-family: var(--tt-font-ui);
     font-size: 15px;

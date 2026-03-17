@@ -51,7 +51,7 @@
 
 .o_markdown_editor {
     // Basis-Tokens auf Element-Ebene: erben Odoo Dark-Mode-Werte korrekt
-    --tt-cm-bg:          var(--o-input-bg);
+    --tt-cm-bg:          var(--tt-editor-bg);
     --tt-cm-color:       var(--o-text-color);
     --tt-cm-gutter-bg:   var(--o-input-bg);
     --tt-cm-gutter-border: var(--border-color);
