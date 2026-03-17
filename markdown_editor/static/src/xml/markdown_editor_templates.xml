@@ -16,11 +16,14 @@
                     placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
                 />
             </div>
-            <!-- Splitter: ziehbar + zwei Snap-Buttons -->
+            <!-- Splitter: schmale Linie + Kreis mit Doppelpfeil -->
             <div class="o_md_splitter" t-on-mousedown="_onSplitterMousedown">
-                <button class="o_md_snap_btn" t-on-click="_snapEditor" title="Editor maximieren">◀</button>
-                <div class="o_md_splitter_handle"></div>
-                <button class="o_md_snap_btn" t-on-click="_snapPreview" title="Vorschau maximieren">▶</button>
+                <div class="o_md_splitter_handle">
+                    <svg viewBox="0 0 26 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 0L0 10l9 10z"/>
+                        <path d="M17 0l9 10-9 10z"/>
+                    </svg>
+                </div>
             </div>
             <!-- Rechte Hälfte: Live-HTML-Vorschau -->
             <div class="o_markdown_preview">
