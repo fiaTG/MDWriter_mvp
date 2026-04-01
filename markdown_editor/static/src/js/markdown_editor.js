@@ -48,8 +48,26 @@ class MarkdownField extends Component {
         //   breaks: true  → Einzelne Zeilenumbrüche erzeugen <br>
         //   linkify: true → URLs werden automatisch zu Links
         this.md = window.markdownit
-            ? window.markdownit({ html: false, breaks: true, linkify: true })
+            ? window.markdownit({ html: false, breaks: true, linkify: true, typographer: true })
             : null;  // Falls die Bibliothek nicht geladen wurde, null
+
+        // Plugins registrieren (werden als globale Variablen durch die Manifest-Assets geladen)
+        if (this.md) {
+            if (window.markdownitAbbr)      this.md.use(window.markdownitAbbr);
+            if (window.markdownitContainer) {
+                // Container benötigt explizite Namen — gängige Typen registrieren
+                this.md.use(window.markdownitContainer, "warning");
+                this.md.use(window.markdownitContainer, "info");
+                this.md.use(window.markdownitContainer, "danger");
+            }
+            if (window.markdownitDeflist)   this.md.use(window.markdownitDeflist);
+            if (window.markdownitEmoji)     this.md.use(window.markdownitEmoji);
+            if (window.markdownitFootnote)  this.md.use(window.markdownitFootnote);
+            if (window.markdownitIns)       this.md.use(window.markdownitIns);
+            if (window.markdownitMark)      this.md.use(window.markdownitMark);
+            if (window.markdownitSub)       this.md.use(window.markdownitSub);
+            if (window.markdownitSup)       this.md.use(window.markdownitSup);
+        }
 
         // useState erstellt reaktiven State: Wenn sich state.value oder state.html ändert,
         // rendert OWL die Komponente automatisch neu.

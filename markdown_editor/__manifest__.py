@@ -22,6 +22,15 @@
     "assets": {
         "web.assets_backend": [
             "markdown_editor/static/lib/markdown-it.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-abbr.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-container.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-deflist.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-emoji.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-footnote.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-ins.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-mark.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-sub.min.js",
+            "markdown_editor/static/lib/markdown-it-plugins/markdown-it-sup.min.js",
             "markdown_editor/static/lib/codemirror/codemirror.min.js",
             "markdown_editor/static/lib/codemirror/markdown.min.js",
             "markdown_editor/static/lib/codemirror/codemirror.min.css",
