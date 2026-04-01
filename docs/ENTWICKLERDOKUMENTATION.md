@@ -393,36 +393,53 @@ Ursachen:
 
 ---
 
-**Focus Mode (Konzentrationsmodus):**
+**Focus Mode (Expand-Modus beim Schreiben):**
 
-Beim Klick in den Editor dimmt alles außerhalb des Editors sanft ab, damit die Aufmerksamkeit auf den Inhalt gelenkt wird. Die Umsetzung ist rein CSS-seitig — kein JavaScript, kein OWL-State-Update, kein Re-Render.
+Beim Klick in den Editor expandiert dieser auf den gesamten Form-Sheet-Bereich; Titel, Notebook und alle anderen Formularelemente blenden sanft aus. Beim Verlassen des Editors kehrt die Ansicht wieder in den Normalzustand zurück. Die Umsetzung ist rein CSS-seitig — kein JavaScript, kein OWL-State-Update, kein Re-Render.
 
 ```scss
-/* Transitions nur aktivieren, wenn Editor auf der Seite vorhanden */
+/* Transitions + Positionierungskontext nur aktivieren wenn Editor auf der Seite vorhanden */
 .o_form_view:has(.o_markdown_editor) {
     .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
     .o-mail-chatter, .o_chatter {
         transition: opacity 0.35s ease;
     }
+    .o_form_sheet { position: relative; } /* Positionierungskontext */
 }
 
-/* Fokus aktiv → Umgebung zurückziehen, Editor-Border hervorheben */
+/* Fokus aktiv → Editor übernimmt das gesamte Form Sheet */
 .o_form_view:has(.o_markdown_editor:focus-within) {
     .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
     .o-mail-chatter, .o_chatter {
-        opacity: 0.25;
+        opacity: 0;
+        pointer-events: none;
     }
-    .o_markdown_editor {
-        box-shadow: 0 6px 28px var(--tt-shadow), 0 0 0 3px var(--tt-primary);
+    .o_form_sheet { overflow: hidden !important; }
+
+    .o_field_widget[name="content_md"] {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        animation: md-editor-expand 0.3s ease forwards;
     }
+    .o_markdown_editor { height: 100%; border-radius: 0; }
+}
+
+@keyframes md-editor-expand {
+    from { opacity: 0; transform: scale(0.985); }
+    to   { opacity: 1; transform: scale(1); }
 }
 ```
 
 **Technische Begründung:**
-- `:focus-within` feuert, sobald ein Nachfahre Fokus erhält — funktioniert sowohl mit dem CodeMirror-internen Hidden-Textarea als auch mit dem Fallback-`<textarea>`
-- `:has()` ist ab Chrome 105, Firefox 121 und Safari 15.4 unterstützt — alle relevanten Browser für Odoo 19 Enterprise
-- `opacity`-Änderungen lösen ausschließlich **Compositing** aus (keine Layout-Recalculation, kein Paint) — GPU-beschleunigt, vernachlässigbarer Ressourcenaufwand
-- `transition` ist nur auf Form-Views mit Markdown-Editor aktiv (`:has(.o_markdown_editor)`) — kein globaler Overhead
+- `.o_form_sheet { position: relative }` macht es zum Positionierungskontext — `inset: 0` auf dem absolut positionierten Field Widget dehnt es bis zur inneren Borderkante des Form Sheets aus (deckt auch Padding-Bereich ab)
+- Die Umgebungselemente bleiben im normalen Dokumentfluss (nur `opacity: 0`) — das Form Sheet behält seine Höhe und der expandierte Editor hat einen definierten `height`-Kontext für `height: 100%`
+- `overflow: hidden` wird nur im Fokus-Zustand gesetzt, um den Editor korrekt einzugrenzen; außerhalb gilt weiterhin `overflow: visible` (nötig für Odoo-Dropdowns)
+- Eintritt: `@keyframes md-editor-expand` (Opacity + minimaler Scale, 300ms)
+- Austritt: Umgebung blendet via `transition: opacity 0.35s ease` sanft wieder ein; der Editor springt sofort zurück in den Normalfluss (kein Exit-Keyframe möglich mit reinem `:focus-within`)
+- `:focus-within` feuert auf CodeMirrors internem Hidden-Textarea sowie auf dem Fallback-`<textarea>`
+- `:has()` wird ab Chrome 105, Firefox 121 und Safari 15.4 unterstützt — alle für Odoo 19 relevanten Browser
+- `opacity`-Änderungen lösen ausschließlich **Compositing** aus (kein Layout, kein Paint) — GPU-beschleunigt, vernachlässigbarer Ressourcenaufwand
 
 ### 4.4 Markdown-Library
 
@@ -625,7 +642,8 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
-| 1.2.9 | 01.04.2026 | Focus Mode: beim Fokussieren des Editors dimmt alles außerhalb (opacity 0.25) sanft ab; Editor-Border leuchtet vollständig auf — rein CSS via `:focus-within` + `:has()`, kein JS |
+| 1.3.0 | 01.04.2026 | Focus Mode: Editor expandiert bei Fokus auf gesamtes Form Sheet (`position: absolute; inset: 0`), Umgebung blendet mit `opacity: 0` aus, Eintritt via `@keyframes` (fade + scale 0.985→1, 300ms) — rein CSS via `:focus-within` + `:has()`, kein JS |
+| 1.2.9 | 01.04.2026 | Focus Mode (Vorstufe): beim Fokussieren des Editors dimmt alles außerhalb (opacity 0.25) sanft ab; Editor-Border leuchtet vollständig auf — rein CSS via `:focus-within` + `:has()`, kein JS |
 | 1.2.8 | 17.03.2026 | Scroll-Sync: zeilenbasierter Ansatz (cm.lineAtHeight) implementiert und wieder rückgängig gemacht (zu starkes Ruckeln durch asynchrone CM-Events); pixel-höhenbasierter Sync wiederhergestellt |
 | 1.2.7 | 17.03.2026 | Scroll-to-top scrollt jetzt auch Editor zurück (cm.scrollTo(null, 0) beim Click) |
 | 1.2.6 | 17.03.2026 | Hintergrundfarben: eigene Tokens --tt-editor-bg / --tt-preview-bg mit light-dark() (sanftes Grau/Mitternachtsblau statt Odoos Extremwerte) |
