@@ -470,24 +470,30 @@
 }
 
 // ============================================================
-// Focus Mode — Editor expandiert auf gesamtes Form Sheet
+// Focus Mode — Editor als Vollbild-Overlay beim Schreiben
 // ============================================================
 
-// Transitions + Positionierungskontext nur aktivieren wenn Editor auf der Seite vorhanden
+// Transitions nur aktivieren wenn Editor auf der Seite vorhanden
 .o_form_view:has(.o_markdown_editor) {
     .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
     .o-mail-chatter,
     .o_chatter {
         transition: opacity 0.35s ease;
     }
-
-    // Form Sheet als Positionierungskontext für den expandierten Editor
-    .o_form_sheet {
-        position: relative;
-    }
 }
 
-// Editor fokussiert → expandiert auf gesamtes Form Sheet, Umgebung blendet aus
+// Backdrop: dunkelt (Dark Mode) bzw. hellt (Light Mode) den gesamten Bildschirm ab
+.o_form_view:has(.o_markdown_editor:focus-within)::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: light-dark(rgba(255, 255, 255, 0.55), rgba(0, 0, 0, 0.7));
+    z-index: 49;
+    pointer-events: none;
+    animation: md-backdrop-in 0.35s ease forwards;
+}
+
+// Editor fokussiert → schwebt als Panel über dem Backdrop, füllt Viewport
 .o_form_view:has(.o_markdown_editor:focus-within) {
     .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
     .o-mail-chatter,
@@ -496,28 +502,28 @@
         pointer-events: none;
     }
 
-    // Overflow hidden damit der expandierte Editor korrekt eingegrenzt wird
-    .o_form_sheet {
-        overflow: hidden !important;
-    }
-
-    // Field Widget übernimmt das gesamte Form Sheet
     .o_field_widget[name="content_md"] {
-        position: absolute;
-        inset: 0;
+        position: fixed;
+        inset: 24px;
         z-index: 50;
         animation: md-editor-expand 0.3s ease forwards;
     }
 
-    // Editor füllt den expandierten Container vollständig
     .o_markdown_editor {
         height: 100%;
-        border-radius: 0;
-        box-shadow: 0 0 0 2px var(--tt-primary);
+        border-radius: var(--tt-radius);
+        box-shadow:
+            0 24px 64px rgba(0, 0, 0, 0.35),
+            0 0 0 2px var(--tt-primary);
     }
 }
 
+@keyframes md-backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
 @keyframes md-editor-expand {
-    from { opacity: 0; transform: scale(0.985); }
+    from { opacity: 0; transform: scale(0.97); }
     to   { opacity: 1; transform: scale(1); }
 }
