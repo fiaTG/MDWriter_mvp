@@ -3,7 +3,7 @@
 **Projekt:** MDWriter – Markdown Editor für Odoo 19
 **Modulversion:** 19.0.1.2.0
 **Autor:** Timo Giese
-**Datum:** März 2026
+**Datum:** April 2026
 **Status:** MVP vollständig implementiert
 
 ---
@@ -391,6 +391,39 @@ Ursachen:
 - Odoo setzt auf `.o_form_sheet_bg` ein `max-width: 1400px`, das auf breiten Bildschirmen Leerraum rechts erzeugt.
 - Da das Modul kein `mail.thread` verwendet, ist kein `flex-direction: column` Override nötig. Der Renderer läuft im natürlichen Row-Layout, `o_form_sheet_bg` füllt automatisch die volle Breite.
 
+---
+
+**Focus Mode (Konzentrationsmodus):**
+
+Beim Klick in den Editor dimmt alles außerhalb des Editors sanft ab, damit die Aufmerksamkeit auf den Inhalt gelenkt wird. Die Umsetzung ist rein CSS-seitig — kein JavaScript, kein OWL-State-Update, kein Re-Render.
+
+```scss
+/* Transitions nur aktivieren, wenn Editor auf der Seite vorhanden */
+.o_form_view:has(.o_markdown_editor) {
+    .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
+    .o-mail-chatter, .o_chatter {
+        transition: opacity 0.35s ease;
+    }
+}
+
+/* Fokus aktiv → Umgebung zurückziehen, Editor-Border hervorheben */
+.o_form_view:has(.o_markdown_editor:focus-within) {
+    .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
+    .o-mail-chatter, .o_chatter {
+        opacity: 0.25;
+    }
+    .o_markdown_editor {
+        box-shadow: 0 6px 28px var(--tt-shadow), 0 0 0 3px var(--tt-primary);
+    }
+}
+```
+
+**Technische Begründung:**
+- `:focus-within` feuert, sobald ein Nachfahre Fokus erhält — funktioniert sowohl mit dem CodeMirror-internen Hidden-Textarea als auch mit dem Fallback-`<textarea>`
+- `:has()` ist ab Chrome 105, Firefox 121 und Safari 15.4 unterstützt — alle relevanten Browser für Odoo 19 Enterprise
+- `opacity`-Änderungen lösen ausschließlich **Compositing** aus (keine Layout-Recalculation, kein Paint) — GPU-beschleunigt, vernachlässigbarer Ressourcenaufwand
+- `transition` ist nur auf Form-Views mit Markdown-Editor aktiv (`:has(.o_markdown_editor)`) — kein globaler Overhead
+
 ### 4.4 Markdown-Library
 
 Dateiname: [static/lib/markdown-it.min.js](../markdown_editor/static/lib/markdown-it.min.js)
@@ -592,6 +625,7 @@ pip install mistune
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 1.2.9 | 01.04.2026 | Focus Mode: beim Fokussieren des Editors dimmt alles außerhalb (opacity 0.25) sanft ab; Editor-Border leuchtet vollständig auf — rein CSS via `:focus-within` + `:has()`, kein JS |
 | 1.2.8 | 17.03.2026 | Scroll-Sync: zeilenbasierter Ansatz (cm.lineAtHeight) implementiert und wieder rückgängig gemacht (zu starkes Ruckeln durch asynchrone CM-Events); pixel-höhenbasierter Sync wiederhergestellt |
 | 1.2.7 | 17.03.2026 | Scroll-to-top scrollt jetzt auch Editor zurück (cm.scrollTo(null, 0) beim Click) |
 | 1.2.6 | 17.03.2026 | Hintergrundfarben: eigene Tokens --tt-editor-bg / --tt-preview-bg mit light-dark() (sanftes Grau/Mitternachtsblau statt Odoos Extremwerte) |

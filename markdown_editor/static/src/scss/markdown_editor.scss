@@ -96,6 +96,7 @@
     box-shadow:
         0 4px 16px var(--tt-shadow),
         0 0 0 3px var(--tt-primary-dim);
+    transition: box-shadow 0.35s ease;
     // Startwerte; werden per JS via _setRatio() überschrieben
     --editor-ratio:  50%;
     --preview-ratio: 50%;
@@ -466,4 +467,32 @@
     &::-webkit-scrollbar-track  { background: transparent; }
     &::-webkit-scrollbar-thumb  { background-color: var(--tt-primary); border-radius: 999px; }
     &::-webkit-scrollbar-thumb:hover { background-color: var(--tt-primary-dark); }
+}
+
+// ============================================================
+// Focus Mode — Konzentrationsmodus beim Schreiben
+// ============================================================
+
+// Transitions nur aktivieren, wenn Markdown-Editor auf der Seite vorhanden ist
+.o_form_view:has(.o_markdown_editor) {
+    .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
+    .o-mail-chatter,
+    .o_chatter {
+        transition: opacity 0.35s ease;
+    }
+}
+
+// Editor fokussiert → Umgebung zurückziehen, Editor hervorheben
+.o_form_view:has(.o_markdown_editor:focus-within) {
+    .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
+    .o-mail-chatter,
+    .o_chatter {
+        opacity: 0.25;
+    }
+
+    .o_markdown_editor {
+        box-shadow:
+            0 6px 28px var(--tt-shadow),
+            0 0 0 3px var(--tt-primary);
+    }
 }
