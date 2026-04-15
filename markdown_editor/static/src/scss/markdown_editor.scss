@@ -482,6 +482,12 @@
     }
 }
 
+// Scrollbar des Odoo-Scroll-Containers ausblenden während Fokus aktiv —
+// verhindert asymmetrischen Abstand (Scrollbar ~17px nimmt rechts Platz weg)
+.o_content:has(.o_markdown_editor:focus-within) {
+    overflow: hidden;
+}
+
 // Backdrop: dunkelt (Dark Mode) bzw. hellt (Light Mode) den gesamten Bildschirm ab
 .o_form_view:has(.o_markdown_editor:focus-within)::before {
     content: "";
