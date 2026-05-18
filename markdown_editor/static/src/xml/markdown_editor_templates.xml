@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <!--
-        QWeb‑Vorlage fuer den Markdown‑Editor mit Split‑View.
-        Links: Textarea, auf der CodeMirror 5 (Markdown‑Modus) mountet.
-        Rechts: Live‑HTML‑Vorschau via markdown‑it + t‑out.
-    -->
     <t t-name="markdown_editor.MarkdownField">
-        <div class="o_markdown_editor" t-ref="container">
-            <!-- Linke Hälfte: Editor-Pane -->
+        <div class="o_markdown_editor">
             <div class="o_md_editor_pane">
                 <textarea
                     t-ref="editor"
@@ -15,27 +9,9 @@
                     t-on-input="_onInput"
                     placeholder="Geben Sie hier Ihren Markdown‑Text ein..."
                 />
-                <!-- Scroll-Fortschrittsbalken: rechte Kante des Editors, ersetzt CM-Scrollbar -->
-                <div class="o_md_editor_progress">
-                    <div class="o_md_editor_bar" t-ref="scrollBar"/>
-                </div>
             </div>
-            <!-- Splitter: schmale Linie + Kreis mit Doppelpfeil -->
-            <div class="o_md_splitter" t-on-mousedown="_onSplitterMousedown">
-                <div class="o_md_splitter_handle">
-                    <svg viewBox="0 0 26 20" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 0L0 10l9 10z"/>
-                        <path d="M17 0l9 10-9 10z"/>
-                    </svg>
-                </div>
-            </div>
-            <!-- Rechte Hälfte: Live-HTML-Vorschau -->
-            <div class="o_markdown_preview" t-ref="preview">
+            <div class="o_markdown_preview">
                 <t t-out="state.html"/>
-            </div>
-            <!-- Scroll-to-top Button: overlay über Preview, erscheint ab scroll > 50px -->
-            <div class="o_md_scroll_progress o_md_scroll_hidden" t-ref="scrollProgress">
-                <div class="o_md_scroll_label">SCROLL TO TOP</div>
             </div>
         </div>
     </t>

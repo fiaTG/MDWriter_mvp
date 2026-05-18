@@ -1,9 +1,8 @@
 // Markdown Editor — Styling
 // Scope: ausschließlich eigene Komponenten (.o_markdown_editor, .o_markdown_preview, .o_md_diff)
-// Kein Odoo-Chrome (Navbar, Buttons, Notebook, Statusbar) wird berührt.
 
 // ============================================================
-// Design Tokens — nur für den Editor selbst
+// Design Tokens
 // ============================================================
 
 :root {
@@ -92,26 +91,21 @@
     border-radius: var(--tt-radius);
     box-sizing: border-box;
     overflow: hidden;
-    position: relative; // Positionierungskontext für absolut platzierten Progress-Indikator
     box-shadow:
         0 4px 16px var(--tt-shadow),
         0 0 0 3px var(--tt-primary-dim);
-    transition: box-shadow 0.35s ease;
-    // Startwerte; werden per JS via _setRatio() überschrieben
-    --editor-ratio:  50%;
-    --preview-ratio: 50%;
 }
 
 // ============================================================
-// Editor-Pane (linke Hälfte, Wrapper)
+// Editor-Pane (linke Hälfte)
 // ============================================================
 
 .o_md_editor_pane {
-    flex: 0 0 var(--editor-ratio);
+    flex: 0 0 50%;
     min-width: 0;
     overflow: hidden;
     display: flex;
-    position: relative;
+    border-right: 2px solid var(--tt-primary);
 
     textarea.o_input,
     .CodeMirror {
@@ -141,80 +135,11 @@
 }
 
 // ============================================================
-// Splitter-Handle
-// ============================================================
-
-// Schmale Linie als Splitter-Balken, Kreis als Handle
-.o_md_splitter {
-    flex: 0 0 30px;
-    position: relative;
-    cursor: col-resize;
-    user-select: none;
-    z-index: 1;
-
-    // Schmale vertikale Linie
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 2px;
-        background: var(--tt-primary);
-        opacity: 0.5;
-        transition: opacity 0.2s ease;
-    }
-
-    &:hover::before {
-        opacity: 1;
-    }
-}
-
-// Kreis mit Doppelpfeil-SVG, mittig auf der Linie
-.o_md_splitter_handle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 33px;
-    height: 33px;
-    border-radius: 50%;
-    background: #1a1a1a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: col-resize;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    transition: background 0.2s ease, box-shadow 0.2s ease;
-
-    svg {
-        width: 14px;
-        height: 10px;
-        pointer-events: none;
-
-        path {
-            fill: var(--tt-primary);
-            transition: fill 0.2s ease;
-        }
-    }
-
-    &:hover {
-        background: var(--tt-primary);
-        box-shadow: 0 4px 18px rgba(151, 210, 29, 0.4);
-
-        svg path {
-            fill: #1a1a1a;
-        }
-    }
-}
-
-// ============================================================
 // Preview (rechte Hälfte)
 // ============================================================
 
 .o_markdown_preview {
-    flex: 0 0 var(--preview-ratio);
+    flex: 0 0 50%;
     min-width: 0;
     padding: 1.25rem 1.5rem;
     overflow-y: auto;
@@ -359,7 +284,7 @@
 }
 
 // ============================================================
-// Odoo Form Layout Fix (nur Breitenkorrektur, keine Farben)
+// Odoo Form Layout Fix
 // ============================================================
 
 .o_form_view:has(.o_markdown_editor) {
@@ -380,71 +305,7 @@
 }
 
 // ============================================================
-// Editor-Scrollfortschrittsbalken (rechte Kante des Editor-Pane)
-// ============================================================
-
-// Versteckt den nativen CodeMirror-Scrollbalken (wird durch eigenen ersetzt)
-.o_markdown_editor .CodeMirror-vscrollbar {
-    display: none !important;
-}
-
-.o_md_editor_progress {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 6px;
-    height: 100%;
-    background: rgba(151, 210, 29, 0.08);
-    z-index: 5;
-    pointer-events: none;
-}
-
-.o_md_editor_bar {
-    width: 100%;
-    height: 0%;
-    background: linear-gradient(180deg, #97d21d, #638a13);
-    border-radius: 0 0 3px 3px;
-    transition: height 0.1s linear;
-}
-
-// ============================================================
-// Scroll-to-top Button (Preview, rechts unten)
-// ============================================================
-
-.o_md_scroll_progress {
-    position: absolute;
-    bottom: 16px;
-    right: 12px;
-    cursor: pointer;
-    z-index: 10;
-    transition: opacity 0.4s ease, transform 0.4s ease;
-
-    &:hover .o_md_scroll_label {
-        opacity: 1;
-        color: var(--tt-primary);
-    }
-}
-
-.o_md_scroll_hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(8px);
-}
-
-.o_md_scroll_label {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-size: 9px;
-    color: var(--tt-primary);
-    font-weight: 600;
-    letter-spacing: 2px;
-    user-select: none;
-    opacity: 0.6;
-    transition: opacity 0.2s ease, color 0.2s ease;
-}
-
-// ============================================================
-// Scrollbars (Editor, Preview, Diff)
+// Scrollbars (Preview, Diff)
 // ============================================================
 
 .o_markdown_preview,
@@ -467,69 +328,4 @@
     &::-webkit-scrollbar-track  { background: transparent; }
     &::-webkit-scrollbar-thumb  { background-color: var(--tt-primary); border-radius: 999px; }
     &::-webkit-scrollbar-thumb:hover { background-color: var(--tt-primary-dark); }
-}
-
-// ============================================================
-// Focus Mode — Editor als Vollbild-Overlay beim Schreiben
-// ============================================================
-
-// Transitions nur aktivieren wenn Editor auf der Seite vorhanden
-.o_form_view:has(.o_markdown_editor) {
-    .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
-    .o-mail-chatter,
-    .o_chatter {
-        transition: opacity 0.35s ease;
-    }
-}
-
-// Scrollbar des Odoo-Scroll-Containers ausblenden während Fokus aktiv —
-// verhindert asymmetrischen Abstand (Scrollbar ~17px nimmt rechts Platz weg)
-.o_content:has(.o_markdown_editor:focus-within) {
-    overflow: hidden;
-}
-
-// Backdrop: dunkelt (Dark Mode) bzw. hellt (Light Mode) den gesamten Bildschirm ab
-.o_form_view:has(.o_markdown_editor:focus-within)::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: light-dark(rgba(255, 255, 255, 0.55), rgba(0, 0, 0, 0.7));
-    z-index: 49;
-    pointer-events: none;
-    animation: md-backdrop-in 0.35s ease forwards;
-}
-
-// Editor fokussiert → schwebt als Panel über dem Backdrop, füllt Viewport
-.o_form_view:has(.o_markdown_editor:focus-within) {
-    .o_form_sheet > *:not(.o_field_widget[name="content_md"]),
-    .o-mail-chatter,
-    .o_chatter {
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .o_field_widget[name="content_md"] {
-        position: fixed;
-        inset: 24px;
-        z-index: 50;
-        animation: md-editor-expand 0.3s ease forwards;
-    }
-
-    .o_markdown_editor {
-        height: 100%;
-        border-radius: var(--tt-radius);
-        box-shadow:
-            0 24px 64px rgba(0, 0, 0, 0.35),
-            0 0 0 2px var(--tt-primary);
-    }
-}
-
-@keyframes md-backdrop-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@keyframes md-editor-expand {
-    from { opacity: 0; transform: scale(0.97); }
-    to   { opacity: 1; transform: scale(1); }
 }
