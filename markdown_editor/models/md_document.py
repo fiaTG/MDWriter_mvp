@@ -146,19 +146,44 @@ class XMdDocument(models.Model):
         self._link_attachment_to_documents(attachment)
         return attachment
 
+    def _get_or_create_mdwriter_folder(self):
+        """Gibt den MDWriter-Ordner in Documents zurück, legt ihn ggf. an.
+
+        Unterstützt beide Documents-Strukturen:
+        - Odoo 16: documents.folder als eigenes Modell
+        - Odoo 17+: Ordner sind documents.document mit type='folder'
+        """
+        try:
+            if "documents.folder" in self.env:
+                # Odoo 16
+                Folder = self.env["documents.folder"].sudo()
+                folder = Folder.search([("name", "=", "MDWriter Dokumentation")], limit=1)
+                return folder or Folder.create({"name": "MDWriter Dokumentation"})
+            # Odoo 17+
+            Doc = self.env["documents.document"].sudo()
+            folder = Doc.search([("name", "=", "MDWriter Dokumentation"), ("type", "=", "folder")], limit=1)
+            return folder or Doc.create({"name": "MDWriter Dokumentation", "type": "folder"})
+        except Exception as e:
+            _logger.warning("MDWriter: Ordner konnte nicht angelegt werden: %s", e)
+            return None
+
     def _link_attachment_to_documents(self, attachment):
         """Legt das Attachment als documents.document im MDWriter-Ordner ab."""
         if "documents.document" not in self.env:
             return
-        folder = self.env.ref("markdown_editor.folder_mdwriter", raise_if_not_found=False)
-        if not folder:
-            return
         try:
-            self.env["documents.document"].sudo().create({
-                "name": attachment.name,
-                "folder_id": folder.id,
-                "attachment_id": attachment.id,
-            })
+            folder = self._get_or_create_mdwriter_folder()
+            if not folder:
+                return
+            vals = {"name": attachment.name, "folder_id": folder.id}
+            Doc = self.env["documents.document"]
+            if "attachment_id" in Doc._fields:
+                # Odoo 16: direktes Attachment-Feld
+                vals["attachment_id"] = attachment.id
+            else:
+                # Odoo 17+: Datei direkt am Document-Record
+                vals.update({"datas": attachment.datas, "mimetype": attachment.mimetype, "type": "binary"})
+            Doc.sudo().create(vals)
         except Exception as e:
             _logger.warning("MDWriter: documents.document konnte nicht erstellt werden: %s", e)
 

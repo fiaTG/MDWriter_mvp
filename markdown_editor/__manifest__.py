@@ -11,12 +11,10 @@
     "depends": [
         "base",
         "web",
-        "documents",
     ],
     "data": [
         "security/ir.model.access.csv",
         "security/markdown_editor_security.xml",
-        "data/documents_data.xml",
         "views/md_document_views.xml",
         "views/md_document_diff_views.xml",
         "report/md_document_report.xml",
