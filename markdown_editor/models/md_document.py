@@ -136,16 +136,31 @@ class XMdDocument(models.Model):
 
     def _create_md_attachment(self, record, content, version_num):
         """Speichert den Markdown-Text als .md-Datei in Odoo (als Attachment/Anhang)."""
-        # base64.b64encode() kodiert den Text als Base64 – Odoo speichert Anhänge so.
-        # .encode("utf-8") wandelt den Python-String in Bytes um (nötig für base64).
-        return self.env["ir.attachment"].sudo().create({
-            # f-String: geschweifte Klammern werden durch den Variablenwert ersetzt
+        attachment = self.env["ir.attachment"].sudo().create({
             "name": f"{record.name}_v{version_num}.md",
             "datas": base64.b64encode(content.encode("utf-8")),
             "mimetype": "text/markdown",
-            "res_model": record._name,  # Verknüpfung: Anhang gehört zu diesem Modell
-            "res_id": record.id,        # Verknüpfung: Anhang gehört zu diesem Datensatz
+            "res_model": record._name,
+            "res_id": record.id,
         })
+        self._link_attachment_to_documents(attachment)
+        return attachment
+
+    def _link_attachment_to_documents(self, attachment):
+        """Legt das Attachment als documents.document im MDWriter-Ordner ab."""
+        if "documents.document" not in self.env:
+            return
+        folder = self.env.ref("markdown_editor.folder_mdwriter", raise_if_not_found=False)
+        if not folder:
+            return
+        try:
+            self.env["documents.document"].sudo().create({
+                "name": attachment.name,
+                "folder_id": folder.id,
+                "attachment_id": attachment.id,
+            })
+        except Exception as e:
+            _logger.warning("MDWriter: documents.document konnte nicht erstellt werden: %s", e)
 
     def _create_pdf_attachment(self, record, version_num):
         """Rendert und speichert einen PDF-Report als Anhang. Gibt False zurück bei Fehler."""

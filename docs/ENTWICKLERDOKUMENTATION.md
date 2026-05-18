@@ -71,6 +71,8 @@ markdown_editor/
 │           ├── JetBrains_Mono/             # Code-Font (Variable Font, TTF)
 │           ├── Inter/                      # Fließtext-Font (Variable Font, TTF)
 │           └── Space_Grotesk/              # Überschriften-Font (Variable Font + statische Schnitte)
+├── data/
+│   └── documents_data.xml                  # Default-Ordner "MDWriter Dokumentation" in Documents
 ├── security/
 │   ├── ir.model.access.csv                 # ACL-Definitionen
 │   └── markdown_editor_security.xml        # Record Rules
