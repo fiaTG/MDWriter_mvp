@@ -1,0 +1,111 @@
+@startuml
+
+skinparam class {
+  BackgroundColor White
+  BorderColor #638a13
+  ArrowColor #638a13
+  HeaderBackgroundColor #97d21d
+}
+skinparam class<<external>> {
+  BackgroundColor #f5f5f5
+  BorderColor #999999
+  HeaderBackgroundColor #dddddd
+}
+skinparam class<<transient>> {
+  BackgroundColor #fffbe6
+  BorderColor #e6b800
+  HeaderBackgroundColor #ffe066
+}
+
+' ─── Externe Odoo-Modelle (vereinfacht) ───────────────────────────────────────
+
+class "res.users" as ResUsers <<external>> {
+  + id : Integer
+  + name : Char
+}
+
+class "ir.attachment" as IrAttachment <<external>> {
+  + id : Integer
+  + name : Char
+  + datas : Binary
+  + mimetype : Char
+}
+
+' ─── Hauptmodell ──────────────────────────────────────────────────────────────
+
+class "x.md.document" as Document {
+  + name : Char [required]
+  + content_md : Text
+  + content_html : Html [computed, sanitize=False]
+  + state : Selection [draft, published, archived]
+  + owner_id : Many2one
+  + version_ids : One2many
+  + current_version : Integer [computed, store]
+  --
+  + action_publish()
+  + action_set_draft()
+  + action_archive_doc()
+  + action_export_pdf()
+  + action_download_md()
+  + action_open_diff()
+  # _create_version()
+  # _create_md_attachment()
+  # _create_pdf_attachment()
+  # _compute_current_version()
+  # _compute_content_html()
+  # _get_report_html()
+}
+
+' ─── Versionsmodell ───────────────────────────────────────────────────────────
+
+class "x.md.document.version" as Version {
+  + document_id : Many2one [required, cascade]
+  + version : Integer [required]
+  + content_md : Text
+  + checksum : Char [32, MD5]
+  + changed_by : Many2one
+  + changed_at : Datetime
+  + md_attachment_id : Many2one
+  + pdf_attachment_id : Many2one
+  --
+  + action_restore()
+}
+
+note right of Version
+  <b>Append-only</b>
+  Einmal angelegt,
+  niemals geändert.
+end note
+
+' ─── Diff-Wizard (TransientModel) ────────────────────────────────────────────
+
+class "x.md.document.diff.wizard" as DiffWizard <<transient>> {
+  + document_id : Many2one [required]
+  + version_from_id : Many2one
+  + version_to_id : Many2one
+  + diff_html : Html [computed, sanitize=False]
+  --
+  # _compute_diff_html()
+}
+
+note bottom of DiffWizard
+  <b>TransientModel</b>
+  Nur temporär im Speicher,
+  kein dauerhafter DB-Eintrag.
+end note
+
+' ─── Beziehungen ─────────────────────────────────────────────────────────────
+
+Document "1" *-- "0..*" Version : version_ids >
+
+Document "*" --> "1" ResUsers : owner_id >
+
+Version "*" --> "1" ResUsers : changed_by >
+Version "*" --> "0..1" IrAttachment : md_attachment_id >
+Version "*" --> "0..1" IrAttachment : pdf_attachment_id >
+
+DiffWizard "*" --> "1" Document : document_id >
+DiffWizard "*" --> "0..1" Version : version_from_id >
+DiffWizard "*" --> "0..1" Version : version_to_id >
+
+@enduml

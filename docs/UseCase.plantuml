@@ -1,0 +1,53 @@
+@startuml
+skinparam rectangle<<System>> {
+  BackgroundColor LightBlue
+  BorderColor Blue
+}
+skinparam actor {
+  BackgroundColor LightYellow
+  BorderColor Orange
+}
+
+' Akteure
+actor User        as Owner
+actor Admin
+actor "External Viewer" as Viewer
+
+rectangle "MDWriter System" <<System>> {
+  usecase "Create Document"              as UC_Create
+  usecase "Edit Markdown"               as UC_Edit
+  usecase "Manage Document Status"      as UC_Status
+  usecase "View Document"               as UC_View
+  usecase "Export PDF / Markdown"       as UC_Export
+  usecase "Configure ACL / Record Rules" as UC_ACL
+  usecase "View Version History"        as UC_VersionHistory
+  usecase "Compare Versions"            as UC_Compare
+  usecase "Restore Version"             as UC_Restore
+}
+
+' Beziehungen: Owner darf alle dokumentbezogenen Aktionen ausführen.
+Owner --> UC_Create
+Owner --> UC_Edit
+Owner --> UC_Status
+Owner --> UC_View
+Owner --> UC_Export
+Owner --> UC_VersionHistory
+Owner --> UC_Compare
+Owner --> UC_Restore
+
+' Admin erbt die Rechte des Owners und kann zusätzlich ACL/Record Rules konfigurieren.
+Admin --> UC_Create
+Admin --> UC_Edit
+Admin --> UC_Status
+Admin --> UC_View
+Admin --> UC_Export
+Admin --> UC_VersionHistory
+Admin --> UC_Compare
+Admin --> UC_Restore
+Admin --> UC_ACL
+
+' Externer Betrachter darf nur lesen.
+Viewer --> UC_View
+Viewer --> UC_VersionHistory
+
+@enduml
