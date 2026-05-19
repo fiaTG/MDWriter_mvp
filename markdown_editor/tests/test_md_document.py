@@ -106,32 +106,27 @@ class TestMdDocumentACL(TransactionCase):
     def _make_test_user(self, name, login):
         """Legt einen Testbenutzer an, kompatibel mit Community und Enterprise.
 
-        Odoo 19 Enterprise fügt Pflichtfelder ohne DB-Default ein (notification_type,
-        color_scheme). Wir setzen bekannte Felder wenn vorhanden und patchen
-        res.users.settings.create falls color_scheme keinen ORM-Default hat.
+        Auf manchen Odoo.sh-Instanzen existiert res_users_settings.color_scheme
+        als NOT NULL-Spalte ohne DB-Default und ohne ORM-Felddefinition (Schema-
+        Inkonsistenz nach Enterprise-Migration). ALTER TABLE setzt den fehlenden
+        Default, sodass res.users.create() erfolgreich die Settings anlegen kann.
         """
-        from unittest.mock import patch
+        self.env.cr.execute("""
+            SELECT 1 FROM information_schema.columns
+            WHERE table_name = 'res_users_settings'
+              AND column_name = 'color_scheme'
+              AND column_default IS NULL
+        """)
+        if self.env.cr.fetchone():
+            self.env.cr.execute(
+                "ALTER TABLE res_users_settings "
+                "ALTER COLUMN color_scheme SET DEFAULT 'light'"
+            )
 
         vals = {"name": name, "login": login}
         if "notification_type" in self.env["res.users"]._fields:
             vals["notification_type"] = "inbox"
-
-        if "res.users.settings" not in self.env:
-            return self.env["res.users"].create(vals)
-
-        # color_scheme in res.users.settings kann in manchen Odoo-19-Builds
-        # NOT NULL ohne DB-Default sein — Standardwert 'light' als Fallback setzen.
-        Settings = type(self.env["res.users.settings"])
-        _orig = Settings.create
-
-        def _with_color_default(s, vals_list):
-            if "color_scheme" in s._fields:
-                for v in vals_list:
-                    v.setdefault("color_scheme", "light")
-            return _orig(s, vals_list)
-
-        with patch.object(Settings, "create", _with_color_default):
-            return self.env["res.users"].create(vals)
+        return self.env["res.users"].create(vals)
 
     def test_owner_can_read_own_document(self):
         doc = self.env["x.md.document"].with_user(self.user_a).browse(self.doc_a.id)
