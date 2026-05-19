@@ -95,16 +95,10 @@ class TestMdDocumentACL(TransactionCase):
         super().setUp()
         # Zwei Testbenutzer anlegen, um die Zugriffsregeln zu prüfen.
         # with_user(user) führt alle Operationen als dieser User aus.
-        self.user_a = self.env["res.users"].create({
-            "name": "User A",
-            "login": "user_a_test@example.com",
-            "notification_type": "inbox",
-        })
-        self.user_b = self.env["res.users"].create({
-            "name": "User B",
-            "login": "user_b_test@example.com",
-            "notification_type": "inbox",
-        })
+        # notification_type ist nur vorhanden wenn das mail-Modul installiert ist
+        extra = {"notification_type": "inbox"} if "notification_type" in self.env["res.users"]._fields else {}
+        self.user_a = self.env["res.users"].create({"name": "User A", "login": "user_a_test@example.com", **extra})
+        self.user_b = self.env["res.users"].create({"name": "User B", "login": "user_b_test@example.com", **extra})
         # Dokument als User A anlegen → User A ist damit der Eigentümer
         self.doc_a = self.env["x.md.document"].with_user(self.user_a).create({
             "name": "Dokument von A",
