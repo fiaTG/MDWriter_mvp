@@ -98,10 +98,12 @@ class TestMdDocumentACL(TransactionCase):
         self.user_a = self.env["res.users"].create({
             "name": "User A",
             "login": "user_a_test@example.com",
+            "notification_type": "inbox",
         })
         self.user_b = self.env["res.users"].create({
             "name": "User B",
             "login": "user_b_test@example.com",
+            "notification_type": "inbox",
         })
         # Dokument als User A anlegen → User A ist damit der Eigentümer
         self.doc_a = self.env["x.md.document"].with_user(self.user_a).create({
