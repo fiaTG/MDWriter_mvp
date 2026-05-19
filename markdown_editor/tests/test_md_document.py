@@ -95,15 +95,43 @@ class TestMdDocumentACL(TransactionCase):
         super().setUp()
         # Zwei Testbenutzer anlegen, um die Zugriffsregeln zu prüfen.
         # with_user(user) führt alle Operationen als dieser User aus.
-        # notification_type ist nur vorhanden wenn das mail-Modul installiert ist
-        extra = {"notification_type": "inbox"} if "notification_type" in self.env["res.users"]._fields else {}
-        self.user_a = self.env["res.users"].create({"name": "User A", "login": "user_a_test@example.com", **extra})
-        self.user_b = self.env["res.users"].create({"name": "User B", "login": "user_b_test@example.com", **extra})
+        self.user_a = self._make_test_user("User A", "user_a_test@example.com")
+        self.user_b = self._make_test_user("User B", "user_b_test@example.com")
         # Dokument als User A anlegen → User A ist damit der Eigentümer
         self.doc_a = self.env["x.md.document"].with_user(self.user_a).create({
             "name": "Dokument von A",
             "content_md": "Inhalt A",
         })
+
+    def _make_test_user(self, name, login):
+        """Legt einen Testbenutzer an, kompatibel mit Community und Enterprise.
+
+        Odoo 19 Enterprise fügt Pflichtfelder ohne DB-Default ein (notification_type,
+        color_scheme). Wir setzen bekannte Felder wenn vorhanden und patchen
+        res.users.settings.create falls color_scheme keinen ORM-Default hat.
+        """
+        from unittest.mock import patch
+
+        vals = {"name": name, "login": login}
+        if "notification_type" in self.env["res.users"]._fields:
+            vals["notification_type"] = "inbox"
+
+        if "res.users.settings" not in self.env:
+            return self.env["res.users"].create(vals)
+
+        # color_scheme in res.users.settings kann in manchen Odoo-19-Builds
+        # NOT NULL ohne DB-Default sein — Standardwert 'light' als Fallback setzen.
+        Settings = type(self.env["res.users.settings"])
+        _orig = Settings.create
+
+        def _with_color_default(s, vals_list):
+            if "color_scheme" in s._fields:
+                for v in vals_list:
+                    v.setdefault("color_scheme", "light")
+            return _orig(s, vals_list)
+
+        with patch.object(Settings, "create", _with_color_default):
+            return self.env["res.users"].create(vals)
 
     def test_owner_can_read_own_document(self):
         doc = self.env["x.md.document"].with_user(self.user_a).browse(self.doc_a.id)
